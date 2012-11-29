@@ -7,10 +7,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -46,7 +43,9 @@ public class FileSystemUserRepositoryTest {
     }
 
     private FileSystemUserRepository userRepository() throws IOException, SAXException, ParserConfigurationException {
-        return new FileSystemUserRepository(new ClassPathResource("/hmac/auth.xml"));
+        final FileSystemUserRepository repository = new FileSystemUserRepository();
+        repository.setResource(new ClassPathResource("/hmac/auth.xml"));
+        return repository;
     }
 
 }
