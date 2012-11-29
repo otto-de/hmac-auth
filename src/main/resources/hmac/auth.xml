@@ -1,0 +1,17 @@
+<auth>
+
+    <user name="tvollerthun" key="someSecretKey" roles="admin" />
+    <user name="cstamm" key="someSecretKey" roles="admin"/>
+    <user name="gsteinacker" key="someSecretKey" roles="admin"/>
+    <user name="rkeil" key="someSecretKey" roles="admin"/>
+    <user name="mfaith" key="someSecretKey" roles="admin"/>
+    <user name="fkoehler" key="someSecretKey" roles="admin"/>
+
+    <user name="mnoecker" key="someSecretKey" roles="shopoffice"/>
+    <user name="rbretzmann" key="someSecretKey" roles="shopoffice"/>
+    <user name="shopoffice" key="someSecretKey" roles="shopoffice"/>
+
+    <user name="nobody" key="someSecretKey" />
+    <user name="spacken" key="someSecretKey" />
+    
+</auth>
