@@ -1,20 +1,31 @@
 package de.otto.hmac.authentication;
 
-import org.apache.commons.io.IOUtils;
+import de.otto.hmac.StringUtils;
 
 import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
 
+/**
+ * A wrapper for a HttpServletRequest.
+ * <p/>
+ * The wrapper is needed to read the request body multiple times, for example during the authentication process
+ * and later in the call stack to read the request body.
+ *
+ */
 public class WrappedRequest extends HttpServletRequestWrapper {
 
     private final String body;
 
-
-    public static WrappedRequest wrap(HttpServletRequest request) throws IOException {
+    /**
+     * Factory method used to create a WrappedRequest, wrapping a HttpServletRequest.
+     *
+     * @param request the HttServletRequest
+     * @return WrappedRequest
+     * @throws IOException if reading the request body fails.
+     */
+    public static WrappedRequest wrap(final HttpServletRequest request) throws IOException {
         if (request instanceof WrappedRequest) {
             return (WrappedRequest) request;
         }
@@ -22,30 +33,28 @@ public class WrappedRequest extends HttpServletRequestWrapper {
         return new WrappedRequest(request);
     }
 
-    private WrappedRequest(HttpServletRequest request) throws IOException {
-        super(request);
-        body = readBody(request);
-    }
-
-    private String readBody(ServletRequest request) throws IOException {
-
-        final ServletInputStream inputStream = request.getInputStream();
-        return inputStream != null ? IOUtils.toString(inputStream) : "";
-    }
-
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        ServletInputStream result = new ServletInputStream() {
+        return new ServletInputStream() {
             final ByteArrayInputStream inputStream = new ByteArrayInputStream(body.getBytes());
 
             public int read() throws IOException {
                 return inputStream.read();
             }
         };
-        return result;
     }
 
     public String getBody() {
         return body;
     }
+
+    private WrappedRequest(final HttpServletRequest request) throws IOException {
+        super(request);
+        String result;
+        try (final ServletInputStream inputStream = request.getInputStream()) {
+            result = inputStream != null ? StringUtils.toString(inputStream) : "";
+        }
+        body = result;
+    }
+
 }
