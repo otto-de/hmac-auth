@@ -1,6 +1,7 @@
 package de.otto.hmac.authorization;
 
 import de.otto.hmac.FileSystemUserRepository;
+import org.springframework.core.io.ClassPathResource;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 
@@ -45,7 +46,7 @@ public class FileSystemUserRepositoryTest {
     }
 
     private FileSystemUserRepository userRepository() throws IOException, SAXException, ParserConfigurationException {
-        return new FileSystemUserRepository();
+        return new FileSystemUserRepository(new ClassPathResource("/hmac/auth.xml"));
     }
 
 }

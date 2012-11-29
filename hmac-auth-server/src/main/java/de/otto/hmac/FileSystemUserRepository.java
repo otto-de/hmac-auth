@@ -2,6 +2,8 @@ package de.otto.hmac;
 
 import de.otto.hmac.authentication.UserRepository;
 import de.otto.hmac.authorization.RoleRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -9,8 +11,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.annotation.PostConstruct;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,12 +30,11 @@ public class FileSystemUserRepository implements UserRepository, RoleRepository 
     private final ConcurrentMap<String, String> userToKey = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Set<String>> userToRole = new ConcurrentHashMap<>();
 
-    public FileSystemUserRepository() throws IOException, SAXException, ParserConfigurationException {
-
-        final Document document = newInstance().newDocumentBuilder()
-                .parse(getClass().getResourceAsStream("/hmac/auth.xml"));
-
-        loadAuthXml(document, userToKey, userToRole);
+    public FileSystemUserRepository(@Value("${hmac-auth.xml.resource}") final Resource authXml) throws IOException, SAXException, ParserConfigurationException {
+        try (final InputStream inputStream = authXml.getInputStream()) {
+            final Document document = newInstance().newDocumentBuilder().parse(inputStream);
+            loadAuthXml(document, userToKey, userToRole);
+        }
     }
 
     @Override
