@@ -44,7 +44,8 @@ public class FileSystemUserRepositoryTest {
 
     private FileSystemUserRepository userRepository() throws IOException, SAXException, ParserConfigurationException {
         final FileSystemUserRepository repository = new FileSystemUserRepository();
-        repository.setResource(new ClassPathResource("/hmac/auth.xml"));
+        repository.setResource("/hmac/auth.xml");
+        repository.postConstruct();
         return repository;
     }
 
