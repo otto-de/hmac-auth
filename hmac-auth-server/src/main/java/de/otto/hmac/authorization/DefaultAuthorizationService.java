@@ -1,24 +1,22 @@
 package de.otto.hmac.authorization;
 
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.otto.hmac.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import static de.otto.hmac.authentication.AuthenticationFilter.API_USERNAME;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
 @Service
 public class DefaultAuthorizationService implements AuthorizationService {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultAuthorizationService.class);
 
     private RoleRepository userRepository;
 
@@ -26,18 +24,18 @@ public class DefaultAuthorizationService implements AuthorizationService {
 
     @Resource
     @Required
-    public void setUserRepository(RoleRepository userRepository) {
+    public void setUserRepository(final RoleRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @Resource
     @Required
-    public void setRequest(HttpServletRequest request) {
+    public void setRequest(final HttpServletRequest request) {
         this.request = request;
     }
 
     @Override
-    public void authorize(String... expectedRoles) {
+    public void authorize(final String... expectedRoles) {
         String username = getUsername(request);
 
         if (DISABLE_AUTHORIZATION_FOR_UNSIGNED_REQUESTS(username)) {
@@ -51,7 +49,7 @@ public class DefaultAuthorizationService implements AuthorizationService {
         }
     }
 
-    private Set<String> intersection(Collection<String> allowedForRoles, Collection<String> rolesForUser) {
+    private Set<String> intersection(final Collection<String> allowedForRoles, final Collection<String> rolesForUser) {
         final HashSet<String> set = new HashSet<>(allowedForRoles);
         set.retainAll(rolesForUser);
         return set;
@@ -61,14 +59,13 @@ public class DefaultAuthorizationService implements AuthorizationService {
         return username == null;
     }
 
-    private static String createErrorMessage(String username, String[] allowedForRoles) {
-        String displayUser = StringUtils.isEmpty(username) ? "Anonymous user" : "["+username+"]";
-        String displayAllowedRoles = StringUtils.join(allowedForRoles, ", ");
-        return displayUser + " is not in one of these groups: [" + displayAllowedRoles + "].";
+    private static String createErrorMessage(final String username, final String[] allowedForRoles) {
+        final String displayUser = StringUtils.isNullOrEmpty(username) ? "Anonymous user" : "["+username+"]";
+        return format("%s is not in one of these groups: %s.", displayUser, Arrays.toString(allowedForRoles));
     }
 
-    private static String getUsername(HttpServletRequest request) {
-        Object username = request.getAttribute(API_USERNAME);
+    private static String getUsername(final HttpServletRequest request) {
+        final Object username = request.getAttribute(API_USERNAME);
         return username!=null ? username.toString() : null;
     }
 

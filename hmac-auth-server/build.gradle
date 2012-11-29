@@ -9,7 +9,6 @@ dependencies {
 
     compile 'commons-codec:commons-codec:1.7'
     compile 'commons-io:commons-io:2.1'
-    compile 'commons-lang:commons-lang:2.5'
 
     compile 'joda-time:joda-time:1.6.2'
 
