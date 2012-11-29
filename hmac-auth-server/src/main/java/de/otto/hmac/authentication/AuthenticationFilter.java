@@ -25,7 +25,7 @@ public class AuthenticationFilter implements Filter {
 
     private static final Logger LOG = getLogger(AuthenticationFilter.class);
 
-    public static final String API_USERNAME = "api-username";
+    public static final String AUTHENTICATED_USERNAME = "authenticated-username";
 
     private AuthenticationService service;
 
@@ -50,7 +50,7 @@ public class AuthenticationFilter implements Filter {
 
                 if (result.getStatus() == SUCCESS) {
                     LOG.debug("Validierung der Signatur erfolgreich. Username: " + result.getUsername());
-                    wrapped.setAttribute(API_USERNAME, result.getUsername());
+                    wrapped.setAttribute(AUTHENTICATED_USERNAME, result.getUsername());
                 }
                 chain.doFilter(wrapped, response);
             } catch (Exception e) {
@@ -68,7 +68,7 @@ public class AuthenticationFilter implements Filter {
             sb.append("Signatur: ").append(RequestSigningUtil.getSignature(request)).append("\n");
             sb.append("Body: " + request.getBody()).append("\n");
             sb.append("Body-MD5: " + toMd5(request.getBody())).append("\n");
-            sb.append("Timestamp: " + RequestSigningUtil.getDate(request)).append("\n");
+            sb.append("Timestamp: " + RequestSigningUtil.getDateFromHeader(request)).append("\n");
             sb.append("Uri: " + request.getRequestURI()).append("\n");
             sb.append("Method: " + request.getMethod()).append("\n");
             sb.append("\n").append("---------------------\n\n");

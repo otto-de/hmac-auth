@@ -8,12 +8,12 @@ public class RequestSigningFixture {
 
 
     public static String createSignature(WrappedRequest request, String user, String key) throws IOException {
-        return createSignature(request.getRequestURI(), request.getMethod(), user, key, request.getHeader("x-p13n-date"), request.getBody());
+        return createSignature(request.getRequestURI(), request.getMethod(), user, key, request.getHeader("x-hmac-auth-date"), request.getBody());
     }
 
     public static String createSignature(String uri, String method, String user, String key, String date, String content) throws IOException {
         MockHttpServletRequest request = new MockHttpServletRequest(method, uri);
-        request.addHeader("x-p13n-date", date);
+        request.addHeader("x-hmac-auth-date", date);
         request.setContent(content.getBytes());
         return user + ":" + RequestSigningUtil.createRequestSignature(WrappedRequest.wrap(request), key);
     }

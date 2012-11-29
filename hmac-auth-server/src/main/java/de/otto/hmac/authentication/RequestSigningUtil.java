@@ -18,8 +18,8 @@ public class RequestSigningUtil {
 
     private static final Logger LOG = getLogger(RequestSigningUtil.class);
 
-    private static String X_P13N_SIGNATURE = "x-p13n-signature";
-    private static String X_P13N_DATE = "x-p13n-date";
+    private static String X_HMAC_AUTH_SIGNATURE = "x-hmac-auth-signature";
+    private static String X_HMAC_AUTH_DATE = "x-hmac-auth-date";
 
 
     public static boolean checkRequest(WrappedRequest request, String secretKey) {
@@ -28,7 +28,7 @@ public class RequestSigningUtil {
             return false;
         }
 
-        String requestSignature = request.getHeader(X_P13N_SIGNATURE);
+        String requestSignature = request.getHeader(X_HMAC_AUTH_SIGNATURE);
 
         String[] split = requestSignature.split(":");
         String sentSignature = split[1];
@@ -40,7 +40,7 @@ public class RequestSigningUtil {
 
 
     public static boolean hasValidRequestTimeStamp(WrappedRequest request) {
-        String requestTimeString = getDate(request);
+        String requestTimeString = getDateFromHeader(request);
         if (requestTimeString == null || requestTimeString.isEmpty()) {
             LOG.error("Signierter Request enthält kein Datum.");
             return false;
@@ -65,7 +65,7 @@ public class RequestSigningUtil {
         StringBuilder builder = new StringBuilder();
 
         builder.append(request.getMethod()).append("\n");
-        builder.append(request.getHeader(X_P13N_DATE)).append("\n");
+        builder.append(request.getHeader(X_HMAC_AUTH_DATE)).append("\n");
         builder.append(request.getRequestURI()).append("\n");
         builder.append(toMd5(request.getBody()));
 
@@ -96,15 +96,15 @@ public class RequestSigningUtil {
     }
 
     public static boolean hasSignature(HttpServletRequest request) {
-        return request.getHeader(X_P13N_SIGNATURE) != null;
+        return request.getHeader(X_HMAC_AUTH_SIGNATURE) != null;
     }
 
     public static String getSignature(HttpServletRequest request) {
-        return request.getHeader(X_P13N_SIGNATURE);
+        return request.getHeader(X_HMAC_AUTH_SIGNATURE);
     }
 
-    public static String getDate(HttpServletRequest request) {
-        String header = request.getHeader(X_P13N_DATE);
+    public static String getDateFromHeader(HttpServletRequest request) {
+        String header = request.getHeader(X_HMAC_AUTH_DATE);
         if (header == null) {
             return "";
         }

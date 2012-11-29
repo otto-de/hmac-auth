@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static de.otto.hmac.authentication.AuthenticationFilter.API_USERNAME;
+import static de.otto.hmac.authentication.AuthenticationFilter.AUTHENTICATED_USERNAME;
 import static java.util.Collections.singleton;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,7 +73,7 @@ public class DefaultAuthorizationServiceTest {
         when(apiUserRepository.getRolesForUser(eq(""))).thenReturn(singleton("everybody"));
 
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getAttribute(API_USERNAME)).thenReturn(someUser);
+        when(request.getAttribute(AUTHENTICATED_USERNAME)).thenReturn(someUser);
 
         DefaultAuthorizationService defaultAuthorizationComponent = new DefaultAuthorizationService();
         defaultAuthorizationComponent.setUserRepository(apiUserRepository);

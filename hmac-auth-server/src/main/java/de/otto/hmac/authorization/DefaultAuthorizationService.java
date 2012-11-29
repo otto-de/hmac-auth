@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.otto.hmac.authentication.AuthenticationFilter.API_USERNAME;
+import static de.otto.hmac.authentication.AuthenticationFilter.AUTHENTICATED_USERNAME;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
@@ -65,7 +65,7 @@ public class DefaultAuthorizationService implements AuthorizationService {
     }
 
     private static String getUsername(final HttpServletRequest request) {
-        final Object username = request.getAttribute(API_USERNAME);
+        final Object username = request.getAttribute(AUTHENTICATED_USERNAME);
         return username!=null ? username.toString() : null;
     }
 

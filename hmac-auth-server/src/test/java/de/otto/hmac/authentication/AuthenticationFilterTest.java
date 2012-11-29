@@ -60,7 +60,7 @@ public class AuthenticationFilterTest {
         //Given
         final MockHttpServletRequest request = putToSomeUriOnXmas();
         final MockHttpServletResponse response = new MockHttpServletResponse();
-        request.addHeader("x-p13n-signature", "username:AssumedToBeValid=");
+        request.addHeader("x-hmac-auth-signature", "username:AssumedToBeValid=");
         final String body = "{ \"key\": \"value\"}";
         request.setContent(body.getBytes());
 
@@ -79,7 +79,7 @@ public class AuthenticationFilterTest {
         filter.doFilter(request, response, filterChain);
 
         // then
-        assertThat(filterChain.request.getAttribute("api-username").toString(), is("username"));
+        assertThat(filterChain.request.getAttribute("authenticated-username").toString(), is("username"));
 
     }
 
@@ -89,7 +89,7 @@ public class AuthenticationFilterTest {
         //Given
         final MockHttpServletRequest request = putToSomeUriOnXmas();
         final MockHttpServletResponse response = new MockHttpServletResponse();
-        request.addHeader("x-p13n-signature", "username:WrongSignature=");
+        request.addHeader("x-hmac-auth-signature", "username:WrongSignature=");
         final String body = "{ \"key\": \"value\"}";
         request.setContent(body.getBytes());
 
@@ -120,7 +120,7 @@ public class AuthenticationFilterTest {
 
     private MockHttpServletRequest putToSomeUriOnXmas() {
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
-        request.addHeader("x-p13n-date", formattedDateOfXmas());
+        request.addHeader("x-hmac-auth-date", formattedDateOfXmas());
         return request;
     }
 

@@ -20,12 +20,12 @@ public class AuthenticationServiceTest {
     public void shouldAcceptValidRequest() throws Exception {
 
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
-        request.addHeader("x-p13n-date", new Instant().toString());
+        request.addHeader("x-hmac-auth-date", new Instant().toString());
 
         request.setContent("{ \"key\": \"value\"}".getBytes());
         String requestSignatur = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
 
-        request.addHeader("x-p13n-signature", "username:" + requestSignatur);
+        request.addHeader("x-hmac-auth-signature", "username:" + requestSignatur);
 
 
         AuthenticationResult result = authService().validate(wrap(request));
@@ -38,13 +38,13 @@ public class AuthenticationServiceTest {
     @Test
     public void shouldRejectRequestIfUserUnknown() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
-        request.addHeader("x-p13n-date", new Instant().toString());
+        request.addHeader("x-hmac-auth-date", new Instant().toString());
 
         String body = "{ \"key\": \"value\"}";
         request.setContent(body.getBytes());
 
         String signature = RequestSigningFixture.createSignature(wrap(request), "unknownUser", "secretKey");
-        request.addHeader("x-p13n-signature", signature);
+        request.addHeader("x-hmac-auth-signature", signature);
 
         AuthenticationResult result = authService().validate(wrap(request));
 
