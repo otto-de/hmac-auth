@@ -9,7 +9,7 @@ subprojects {
     apply plugin: 'signing'
 
     group = 'de.otto'
-    version = '0.1.0-SNAPSHOT'
+    version = '0.1.0'
 
     repositories {
         mavenCentral()
