@@ -1,11 +1,16 @@
 package de.otto.hmac.authorization;
 
 import de.otto.hmac.FileSystemUserRepository;
+import de.otto.hmac.HmacAttributes;
 import org.testng.annotations.Test;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static de.otto.hmac.authentication.AuthenticationFilter.AUTHENTICATED_USERNAME;
+import java.util.HashSet;
+import java.util.Set;
+
+import static de.otto.hmac.HmacAttributes.AUTHENTICATED_USERNAME;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -18,23 +23,24 @@ public class DefaultAuthorizationServiceTest {
 
     @Test
     public void shouldAcceptNullInUnrestrictedGroup() throws Exception {
-        authComponent(null).authorize("everybody");
+        authComponent(null).authorize(null, singleton("everybody"));
     }
 
     @Test
     public void shouldAcceptNullUserInSpecificGroup() throws Exception {
-        authComponent(null).authorize("admin");
+        authComponent(null).authorize(null, singleton("admin"));
     }
 
     @Test
     public void shouldAcceptNullUserEverywhere() {
-        authComponent(null).authorize("admin", "shopoffice");
+        final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
+        authComponent(null).authorize(null, roles);
     }
 
     @Test
     public void shouldNotAcceptEmptyUserInSpecificGroup() throws Exception {
         try  {
-            authComponent("").authorize("admin");
+            authComponent("").authorize("", singleton("admin"));
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
         }
@@ -43,7 +49,7 @@ public class DefaultAuthorizationServiceTest {
     @Test
     public void shouldNotAcceptSomeUserInSpecificGroup() throws Exception {
         try  {
-            authComponent("someUser").authorize("admin");
+            authComponent("someUser").authorize("someUser", singleton("admin"));
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
 
@@ -52,18 +58,18 @@ public class DefaultAuthorizationServiceTest {
 
     @Test
     public void shouldAcceptExistingUserInSpecificGroup() throws Exception {
-        authComponent("tom").authorize("admin");
+        authComponent("tom").authorize("tom", singleton("admin"));
     }
 
 
     @Test
     public void shouldAcceptEmptyInUnrestrictedGroup() throws Exception {
-        authComponent("").authorize("everybody");
+        authComponent("").authorize("", singleton("everybody"));
     }
 
     @Test
     public void shouldAcceptSomeStringInUnrestrictedGroup() throws Exception {
-        authComponent("someUser").authorize("everybody");
+        authComponent("someUser").authorize("someUser", singleton("everybody"));
     }
 
     private DefaultAuthorizationService authComponent(String someUser) {
@@ -77,14 +83,14 @@ public class DefaultAuthorizationServiceTest {
 
         DefaultAuthorizationService defaultAuthorizationComponent = new DefaultAuthorizationService();
         defaultAuthorizationComponent.setUserRepository(apiUserRepository);
-        defaultAuthorizationComponent.setRequest(request);
         return defaultAuthorizationComponent;
     }
 
     @Test
     public void shouldGiveValuableErrorMessageWithEmptyUser() {
         try  {
-            authComponent("").authorize("admin", "shopoffice");
+            final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
+            authComponent("").authorize("", roles);
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
             assertThat(e.getMessage(), is("Anonymous user is not in one of these groups: [admin, shopoffice]."));
@@ -94,7 +100,8 @@ public class DefaultAuthorizationServiceTest {
     @Test
     public void shouldGiveValuableErrorMessageWithNamesUser() {
         try  {
-            authComponent("someUnauthorizedUser").authorize("admin", "shopoffice");
+            final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
+            authComponent("someUnauthorizedUser").authorize("someUnauthorizedUser", roles);
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
             assertThat(e.getMessage(), is("[someUnauthorizedUser] is not in one of these groups: [admin, shopoffice]."));

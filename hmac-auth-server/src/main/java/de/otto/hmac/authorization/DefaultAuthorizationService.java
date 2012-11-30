@@ -5,13 +5,11 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static de.otto.hmac.authentication.AuthenticationFilter.AUTHENTICATED_USERNAME;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
@@ -20,32 +18,23 @@ public class DefaultAuthorizationService implements AuthorizationService {
 
     private RoleRepository userRepository;
 
-    private HttpServletRequest request;
-
     @Resource
     @Required
     public void setUserRepository(final RoleRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    @Resource
-    @Required
-    public void setRequest(final HttpServletRequest request) {
-        this.request = request;
-    }
-
     @Override
-    public void authorize(final String... expectedRoles) {
-        String username = getUsername(request);
+    public void authorize(final String userName, final Set<String> expectedRoles) {
 
-        if (DISABLE_AUTHORIZATION_FOR_UNSIGNED_REQUESTS(username)) {
+        if (DISABLE_AUTHORIZATION_FOR_UNSIGNED_REQUESTS(userName)) {
             return;
         }
 
-        final Set<String> userRoles = userRepository.getRolesForUser(username);
+        final Set<String> userRoles = userRepository.getRolesForUser(userName);
 
-        if (intersection(asList(expectedRoles), userRoles).isEmpty()) {
-                throw new AuthorizationException(createErrorMessage(username, expectedRoles));
+        if (intersection(expectedRoles, userRoles).isEmpty()) {
+                throw new AuthorizationException(createErrorMessage(userName, expectedRoles));
         }
     }
 
@@ -59,14 +48,9 @@ public class DefaultAuthorizationService implements AuthorizationService {
         return username == null;
     }
 
-    private static String createErrorMessage(final String username, final String[] allowedForRoles) {
+    private static String createErrorMessage(final String username, final Set<String> allowedForRoles) {
         final String displayUser = StringUtils.isNullOrEmpty(username) ? "Anonymous user" : "["+username+"]";
-        return format("%s is not in one of these groups: %s.", displayUser, Arrays.toString(allowedForRoles));
-    }
-
-    private static String getUsername(final HttpServletRequest request) {
-        final Object username = request.getAttribute(AUTHENTICATED_USERNAME);
-        return username!=null ? username.toString() : null;
+        return format("%s is not in one of these groups: %s.", displayUser, allowedForRoles);
     }
 
 }

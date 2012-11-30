@@ -1,5 +1,7 @@
 package de.otto.hmac.authentication;
 
+import de.otto.hmac.HmacAttributes;
+import de.otto.hmac.StringUtils;
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
@@ -14,6 +16,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import static de.otto.hmac.HmacAttributes.AUTHENTICATED_USERNAME;
+import static de.otto.hmac.StringUtils.toMd5;
 import static de.otto.hmac.authentication.AuthenticationResult.Status.FAIL;
 import static de.otto.hmac.authentication.AuthenticationResult.Status.SUCCESS;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
@@ -25,9 +29,13 @@ public class AuthenticationFilter implements Filter {
 
     private static final Logger LOG = getLogger(AuthenticationFilter.class);
 
-    public static final String AUTHENTICATED_USERNAME = "authenticated-username";
-
     private AuthenticationService service;
+
+    @Required
+    @Resource
+    public void setService(AuthenticationService service) {
+        this.service = service;
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -61,6 +69,16 @@ public class AuthenticationFilter implements Filter {
         }
     }
 
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        // do nothing
+    }
+
+    @Override
+    public void destroy() {
+        // Do nothing
+    }
+
     private void logDebug(WrappedRequest request) {
         if (LOG.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder("\n\n-----------------------------------\n");
@@ -75,32 +93,6 @@ public class AuthenticationFilter implements Filter {
 
             LOG.debug(sb.toString());
         }
-    }
-
-
-    private static String toMd5(String body) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            return Hex.encodeHexString(md.digest(body.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
-            throw new RuntimeException("should never happen", e);
-        }
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // do nothing
-    }
-
-    @Override
-    public void destroy() {
-        // Do nothing
-    }
-
-    @Required
-    @Resource
-    public void setService(AuthenticationService service) {
-        this.service = service;
     }
 
 }

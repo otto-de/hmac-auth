@@ -1,5 +1,6 @@
 package de.otto.hmac.authentication;
 
+import de.otto.hmac.HmacAttributes;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.Instant;
@@ -12,15 +13,13 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
+import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class RequestSigningUtil {
 
     private static final Logger LOG = getLogger(RequestSigningUtil.class);
-
-    private static String X_HMAC_AUTH_SIGNATURE = "x-hmac-auth-signature";
-    private static String X_HMAC_AUTH_DATE = "x-hmac-auth-date";
-
 
     public static boolean checkRequest(WrappedRequest request, String secretKey) {
 

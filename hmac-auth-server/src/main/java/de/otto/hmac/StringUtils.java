@@ -1,9 +1,10 @@
 package de.otto.hmac;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
+import org.apache.commons.codec.binary.Hex;
+
+import java.io.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Some String utilities.
@@ -29,5 +30,15 @@ public class StringUtils {
         }
         return sw.toString();
     }
+
+    public static String toMd5(String body) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            return Hex.encodeHexString(md.digest(body.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+            throw new RuntimeException("should never happen", e);
+        }
+    }
+
 
 }
