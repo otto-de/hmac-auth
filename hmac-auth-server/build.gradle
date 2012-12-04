@@ -31,49 +31,51 @@ signing {
 }
 
 uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+    if(hasProperty('sonatypeUsername')){
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
-            pom.project {
-                name 'hmac-auth-server'
-                packaging 'jar'
-                description 'server library of the hmac-auth project.'
-                url 'http://github.com/otto-de/hmac-auth'
-
-                scm {
-                    url 'scm:git@github.com:otto-de/hmac-auth.git'
-                    connection 'scm:git@github.com:otto-de/hmac-auth.git'
-                    developerConnection 'scm:git@github.com:otto-de/hmac-auth.git'
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
                 }
 
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'repo'
-                    }
-                }
+                pom.project {
+                    name 'hmac-auth-server'
+                    packaging 'jar'
+                    description 'server library of the hmac-auth project.'
+                    url 'http://github.com/otto-de/hmac-auth'
 
-                developers {
-                    developer {
-                        id 'tvollerthun'
-                        name 'Tom Vollerthun'
+                    scm {
+                        url 'scm:git@github.com:otto-de/hmac-auth.git'
+                        connection 'scm:git@github.com:otto-de/hmac-auth.git'
+                        developerConnection 'scm:git@github.com:otto-de/hmac-auth.git'
                     }
-                    developer {
-                        id 'cstamm'
-                        name 'Christian Stamm'
+
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
                     }
-                    developer {
-                        id 'gsteinacker'
-                        name 'Guido Steinacker'
+
+                    developers {
+                        developer {
+                            id 'tvollerthun'
+                            name 'Tom Vollerthun'
+                        }
+                        developer {
+                            id 'cstamm'
+                            name 'Christian Stamm'
+                        }
+                        developer {
+                            id 'gsteinacker'
+                            name 'Guido Steinacker'
+                        }
                     }
                 }
             }
