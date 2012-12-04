@@ -30,8 +30,8 @@ signing {
     sign configurations.archives
 }
 
+
 uploadArchives {
-    if(hasProperty('sonatypeUsername')){
         repositories {
             mavenDeployer {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
@@ -83,5 +83,4 @@ uploadArchives {
                 }
             }
         }
-    }
 }
