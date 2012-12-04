@@ -65,6 +65,9 @@ uploadArchives {
 
                     developers {
                         developer {
+                            name 'Robert Keil'
+                        }
+                        developer {
                             id 'tvollerthun'
                             name 'Tom Vollerthun'
                         }
