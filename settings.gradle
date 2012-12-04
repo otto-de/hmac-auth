@@ -1,1 +1,3 @@
 include "hmac-auth-server"
+
+project(":hmac-auth-server").buildFileName= "server.gradle"
