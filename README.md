@@ -12,7 +12,7 @@ HMAC authentication for RESTful web applications
 
 Repository:
 
-```
+```xml
 <repositories>
    <repository>
         <id>SonatypeSnapshots</id>
@@ -23,7 +23,7 @@ Repository:
 
 Dependency:
 
-```
+```xml
 <dependency>
    <groupId>de.otto</groupId>
    <artifactId>hmac-auth-server</artifactId>
@@ -35,7 +35,7 @@ Dependency:
 
 Repository:
 
-```
+```groovy
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 }
@@ -43,7 +43,7 @@ repositories {
 
 Dependency:
 
-```
+```groovy
 dependencies {
     compile ("de.otto:hmac-auth-server:0.1.0-SNAPSHOT")
 }
