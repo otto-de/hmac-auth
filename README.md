@@ -27,7 +27,12 @@ Dependency:
 <dependency>
    <groupId>de.otto</groupId>
    <artifactId>hmac-auth-server</artifactId>
-   <version>0.2.0-SNAPSHOT</version>
+   <version>0.2.1-SNAPSHOT</version>
+</dependency>
+<dependency>
+   <groupId>de.otto</groupId>
+   <artifactId>hmac-auth-client</artifactId>
+   <version>0.2.1-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -45,6 +50,9 @@ Dependency:
 
 ```groovy
 dependencies {
-    compile ("de.otto:hmac-auth-server:0.2.0-SNAPSHOT")
+    compile ("de.otto:hmac-auth-server:0.2.1-SNAPSHOT")
+}
+dependencies {
+    compile ("de.otto:hmac-auth-client:0.2.1-SNAPSHOT")
 }
 ```
