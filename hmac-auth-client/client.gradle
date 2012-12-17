@@ -12,6 +12,8 @@ dependencies {
     compile 'joda-time:joda-time:1.6.2'
 
     compile 'org.slf4j:slf4j-api:1.6.1'
+    
+    compile 'com.sun.jersey.contribs:jersey-apache-client:1.9.1','com.sun.jersey:jersey-client:1.9.1','com.sun.jersey:jersey-core:1.9.1'
     compile 'de.otto:hmac-auth-common:0.2.1-SNAPSHOT'
     
     testCompile 'org.testng:testng:6.3.1'
@@ -45,9 +47,9 @@ uploadArchives {
                 }
 
                 pom.project {
-                    name 'hmac-auth-server'
+                    name 'hmac-auth-client'
                     packaging 'jar'
-                    description 'server library of the hmac-auth project.'
+                    description 'client library of the hmac-auth project.'
                     url 'http://github.com/otto-de/hmac-auth'
 
                     scm {
@@ -65,21 +67,6 @@ uploadArchives {
                     }
 
                     developers {
-                        developer {
-                            name 'Robert Keil'
-                        }
-                        developer {
-                            id 'tvollerthun'
-                            name 'Tom Vollerthun'
-                        }
-                        developer {
-                            id 'cstamm'
-                            name 'Christian Stamm'
-                        }
-                        developer {
-                            id 'gsteinacker'
-                            name 'Guido Steinacker'
-                        }
                         developer {
                             id 'mnoecker'
                             name 'Mario Nöcker'

@@ -2,6 +2,8 @@ package de.otto.hmac.authentication;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.joda.time.DateTime;
+import org.springframework.util.Assert;
 
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
@@ -10,6 +12,7 @@ import com.sun.jersey.client.apache.ApacheHttpClientHandler;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
 import de.otto.hmac.HmacAttributes;
+import de.otto.hmac.StringUtils;
 
 public class HMACJerseyClient extends ApacheHttpClient {
 
@@ -18,7 +21,7 @@ public class HMACJerseyClient extends ApacheHttpClient {
     private String method;
     private String date;
     private String requestUri;
-    private String body;
+    private String body = "";
 
     private HMACJerseyClient(final ClientConfig cc) {
         super(createDefaultClientHander(cc), null);
@@ -31,10 +34,23 @@ public class HMACJerseyClient extends ApacheHttpClient {
     }
 
     public WebResource.Builder authenticatedResource(final String url) {
+        assertAuthentificationPossible();
         final StringBuilder builder = new StringBuilder(user);
+        date = new DateTime().toString();
         builder.append(":");
         builder.append(RequestSigningUtil.createRequestSignature(method, date, requestUri, body, secretKey));
-        return resource(url).header(HmacAttributes.X_HMAC_AUTH_SIGNATURE, builder.toString());
+        return resource(url).header(HmacAttributes.X_HMAC_AUTH_SIGNATURE, builder.toString()).header(
+                HmacAttributes.X_HMAC_AUTH_DATE, date);
+    }
+
+    private void assertAuthentificationPossible() {
+        Assert.isTrue(!StringUtils.isNullOrEmpty(user), "User is desired for authentication");
+        Assert.isTrue(!StringUtils.isNullOrEmpty(secretKey), "Secret key is desired for authentication");
+        Assert.isTrue(!StringUtils.isNullOrEmpty(method), "Method is desired for authentication");
+        Assert.isTrue(!StringUtils.isNullOrEmpty(requestUri), "URI is desired for authentication");
+        if (method.equals("PUT") || method.equals("POST")) {
+            Assert.isTrue(!StringUtils.isNullOrEmpty(body), "Body is required in PUT and POST");
+        }
     }
 
     private static ApacheHttpClientHandler createDefaultClientHander(final ClientConfig cc) {
@@ -53,11 +69,6 @@ public class HMACJerseyClient extends ApacheHttpClient {
 
     public HMACJerseyClient withMethod(final String method) {
         this.method = method;
-        return this;
-    }
-
-    public HMACJerseyClient withDate(final String date) {
-        this.date = date;
         return this;
     }
 

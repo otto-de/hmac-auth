@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" total="9" passed="9">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="966" started-at="2012-12-14T14:18:07Z" finished-at="2012-12-14T14:18:08Z">
+    <groups>
+    </groups>
+    <test name="Default test" duration-ms="966" started-at="2012-12-14T14:18:07Z" finished-at="2012-12-14T14:18:08Z">
+      <class name="de.otto.hmac.authentication.HMACJerseyClientTest">
+        <test-method status="PASS" signature="shouldDeleteSuccessfulWithAllInformation()[pri:0, instance:de.otto.hmac.authentication.HMACJerseyClientTest@400bdd7f]" name="shouldDeleteSuccessfulWithAllInformation" duration-ms="495" started-at="2012-12-14T14:18:07Z" finished-at="2012-12-14T14:18:07Z">
+        </test-method>
+        <test-method status="PASS" signature="shouldFailOnGetWithoutSecret()[pri:0, instance:de.otto.hmac.authentication.HMACJerseyClientTest@400bdd7f]" name="shouldFailOnGetWithoutSecret" duration-ms="81" started-at="2012-12-14T14:18:07Z" finished-at="2012-12-14T14:18:07Z">
+        </test-method>
+        <test-method status="PASS" signature="shouldFailOnGetWithoutUri()[pri:0, instance:de.otto.hmac.authentication.HMACJerseyClientTest@400bdd7f]" name="shouldFailOnGetWithoutUri" duration-ms="69" started-at="2012-12-14T14:18:07Z" finished-at="2012-12-14T14:18:07Z">
+        </test-method>
+        <test-method status="PASS" signature="shouldFailOnGetWithoutUser()[pri:0, instance:de.otto.hmac.authentication.HMACJerseyClientTest@400bdd7f]" name="shouldFailOnGetWithoutUser" duration-ms="69" started-at="2012-12-14T14:18:07Z" finished-at="2012-12-14T14:18:08Z">
+        </test-method>
+        <test-method status="PASS" signature="shouldFailOnPutWithoutBody()[pri:0, instance:de.otto.hmac.authentication.HMACJerseyClientTest@400bdd7f]" name="shouldFailOnPutWithoutBody" duration-ms="53" started-at="2012-12-14T14:18:08Z" finished-at="2012-12-14T14:18:08Z">
+        </test-method>
+        <test-method status="PASS" signature="shouldFailWithoutMethod()[pri:0, instance:de.otto.hmac.authentication.HMACJerseyClientTest@400bdd7f]" name="shouldFailWithoutMethod" duration-ms="50" started-at="2012-12-14T14:18:08Z" finished-at="2012-12-14T14:18:08Z">
+        </test-method>
+        <test-method status="PASS" signature="shouldGetSuccessfulWithAllInformation()[pri:0, instance:de.otto.hmac.authentication.HMACJerseyClientTest@400bdd7f]" name="shouldGetSuccessfulWithAllInformation" duration-ms="46" started-at="2012-12-14T14:18:08Z" finished-at="2012-12-14T14:18:08Z">
+        </test-method>
+        <test-method status="PASS" signature="shouldPostSuccessfulWithAllInformation()[pri:0, instance:de.otto.hmac.authentication.HMACJerseyClientTest@400bdd7f]" name="shouldPostSuccessfulWithAllInformation" duration-ms="42" started-at="2012-12-14T14:18:08Z" finished-at="2012-12-14T14:18:08Z">
+        </test-method>
+        <test-method status="PASS" signature="shouldPutSuccessfulWithAllInformation()[pri:0, instance:de.otto.hmac.authentication.HMACJerseyClientTest@400bdd7f]" name="shouldPutSuccessfulWithAllInformation" duration-ms="43" started-at="2012-12-14T14:18:08Z" finished-at="2012-12-14T14:18:08Z">
+        </test-method>
+      </class>
+    </test>
+  </suite>
+</testng-results>
