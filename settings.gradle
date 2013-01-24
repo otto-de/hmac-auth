@@ -1,5 +1,6 @@
-include "hmac-auth-common", "hmac-auth-server", "hmac-auth-client"
+include "hmac-auth-common", "hmac-auth-server", "hmac-auth-client", "hmac-auth-proxy"
 
-project(":hmac-auth-common").buildFileName= "common.gradle"
-project(":hmac-auth-server").buildFileName= "server.gradle"
-project(":hmac-auth-client").buildFileName= "client.gradle"
+project(":hmac-auth-common").buildFileName = "common.gradle"
+project(":hmac-auth-server").buildFileName = "server.gradle"
+project(":hmac-auth-client").buildFileName = "client.gradle"
+project(":hmac-auth-proxy").buildFileName = "proxy.gradle"
