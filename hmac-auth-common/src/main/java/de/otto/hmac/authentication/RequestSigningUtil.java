@@ -1,21 +1,20 @@
 package de.otto.hmac.authentication;
 
-import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
-import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
-import static org.slf4j.LoggerFactory.getLogger;
-
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.joda.time.Instant;
 import org.slf4j.Logger;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
+import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class RequestSigningUtil {
 
@@ -65,7 +64,7 @@ public class RequestSigningUtil {
     }
 
     public static String createSignatureBase(final String method, final String dateHeader, final String requestUri,
-            final String body) {
+                                             final String body) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(method).append("\n");
@@ -73,11 +72,13 @@ public class RequestSigningUtil {
         builder.append(requestUri).append("\n");
         builder.append(toMd5(body));
 
-        return builder.toString();
+        String s = builder.toString();
+        System.out.println(s);
+        return s;
     }
 
     public static String createRequestSignature(final String method, final String dateHeader, final String requestUri,
-            final String body, final String secretKey) {
+                                                final String body, final String secretKey) {
         try {
             final SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
             final Mac mac = Mac.getInstance("HmacSHA256");
@@ -86,8 +87,7 @@ public class RequestSigningUtil {
             final byte[] result = mac.doFinal(signatureBase.getBytes());
             return Base64.encodeBase64String(result);
 
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("should never happen", e);
         }
     }
@@ -100,8 +100,7 @@ public class RequestSigningUtil {
             final String signatureBase = createSignatureBase(request);
             final byte[] result = mac.doFinal(signatureBase.getBytes());
             return Base64.encodeBase64String(result);
-        }
-        catch (final Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException("should never happen", e);
         }
     }
@@ -110,8 +109,7 @@ public class RequestSigningUtil {
         try {
             final MessageDigest md = MessageDigest.getInstance("MD5");
             return Hex.encodeHexString(md.digest(body.getBytes("UTF-8")));
-        }
-        catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        } catch (UnsupportedEncodingException|NoSuchAlgorithmException e){
             throw new RuntimeException("should never happen", e);
         }
     }
