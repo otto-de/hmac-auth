@@ -1,25 +1,18 @@
+apply plugin: 'application'
+
+mainClassName = "de.otto.hmac.proxy.ProxyServer"
+
 dependencies {
 
     compile 'de.otto:hmac-auth-client:0.2.1-SNAPSHOT'
-    compile 'org.glassfish.grizzly:grizzly-framework:2.2.19'
-
 
     compile "com.sun.jersey:jersey-server:1.17"
     compile "com.sun.jersey:jersey-core:1.17"
     compile "com.sun.jersey:jersey-grizzly2:1.17"
-    compile "org.glassfish.grizzly:grizzly-http-server:2.2.16"
-    compile "org.glassfish.grizzly:grizzly-http:2.2.16"
-
-    compile "commons-io:commons-io:1.0"
 
     compile "com.beust:jcommander:1.30"
 
-
-    compile "javax.ws.rs:jsr311-api:1.1.1"
-    compile "asm:asm:3.3.1"
-
     testCompile 'org.testng:testng:6.3.1'
-    testCompile 'org.hamcrest:hamcrest-core:1.3'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
     testCompile 'org.mockito:mockito-core:1.9.5'
 }
@@ -48,9 +41,9 @@ uploadArchives {
             }
 
             pom.project {
-                name 'hmac-auth-client'
-                packaging 'jar'
-                description 'client library of the hmac-auth project.'
+                name 'hmac-auth-proxy'
+                packaging 'zip'
+                description 'Proxy-Application of the hmac-auth project.'
                 url 'http://github.com/otto-de/hmac-auth'
 
                 scm {
@@ -69,8 +62,8 @@ uploadArchives {
 
                 developers {
                     developer {
-                        id 'mnoecker'
-                        name 'Mario Nöcker'
+                        id 'tvollert'
+                        name 'Tom Vollerthun'
                     }
                 }
             }
