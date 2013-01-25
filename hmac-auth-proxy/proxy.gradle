@@ -18,7 +18,7 @@ dependencies {
 }
 
 artifacts {
-    archives jar
+    archives distZip
     archives javadocJar
     archives sourcesJar
 }
@@ -42,7 +42,7 @@ uploadArchives {
 
             pom.project {
                 name 'hmac-auth-proxy'
-                packaging 'zip'
+                packaging 'distZip'
                 description 'Proxy-Application of the hmac-auth project.'
                 url 'http://github.com/otto-de/hmac-auth'
 
