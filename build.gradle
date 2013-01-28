@@ -1,5 +1,6 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
+apply plugin: 'java'
 
 subprojects {
     apply plugin: 'java'
@@ -8,12 +9,14 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: 'signing'
 
+    sourceCompatibility = 1.7
+
     group = 'de.otto'
 
     repositories {
         mavenCentral()
 
-	maven {
+        maven {
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
         }
     }
