@@ -61,6 +61,7 @@ public class ProxyResource {
 
     private WebResource.Builder createBuilder(UriInfo uriInfo, String body, String method) {
         URI targetUri = withTargetHostAndPort(uriInfo.getRequestUriBuilder());
+        System.out.println("Sending request to " + targetUri);
         return webResourceWithAuth(body, method, targetUri);
     }
 
