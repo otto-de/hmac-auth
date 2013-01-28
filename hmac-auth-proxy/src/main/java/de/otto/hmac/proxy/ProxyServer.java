@@ -1,7 +1,6 @@
 package de.otto.hmac.proxy;
 
 import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
-import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 import org.glassfish.grizzly.http.server.HttpServer;
@@ -9,9 +8,8 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static de.otto.hmac.proxy.CLIParameterToConfigurationReader.toConfiguration;
 
@@ -29,6 +27,7 @@ public class ProxyServer {
     }
 
     public static void main(String[] args) throws IOException {
+        Logger.getLogger("").setLevel(Level.OFF);
         toConfiguration(args);
 
         if (ProxyConfiguration.isHelp()) {
@@ -44,7 +43,12 @@ public class ProxyServer {
         }
 
         HttpServer httpServer = startServer();
-        System.out.println(String.format("Jersey app started.\nHit enter to stop it...", BASE_URI, BASE_URI));
+
+
+        System.out.println("HMAC-Proxy listens to [localhost:9998]");
+        System.out.println(String.format("HMAC-Proxy forwards to [%s:%d]", ProxyConfiguration.getTargetHost(), ProxyConfiguration.getPort()));
+        System.out.println(String.format("As user [%s]", ProxyConfiguration.getUser()));
+        System.out.println("Hit enter to stop proxy...");
         System.in.read();
         httpServer.stop();
     }
