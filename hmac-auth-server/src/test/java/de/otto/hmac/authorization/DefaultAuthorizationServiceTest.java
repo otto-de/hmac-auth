@@ -1,11 +1,9 @@
 package de.otto.hmac.authorization;
 
 import de.otto.hmac.FileSystemUserRepository;
-import de.otto.hmac.HmacAttributes;
 import org.testng.annotations.Test;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,26 +18,9 @@ import static org.testng.Assert.fail;
 @Test
 public class DefaultAuthorizationServiceTest {
 
-
-    @Test
-    public void shouldAcceptNullInUnrestrictedGroup() throws Exception {
-        authComponent(null).authorize(null, singleton("everybody"));
-    }
-
-    @Test
-    public void shouldAcceptNullUserInSpecificGroup() throws Exception {
-        authComponent(null).authorize(null, singleton("admin"));
-    }
-
-    @Test
-    public void shouldAcceptNullUserEverywhere() {
-        final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
-        authComponent(null).authorize(null, roles);
-    }
-
     @Test
     public void shouldNotAcceptEmptyUserInSpecificGroup() throws Exception {
-        try  {
+        try {
             authComponent("").authorize("", singleton("admin"));
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
@@ -48,7 +29,7 @@ public class DefaultAuthorizationServiceTest {
 
     @Test
     public void shouldNotAcceptSomeUserInSpecificGroup() throws Exception {
-        try  {
+        try {
             authComponent("someUser").authorize("someUser", singleton("admin"));
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
@@ -88,7 +69,7 @@ public class DefaultAuthorizationServiceTest {
 
     @Test
     public void shouldGiveValuableErrorMessageWithEmptyUser() {
-        try  {
+        try {
             final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
             authComponent("").authorize("", roles);
             fail("Should not authorize if user is not in Group");
@@ -99,7 +80,7 @@ public class DefaultAuthorizationServiceTest {
 
     @Test
     public void shouldGiveValuableErrorMessageWithNamesUser() {
-        try  {
+        try {
             final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
             authComponent("someUnauthorizedUser").authorize("someUnauthorizedUser", roles);
             fail("Should not authorize if user is not in Group");
