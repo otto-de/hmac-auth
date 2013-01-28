@@ -27,8 +27,6 @@ signing {
     sign configurations.archives
 }
 
-version = '0.2.1-SNAPSHOT'
-
 uploadArchives {
     repositories {
         mavenDeployer {

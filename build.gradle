@@ -9,6 +9,8 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: 'signing'
 
+    version = '0.2.2-SNAPSHOT'
+
     sourceCompatibility = 1.7
 
     group = 'de.otto'
