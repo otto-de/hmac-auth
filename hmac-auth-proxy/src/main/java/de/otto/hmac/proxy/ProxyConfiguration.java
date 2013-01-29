@@ -8,6 +8,7 @@ public class ProxyConfiguration {
     private static String user;
     private static String password;
     private static boolean help;
+    private static boolean verbose;
 
     public static int getPort() {
         return port;
@@ -47,5 +48,13 @@ public class ProxyConfiguration {
 
     public static void setHelp(boolean help) {
         ProxyConfiguration.help = help;
+    }
+
+    public static void setVerbose(boolean verbose) {
+        ProxyConfiguration.verbose = verbose;
+    }
+
+    public static boolean isVerbose() {
+        return verbose;
     }
 }

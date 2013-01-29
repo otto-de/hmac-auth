@@ -6,17 +6,20 @@ import com.beust.jcommander.Parameter;
 public class CLIParameterToConfigurationReader {
 
     private static class InternalProxyConfiguration {
-        @Parameter(names = { "-p", "--port" }, description = "Port of target server")
-        int port=80;
+        @Parameter(names = {"-tp", "--targetPort"}, description = "Port of target server")
+        int port = 80;
 
-        @Parameter(names = { "-h", "--host" }, description = "Hostname of target server")
+        @Parameter(names = {"-h", "--host"}, description = "Hostname of target server")
         String targetHost = "develop.lhotse.ov.otto.de";
 
-        @Parameter(names = { "-u", "--user" }, description = "User that is allowed to set stuff on target server")
-        String user="";
+        @Parameter(names = {"-u", "--user"}, description = "User that is allowed to set stuff on target server")
+        String user = "";
 
-        @Parameter(names = { "-s", "--secret" }, description = "The secret that identifies the user on the target server")
-        String password="";
+        @Parameter(names = {"-p", "--password"}, description = "The password that identifies the user on the target server")
+        String password = "";
+
+        @Parameter(names = {"-v", "--verbose"}, description = "Enable logging.")
+        boolean verbose = false;
 
         @Parameter(names = "--help", help = true)
         private boolean help;
@@ -33,6 +36,7 @@ public class CLIParameterToConfigurationReader {
         ProxyConfiguration.setUser(internalProxyConfiguration.user);
         ProxyConfiguration.setPassword(internalProxyConfiguration.password);
         ProxyConfiguration.setHelp(internalProxyConfiguration.help);
+        ProxyConfiguration.setVerbose(internalProxyConfiguration.verbose);
     }
 
 }

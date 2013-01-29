@@ -4,13 +4,13 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import de.otto.hmac.authentication.HMACJerseyClient;
+import org.glassfish.grizzly.http.util.HttpStatus;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Request;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 @Path("/")
 public class ProxyResource {
@@ -23,39 +23,67 @@ public class ProxyResource {
 
     @Path("{resource:.*}")
     @GET
-    public String getRequest(@Context UriInfo uriInfo, @Context Request request) {
-        return createBuilder(uriInfo, request.getMethod()).get(String.class);
+    public Response getRequest(@Context UriInfo uriInfo, @Context Request request) {
+        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod()).get(ClientResponse.class);
+        return clientResponseToResponse(clientResponse);
     }
 
     @Path("{resource:.*}")
     @POST
-    public String postRequest(String body, @Context UriInfo uriInfo, @Context Request request) {
-        return createBuilder(uriInfo, body, request.getMethod()).post(String.class);
+    public Response postRequest(String body, @Context UriInfo uriInfo, @Context Request request) {
+        ClientResponse clientResponse = createBuilder(uriInfo, body, request.getMethod()).post(ClientResponse.class);
+        return clientResponseToResponse(clientResponse);
     }
 
     @Path("{resource:.*}")
     @PUT
-    public String putRequest(String body, @Context UriInfo uriInfo, @Context Request request) {
-        return createBuilder(uriInfo, body, request.getMethod()).put(String.class);
+    public Response putRequest(String body, @Context UriInfo uriInfo, @Context Request request) {
+        ClientResponse clientResponse = createBuilder(uriInfo, body, request.getMethod()).put(ClientResponse.class);
+        return clientResponseToResponse(clientResponse);
     }
-
 
     @Path("{resource:.*}")
     @DELETE
-    public String deleteRequest(@Context UriInfo uriInfo, @Context Request request) {
-        return createBuilder(uriInfo, request.getMethod()).delete(String.class);
+    public Response deleteRequest(@Context UriInfo uriInfo, @Context Request request) {
+        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod()).delete(ClientResponse.class);
+        return clientResponseToResponse(clientResponse);
     }
+
 
     @Path("{resource:.*}")
     @HEAD
-    public ClientResponse headRequest(@Context UriInfo uriInfo, @Context Request request) {
-        return createBuilder(uriInfo, request.getMethod()).head();
+    public Response headRequest(@Context UriInfo uriInfo, @Context Request request) {
+        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod()).head();
+        return clientResponseToResponse(clientResponse);
     }
 
     @Path("{resource:.*}")
     @OPTIONS
-    public String optionsRequest(@Context UriInfo uriInfo, @Context Request request) {
-        return createBuilder(uriInfo, request.getMethod()).options(String.class);
+    public Response optionsRequest(@Context UriInfo uriInfo, @Context Request request) {
+        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod()).options(ClientResponse.class);
+        return clientResponseToResponse(clientResponse);
+    }
+
+    private static Response clientResponseToResponse(ClientResponse r) {
+        Response.ResponseBuilder rb = Response.status(r.getStatus());
+        
+        copyAllHeaders(r, rb);
+
+        String content = r.getEntity(String.class);
+
+        System.out.println(String.format("Retrieved answer: HTTP-Code [%d]\nContent: \n%s\n\n", r.getStatus(), content));
+        
+        rb.entity(content);
+
+        return rb.build();
+    }
+
+    private static void copyAllHeaders(ClientResponse r, Response.ResponseBuilder rb) {
+        for (Map.Entry<String, List<String>> entry : r.getHeaders().entrySet()) {
+            for (String value : entry.getValue()) {
+                rb.header(entry.getKey(), value);
+            }
+        }
     }
 
 

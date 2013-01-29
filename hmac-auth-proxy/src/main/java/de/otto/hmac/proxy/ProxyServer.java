@@ -27,17 +27,22 @@ public class ProxyServer {
     }
 
     public static void main(String[] args) throws IOException {
-        Logger.getLogger("").setLevel(Level.OFF);
         toConfiguration(args);
+
+        if (!ProxyConfiguration.isVerbose()) {
+            Logger.getLogger("").setLevel(Level.OFF);
+        }
+
 
         if (ProxyConfiguration.isHelp()) {
             System.out.println("A local proxy server that forwards all requests to the given target host and port, \n" +
                     "but with hmac-authentication headers appended.\n" +
                     "USAGE:\n" +
-                    "    -u --user USER         authenticated username\n"+
-                    "    -s --secret PASSWORD   password of user\n"+
-                    "    -h --host HOST         target host\n"+
-                    "    -p --port PORT         target port\n"
+                    "    -u --user USER             authenticated username\n" +
+                    "    -p --password PASSWORD     password of user\n" +
+                    "    -h --host HOST             target host\n" +
+                    "    -tp --targetPort PORT      target port\n" +
+                    "    -v --verbose               display more stuff\n"
             );
             return;
         }
