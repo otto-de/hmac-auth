@@ -4,7 +4,6 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import de.otto.hmac.authentication.HMACJerseyClient;
-import org.glassfish.grizzly.http.util.HttpStatus;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -23,62 +22,63 @@ public class ProxyResource {
 
     @Path("{resource:.*}")
     @GET
-    public Response getRequest(@Context UriInfo uriInfo, @Context Request request) {
-        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod()).get(ClientResponse.class);
+    public Response getRequest(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
+        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod(), headers).get(ClientResponse.class);
         return clientResponseToResponse(clientResponse);
     }
 
     @Path("{resource:.*}")
     @POST
-    public Response postRequest(String body, @Context UriInfo uriInfo, @Context Request request) {
-        ClientResponse clientResponse = createBuilder(uriInfo, body, request.getMethod()).post(ClientResponse.class);
+    public Response postRequest(String body, @Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
+        ClientResponse clientResponse = createBuilder(uriInfo, body, request.getMethod(), headers).post(ClientResponse.class, body);
         return clientResponseToResponse(clientResponse);
     }
 
     @Path("{resource:.*}")
     @PUT
-    public Response putRequest(String body, @Context UriInfo uriInfo, @Context Request request) {
-        ClientResponse clientResponse = createBuilder(uriInfo, body, request.getMethod()).put(ClientResponse.class);
+    public Response putRequest(String body, @Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
+
+        ClientResponse clientResponse = createBuilder(uriInfo, body, request.getMethod(), headers).put(ClientResponse.class, body);
         return clientResponseToResponse(clientResponse);
     }
 
     @Path("{resource:.*}")
     @DELETE
-    public Response deleteRequest(@Context UriInfo uriInfo, @Context Request request) {
-        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod()).delete(ClientResponse.class);
+    public Response deleteRequest(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
+        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod(), headers).delete(ClientResponse.class);
         return clientResponseToResponse(clientResponse);
     }
-
 
     @Path("{resource:.*}")
     @HEAD
-    public Response headRequest(@Context UriInfo uriInfo, @Context Request request) {
-        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod()).head();
+    public Response headRequest(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
+        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod(), headers).head();
         return clientResponseToResponse(clientResponse);
     }
 
+
     @Path("{resource:.*}")
     @OPTIONS
-    public Response optionsRequest(@Context UriInfo uriInfo, @Context Request request) {
-        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod()).options(ClientResponse.class);
+    public Response optionsRequest(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
+        ClientResponse clientResponse = createBuilder(uriInfo, request.getMethod(), headers).options(ClientResponse.class);
         return clientResponseToResponse(clientResponse);
     }
 
     private static Response clientResponseToResponse(ClientResponse r) {
         Response.ResponseBuilder rb = Response.status(r.getStatus());
-        
-        copyAllHeaders(r, rb);
 
-        String content = r.getEntity(String.class);
+        copyResponseHeaders(r, rb);
+
+        String content = r.getStatus() != 204 ? r.getEntity(String.class) : "";
 
         System.out.println(String.format("Retrieved answer: HTTP-Code [%d]\nContent: \n%s\n\n", r.getStatus(), content));
-        
+
         rb.entity(content);
 
         return rb.build();
     }
 
-    private static void copyAllHeaders(ClientResponse r, Response.ResponseBuilder rb) {
+    private static void copyResponseHeaders(ClientResponse r, Response.ResponseBuilder rb) {
         for (Map.Entry<String, List<String>> entry : r.getHeaders().entrySet()) {
             for (String value : entry.getValue()) {
                 rb.header(entry.getKey(), value);
@@ -86,15 +86,29 @@ public class ProxyResource {
         }
     }
 
+    private static void copyRequestHeaders(HttpHeaders headers, WebResource.Builder builder) {
+        if (headers == null) {
+            return;
+        }
 
-    private WebResource.Builder createBuilder(UriInfo uriInfo, String body, String method) {
-        URI targetUri = withTargetHostAndPort(uriInfo.getRequestUriBuilder());
-        System.out.println("Sending request to " + targetUri);
-        return webResourceWithAuth(body, method, targetUri);
+        for (Map.Entry<String, List<String>> entry : headers.getRequestHeaders().entrySet()) {
+            builder.header(entry.getKey(), entry.getValue().get(0));
+        }
     }
 
-    protected WebResource.Builder createBuilder(UriInfo uriInfo, String method) {
-        return createBuilder(uriInfo, "", method);
+
+    private WebResource.Builder createBuilder(UriInfo uriInfo, String body, String method, HttpHeaders headers) {
+        URI targetUri = withTargetHostAndPort(uriInfo.getRequestUriBuilder());
+        System.out.println("Sending request to " + targetUri);
+        WebResource.Builder builder = webResourceWithAuth(body, method, targetUri);
+
+        copyRequestHeaders(headers, builder);
+
+        return builder;
+    }
+
+    protected WebResource.Builder createBuilder(UriInfo uriInfo, String method, HttpHeaders headers) {
+        return createBuilder(uriInfo, "", method, headers);
     }
 
 

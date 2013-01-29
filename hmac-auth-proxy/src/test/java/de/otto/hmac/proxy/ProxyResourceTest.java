@@ -4,6 +4,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.impl.ClientRequestImpl;
 import org.testng.annotations.Test;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.lang.reflect.InvocationTargetException;
@@ -16,6 +17,8 @@ import static org.mockito.Mockito.*;
 
 @Test
 public class ProxyResourceTest {
+
+    private static final HttpHeaders NO_HEADERS = null;
 
     @Test
     public void shouldAdjustTargetServerAndPort() {
@@ -41,7 +44,7 @@ public class ProxyResourceTest {
         ProxyConfiguration.setTargetHost("develop.lhotse.ov.otto.de");
 
         ProxyResource proxyResource = new ProxyResource();
-        WebResource.Builder target = proxyResource.createBuilder(uriInfo, "GET");
+        WebResource.Builder target = proxyResource.createBuilder(uriInfo, "GET", NO_HEADERS);
 
         ClientRequestImpl clientRequest = getRequestFromWebresourceBuilder(target);
 
