@@ -15,15 +15,23 @@ import static de.otto.hmac.proxy.CLIParameterToConfigurationReader.toConfigurati
 
 public class ProxyServer {
 
+    private static HttpServer httpServer;
+
     private static URI getBaseURI() {
         return UriBuilder.fromUri("http://localhost/").port(9998).build();
     }
 
     public static final URI BASE_URI = getBaseURI();
 
-    protected static HttpServer startServer() throws IOException {
+    protected static void startServer() throws IOException {
         ResourceConfig rc = new PackagesResourceConfig("de.otto.hmac.proxy");
-        return GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
+        httpServer = GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
+    }
+
+    protected static void stopServer() {
+        if (httpServer != null) {
+            httpServer.stop();
+        }
     }
 
     public static void main(String[] args) throws IOException {
@@ -33,6 +41,7 @@ public class ProxyServer {
             Logger.getLogger("").setLevel(Level.OFF);
         }
 
+        startServer();
 
         if (ProxyConfiguration.isHelp()) {
             System.out.println("A local proxy server that forwards all requests to the given target host and port, \n" +
@@ -47,14 +56,12 @@ public class ProxyServer {
             return;
         }
 
-        HttpServer httpServer = startServer();
 
-
-        System.out.println("HMAC-Proxy listens to [localhost:9998]");
+        System.out.println(String.format("HMAC-Proxy listens to [%s]", BASE_URI));
         System.out.println(String.format("HMAC-Proxy forwards to [%s:%d]", ProxyConfiguration.getTargetHost(), ProxyConfiguration.getPort()));
         System.out.println(String.format("As user [%s]", ProxyConfiguration.getUser()));
         System.out.println("Hit enter to stop proxy...");
         System.in.read();
-        httpServer.stop();
+        stopServer();
     }
 }

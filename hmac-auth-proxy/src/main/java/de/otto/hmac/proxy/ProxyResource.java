@@ -14,10 +14,15 @@ import java.util.Map;
 @Path("/")
 public class ProxyResource {
 
-    private HMACJerseyClient client;
+    private static HMACJerseyClient client;
+    public static final String ACCEPT_ENCODING = "accept-encoding";
 
     public ProxyResource() {
         client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
+    }
+
+    public static void setClient(HMACJerseyClient client) {
+        ProxyResource.client = client;
     }
 
     @Path("{resource:.*}")
@@ -64,17 +69,12 @@ public class ProxyResource {
         return clientResponseToResponse(clientResponse);
     }
 
-    private static Response clientResponseToResponse(ClientResponse r) {
-        Response.ResponseBuilder rb = Response.status(r.getStatus());
-
-        copyResponseHeaders(r, rb);
-
-        String content = r.getStatus() != 204 ? r.getEntity(String.class) : "";
-
-        System.out.println(String.format("Retrieved answer: HTTP-Code [%d]\nContent: \n%s\n\n", r.getStatus(), content));
-
+    private static Response clientResponseToResponse(ClientResponse clientResponse) {
+        Response.ResponseBuilder rb = Response.status(clientResponse.getStatus());
+        copyResponseHeaders(clientResponse, rb);
+        String content = clientResponse.getStatus() != 204 ? clientResponse.getEntity(String.class) : "";
+        System.out.println(String.format("Retrieved answer: HTTP-Code [%d]\nContent: \n%s\n\n", clientResponse.getStatus(), content));
         rb.entity(content);
-
         return rb.build();
     }
 
@@ -92,7 +92,12 @@ public class ProxyResource {
         }
 
         for (Map.Entry<String, List<String>> entry : headers.getRequestHeaders().entrySet()) {
-            builder.header(entry.getKey(), entry.getValue().get(0));
+            if (ACCEPT_ENCODING.equalsIgnoreCase(entry.getKey())) {
+                continue;
+            }
+            for (String value : entry.getValue()) {
+                builder.header(entry.getKey(), value);
+            }
         }
     }
 

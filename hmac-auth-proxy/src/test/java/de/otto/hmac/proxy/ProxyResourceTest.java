@@ -1,12 +1,15 @@
 package de.otto.hmac.proxy;
 
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.impl.ClientRequestImpl;
 import org.testng.annotations.Test;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -18,7 +21,8 @@ import static org.mockito.Mockito.*;
 @Test
 public class ProxyResourceTest {
 
-    private static final HttpHeaders NO_HEADERS = null;
+    private static final HttpHeaders NO_HEADERS
+            = null;
 
     @Test
     public void shouldAdjustTargetServerAndPort() {
@@ -56,6 +60,5 @@ public class ProxyResourceTest {
         buildMethod.setAccessible(true);
         return (ClientRequestImpl) buildMethod.invoke(target, "GET");
     }
-
 
 }
