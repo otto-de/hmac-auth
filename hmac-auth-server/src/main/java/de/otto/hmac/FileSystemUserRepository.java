@@ -2,12 +2,9 @@ package de.otto.hmac;
 
 import de.otto.hmac.authentication.UserRepository;
 import de.otto.hmac.authorization.RoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -60,11 +57,15 @@ public class FileSystemUserRepository implements UserRepository, RoleRepository 
 
     @Override
     public Set<String> getRolesForUser(final String user) {
-        final Set<String> userRoles = userToRole.get(user);
         final Set<String> roles = new HashSet<>();
-        if (userRoles != null) {
-            roles.addAll(userRoles);
+
+        if (user != null) {
+            final Set<String> userRoles = userToRole.get(user);
+            if (userRoles != null) {
+                roles.addAll(userRoles);
+            }
         }
+
         roles.add("everybody");
         return roles;
     }

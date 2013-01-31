@@ -39,7 +39,12 @@ public class FileSystemUserRepositoryTest {
     public void unknownUserShouldHaveRoleEveryBody() throws Exception {
         FileSystemUserRepository userRepository = userRepository();
         assertThat(userRepository.getRolesForUser("foo"), hasItem("everybody"));
+    }
 
+    @Test
+    public void nullUserShouldHaveRoleEverybody() throws Exception {
+        FileSystemUserRepository userRepository = userRepository();
+        assertThat(userRepository.getRolesForUser(null), hasItem("everybody"));
     }
 
     private FileSystemUserRepository userRepository() throws IOException, SAXException, ParserConfigurationException {

@@ -1,8 +1,5 @@
 package de.otto.hmac.authentication;
 
-import de.otto.hmac.HmacAttributes;
-import de.otto.hmac.StringUtils;
-import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Component;
@@ -12,9 +9,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import static de.otto.hmac.HmacAttributes.AUTHENTICATED_USERNAME;
 import static de.otto.hmac.StringUtils.toMd5;
