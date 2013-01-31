@@ -15,16 +15,7 @@ import java.util.Map;
 @Path("/")
 public class ProxyResource {
 
-    private static HMACJerseyClient client;
     public static final String ACCEPT_ENCODING = "accept-encoding";
-
-    public ProxyResource() {
-        client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
-    }
-
-    public static void setClient(HMACJerseyClient client) {
-        ProxyResource.client = client;
-    }
 
     @Path("{resource:.*}")
     @GET
@@ -129,7 +120,8 @@ public class ProxyResource {
 
 
     protected WebResource.Builder webResourceWithAuth(String body, String method, URI targetUri) {
-        WebResource.Builder builder = client
+        WebResource.Builder builder = HMACJerseyClient
+                .create(new DefaultApacheHttpClientConfig())
                 .withMethod(method)
                 .withUri(targetUri.getPath())
                 .withBody(body)
