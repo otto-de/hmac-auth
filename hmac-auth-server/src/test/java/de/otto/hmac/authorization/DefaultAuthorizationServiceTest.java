@@ -18,6 +18,74 @@ import static org.testng.Assert.fail;
 @Test
 public class DefaultAuthorizationServiceTest {
 
+    private static class ConfigWithAuthSet implements HmacConfiguration {
+        private boolean disableAuthorizationForUnsignedRequests;
+
+        private ConfigWithAuthSet(boolean disableAuthorizationForUnsignedRequests) {
+            this.disableAuthorizationForUnsignedRequests = disableAuthorizationForUnsignedRequests;
+        }
+
+        public static ConfigWithAuthSet configWithoutAuth() {
+            return new ConfigWithAuthSet(true);
+        }
+
+        public static ConfigWithAuthSet configWithAuth() {
+            return new ConfigWithAuthSet(false);
+        }
+
+        @Override
+        public boolean disableAuthorizationForUnsignedRequests() {
+            return disableAuthorizationForUnsignedRequests;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+    }
+
+    @Test
+    public void shouldAcceptNullInUnrestrictedGroupWithDisabledAuth() throws Exception {
+        DefaultAuthorizationService service = authComponent(null);
+        service.setHmacConfiguration(ConfigWithAuthSet.configWithoutAuth());
+        service.authorize(null, singleton("everybody"));
+    }
+
+    @Test
+    public void shouldAcceptNullUserInSpecificGroupWithDisabledAuth() throws Exception {
+        DefaultAuthorizationService service = authComponent(null);
+        service.setHmacConfiguration(ConfigWithAuthSet.configWithoutAuth());
+        service.authorize(null, singleton("admin"));
+    }
+
+    @Test
+    public void shouldAcceptNullUserEverywhereWithDisabledAuth() {
+        final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
+        DefaultAuthorizationService service = authComponent(null);
+        service.setHmacConfiguration(ConfigWithAuthSet.configWithoutAuth());
+        service.authorize(null, roles);
+    }
+
+    @Test
+    public void shouldNotAcceptNullUserInSpecificGroupWithEnabledAuth() throws Exception {
+        try {
+            DefaultAuthorizationService service = authComponent(null);
+            service.setHmacConfiguration(ConfigWithAuthSet.configWithAuth());
+            service.authorize(null, singleton("admin"));
+            fail("Should not authorize null user");
+        } catch (AuthorizationException e) {
+        }
+    }
+
+    @Test
+    public void shouldNotAcceptNullUserEverywhereWithEnabledAuth() {
+        final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
+
+        try {
+            DefaultAuthorizationService service = authComponent(null);
+            service.setHmacConfiguration(ConfigWithAuthSet.configWithAuth());
+            service.authorize(null, roles);
+            fail("Should not authorize null user");
+        } catch (AuthorizationException e) {
+        }
+    }
+
+
     @Test
     public void shouldNotAcceptEmptyUserInSpecificGroup() throws Exception {
         try {
@@ -64,6 +132,7 @@ public class DefaultAuthorizationServiceTest {
 
         DefaultAuthorizationService defaultAuthorizationComponent = new DefaultAuthorizationService();
         defaultAuthorizationComponent.setUserRepository(apiUserRepository);
+        defaultAuthorizationComponent.setHmacConfiguration(ConfigWithAuthSet.configWithAuth());
         return defaultAuthorizationComponent;
     }
 

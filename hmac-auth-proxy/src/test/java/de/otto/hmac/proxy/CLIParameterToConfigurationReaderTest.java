@@ -33,13 +33,13 @@ public class CLIParameterToConfigurationReaderTest {
 
     @Test
     public void shouldSetTargetPortWithLongParameter() {
-        toConfiguration(new String[]{"--port", "201839"});
+        toConfiguration(new String[]{"--targetPort", "201839"});
         assertThat(ProxyConfiguration.getPort(), is(201839));
     }
+    
     @Test
-
     public void shouldSetTargetPortWithShortParameter() {
-        toConfiguration(new String[]{"-p", "-23174891"});
+        toConfiguration(new String[]{"-tp", "-23174891"});
         assertThat(ProxyConfiguration.getPort(), is(-23174891));
     }
 

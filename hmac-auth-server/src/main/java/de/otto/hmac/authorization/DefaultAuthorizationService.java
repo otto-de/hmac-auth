@@ -15,6 +15,7 @@ import static java.lang.String.format;
 public class DefaultAuthorizationService implements AuthorizationService {
 
     private RoleRepository userRepository;
+    private HmacConfiguration hmacConfiguration;
 
     @Resource
     @Required
@@ -22,14 +23,30 @@ public class DefaultAuthorizationService implements AuthorizationService {
         this.userRepository = userRepository;
     }
 
+    @Resource
+    @Required
+    public void setHmacConfiguration(HmacConfiguration hmacConfiguration) {
+        this.hmacConfiguration = hmacConfiguration;
+    }
+
+
     @Override
     public void authorize(final String userName, final Set<String> expectedRoles) {
+        if (doNotCheck(userName)) {
+            return;
+        }
+
         final Set<String> userRoles = userRepository.getRolesForUser(userName);
 
         if (intersection(expectedRoles, userRoles).isEmpty()) {
             throw new AuthorizationException(createErrorMessage(userName, expectedRoles));
         }
     }
+
+    private boolean doNotCheck(String username) {
+        return hmacConfiguration.disableAuthorizationForUnsignedRequests() && username == null;
+    }
+
 
     private Set<String> intersection(final Collection<String> allowedForRoles, final Collection<String> rolesForUser) {
         final HashSet<String> set = new HashSet<>(allowedForRoles);
