@@ -107,7 +107,7 @@ public class ProxyResource {
     }
 
     private static ArrayList<String> of(String[] ignoreHeaders) {
-        ArrayList<String> allIgnoreHeaders = new ArrayList<>();
+        ArrayList<String> allIgnoreHeaders = new ArrayList<String>();
         for (String ignoreHeader : ignoreHeaders) {
             allIgnoreHeaders.add(ignoreHeader.toLowerCase());
         }

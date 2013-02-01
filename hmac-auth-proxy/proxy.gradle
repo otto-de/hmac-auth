@@ -2,8 +2,11 @@ apply plugin: 'application'
 
 mainClassName = "de.otto.hmac.proxy.ProxyServer"
 
-dependencies {
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
+
+dependencies {
     compile 'de.otto:hmac-auth-client:0.2.1-SNAPSHOT'
 
     compile "com.sun.jersey:jersey-server:1.17"
