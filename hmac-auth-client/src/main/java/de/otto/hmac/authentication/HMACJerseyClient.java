@@ -35,8 +35,8 @@ public class HMACJerseyClient extends ApacheHttpClient {
 
     public WebResource.Builder authenticatedResource(final String url) {
         assertAuthentificationPossible();
-        final StringBuilder builder = new StringBuilder(user);
         date = new DateTime().toString();
+        final StringBuilder builder = new StringBuilder(user);
         builder.append(":");
         builder.append(RequestSigningUtil.createRequestSignature(method, date, requestUri, body, secretKey));
         return resource(url).header(HmacAttributes.X_HMAC_AUTH_SIGNATURE, builder.toString()).header(
