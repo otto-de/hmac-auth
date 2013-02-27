@@ -20,7 +20,7 @@ public class FileSystemUserRepositoryTest {
     @Test
     public void shouldKnowUsersPasswords() throws Exception {
         FileSystemUserRepository userRepository = userRepository();
-        assertThat(userRepository.getKey("tvollerthun"), is("someSecretKey"));
+        assertThat(userRepository.getKey("maxmustermann"), is("someSecretKey"));
     }
 
     @Test
@@ -32,11 +32,11 @@ public class FileSystemUserRepositoryTest {
     @Test
     public void shouldKnowUserRoles() throws Exception {
         FileSystemUserRepository userRepository = userRepository();
-        assertThat(userRepository.getRolesForUser("mnoecker"), hasItems("everybody", "shopoffice"));
+        assertThat(userRepository.getRolesForUser("maxmustermann"), hasItems("admin", "backoffice"));
     }
 
     @Test
-    public void unknownUserShouldHaveRoleEveryBody() throws Exception {
+    public void unknownUserShouldHaveRoleEverybody() throws Exception {
         FileSystemUserRepository userRepository = userRepository();
         assertThat(userRepository.getRolesForUser("foo"), hasItem("everybody"));
     }
