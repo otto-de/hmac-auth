@@ -3,10 +3,65 @@ hmac-auth
 
 HMAC authentication for RESTful web applications
 
+Current release: 1.0.0 (in Maven Central repo)
+Current snapshot: 1.1.0-SNAPSHOT (in Sonatype snapshot repo)
 
-*WORK IN PROGRESS - UNSTABLE!*
+# Release 1.0.0
 
-# Releases
+## Maven:
+
+Repository:
+
+```xml
+<repositories>
+   <repository>
+        <id>central</id>
+        <url>http://repo1.maven.org/maven2/</url>
+   </repository>
+</repositories>
+```
+
+Dependency:
+
+```xml
+<dependency>
+   <groupId>de.otto</groupId>
+   <artifactId>hmac-auth-server</artifactId>
+   <version>1.0.0</version>
+</dependency>
+<dependency>
+   <groupId>de.otto</groupId>
+   <artifactId>hmac-auth-client</artifactId>
+   <version>1.0.0</version>
+</dependency>
+<dependency>
+   <groupId>de.otto</groupId>
+   <artifactId>hmac-auth-proxy</artifactId>
+   <version>1.0.0</version>
+</dependency>
+```
+
+## Gradle:
+
+Repository:
+
+```groovy
+repositories {
+    mavenCentral()
+}
+```
+
+Dependency:
+
+```groovy
+dependencies {
+    compile ("de.otto:hmac-auth-server:1.0.0")
+    compile ("de.otto:hmac-auth-client:1.0.0")
+    compile ("de.otto:hmac-auth-proxy:1.0.0")
+}
+```
+
+# Release 1.1.0-SNAPSHOT
 
 ## Maven:
 
@@ -27,17 +82,17 @@ Dependency:
 <dependency>
    <groupId>de.otto</groupId>
    <artifactId>hmac-auth-server</artifactId>
-   <version>0.2.2-SNAPSHOT</version>
+   <version>1.1.0-SNAPSHOT</version>
 </dependency>
 <dependency>
    <groupId>de.otto</groupId>
    <artifactId>hmac-auth-client</artifactId>
-   <version>0.2.2-SNAPSHOT</version>
+   <version>1.1.0-SNAPSHOT</version>
 </dependency>
 <dependency>
    <groupId>de.otto</groupId>
    <artifactId>hmac-auth-proxy</artifactId>
-   <version>0.2.2-SNAPSHOT</version>
+   <version>1.1.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -55,8 +110,8 @@ Dependency:
 
 ```groovy
 dependencies {
-    compile ("de.otto:hmac-auth-server:0.2.2-SNAPSHOT")
-    compile ("de.otto:hmac-auth-client:0.2.2-SNAPSHOT")
-    compile ("de.otto:hmac-auth-proxy:0.2.2-SNAPSHOT")
+    compile ("de.otto:hmac-auth-server:1.1.0-SNAPSHOT")
+    compile ("de.otto:hmac-auth-client:1.1.0-SNAPSHOT")
+    compile ("de.otto:hmac-auth-proxy:1.1.0-SNAPSHOT")
 }
 ```
