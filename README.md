@@ -3,8 +3,8 @@ hmac-auth
 
 HMAC authentication for RESTful web applications
 
-Current release: 1.0.0 (in Maven Central repo)
-Current snapshot: 1.1.0-SNAPSHOT (in Sonatype snapshot repo)
+* Current release: 1.0.0 (in Maven Central repo)
+* Current snapshot: 1.1.0-SNAPSHOT (in Sonatype snapshot repo)
 
 # Release 1.0.0
 
