@@ -36,7 +36,7 @@ public class RolesAuthorizationAspect {
         this.authorizationService = authorizationService;
     }
 
-    @Before("@target(org.springframework.stereotype.Controller) && @annotation(allowedForRoles)")
+    @Before("@annotation(allowedForRoles)")
     public void assertAuthorized(JoinPoint jp, AllowedForRoles allowedForRoles) {
         final Set<String> roles = new HashSet<>(asList(allowedForRoles.value()));
         authorizationService.authorize(getUsername(request), roles);
