@@ -32,7 +32,7 @@ public class RequestSigningUtil {
         final String[] split = requestSignature.split(":");
         final String sentSignature = split[1];
 
-        final String generatedSignature = createRequestSignature(request, secretKey);
+        final String generatedSignature = createRequestSignature(request, secretKey).trim();
 
         return generatedSignature.equals(sentSignature);
     }
