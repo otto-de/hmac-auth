@@ -84,7 +84,7 @@ public class RequestSigningUtil {
             mac.init(keySpec);
             final String signatureBase = createSignatureBase(method, dateHeader, requestUri, body);
             final byte[] result = mac.doFinal(signatureBase.getBytes());
-            return Base64.encodeBase64String(result);
+            return encodeBase64WithoutLinefeed(result);
 
         }
         catch (final Exception e) {
@@ -99,11 +99,15 @@ public class RequestSigningUtil {
             mac.init(keySpec);
             final String signatureBase = createSignatureBase(request);
             final byte[] result = mac.doFinal(signatureBase.getBytes());
-            return Base64.encodeBase64String(result);
+            return encodeBase64WithoutLinefeed(result);
         }
         catch (final Exception e) {
             throw new RuntimeException("should never happen", e);
         }
+    }
+
+    protected static String encodeBase64WithoutLinefeed(byte[] result) {
+        return Base64.encodeBase64String(result).trim();
     }
 
     private static String toMd5(final String body) {
