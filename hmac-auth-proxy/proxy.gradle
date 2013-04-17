@@ -9,9 +9,8 @@ targetCompatibility = 1.6
 dependencies {
     compile project(path: ":hmac-auth-client")
 
-    compile "com.sun.jersey:jersey-server:1.17"
-    compile "com.sun.jersey:jersey-core:1.17"
-    compile "com.sun.jersey:jersey-grizzly2:1.17"
+    compile "com.sun.jersey:jersey-server:1.17.1"
+    compile "com.sun.jersey:jersey-grizzly2:1.17.1"
 
     compile "com.beust:jcommander:1.30"
 
