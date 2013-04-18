@@ -2,6 +2,7 @@ package de.otto.hmac.proxy;
 
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import de.otto.hmac.authentication.HMACJerseyClient;
 
 import javax.ws.rs.*;
@@ -120,7 +121,7 @@ public class ProxyResource {
 
     protected WebResource.Builder webResourceWithAuth(String body, String method, URI targetUri) {
         WebResource.Builder builder = HMACJerseyClient
-                .create()
+                .create(new DefaultApacheHttpClientConfig())
                 .withMethod(method)
                 .withUri(targetUri.getPath())
                 .withBody(body)

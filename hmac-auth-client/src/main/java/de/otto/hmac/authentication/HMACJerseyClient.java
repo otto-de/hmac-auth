@@ -1,21 +1,20 @@
 package de.otto.hmac.authentication;
 
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache4.ApacheHttpClient4;
-import com.sun.jersey.client.apache4.ApacheHttpClient4Handler;
-import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.joda.time.DateTime;
 import org.springframework.util.Assert;
+
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.client.apache.ApacheHttpClient;
+import com.sun.jersey.client.apache.ApacheHttpClientHandler;
+import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
 import de.otto.hmac.HmacAttributes;
 import de.otto.hmac.StringUtils;
 
-public class HMACJerseyClient extends ApacheHttpClient4 {
+public class HMACJerseyClient extends ApacheHttpClient {
 
     private String user;
     private String secretKey;
@@ -25,7 +24,7 @@ public class HMACJerseyClient extends ApacheHttpClient4 {
     private String body = "";
 
     private HMACJerseyClient(final ClientConfig cc) {
-        super(createDefaultClientHandler(), cc, null);
+        super(createDefaultClientHander(cc), null);
     }
 
     public HMACJerseyClient auth(final String user, final String secretKey) {
@@ -54,18 +53,14 @@ public class HMACJerseyClient extends ApacheHttpClient4 {
         }
     }
 
-    private static ApacheHttpClient4Handler createDefaultClientHandler() {
-        final HttpClient client = new DefaultHttpClient(new ThreadSafeClientConnManager());
+    private static ApacheHttpClientHandler createDefaultClientHander(final ClientConfig cc) {
+        final HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
 
-        return new ApacheHttpClient4Handler(client, createCookieStore(), false);
-    }
-
-    private static BasicCookieStore createCookieStore() {
-        return new BasicCookieStore();
+        return new ApacheHttpClientHandler(client, cc);
     }
 
     public static HMACJerseyClient create() {
-        return create(new DefaultApacheHttpClient4Config());
+        return create(new DefaultApacheHttpClientConfig());
     }
 
     public static HMACJerseyClient create(final ClientConfig cc) {

@@ -12,8 +12,9 @@ dependencies {
     compile 'joda-time:joda-time:1.6.2'
 
     compile 'org.slf4j:slf4j-api:1.6.1'
-
-    compile project(path: ":hmac-auth-common")
+    
+    compile 'com.sun.jersey.contribs:jersey-apache-client:1.17','com.sun.jersey:jersey-client:1.17','com.sun.jersey:jersey-core:1.17','commons-httpclient:commons-httpclient:3.1'
+    compile 'de.otto:hmac-auth-common:0.2.1-SNAPSHOT'
     
     testCompile 'org.testng:testng:6.8.1'
     testCompile 'org.hamcrest:hamcrest-core:1.3'
