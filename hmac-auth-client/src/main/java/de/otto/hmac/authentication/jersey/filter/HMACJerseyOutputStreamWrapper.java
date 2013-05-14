@@ -11,7 +11,7 @@ import java.io.OutputStream;
  * Outputstream wrapper to capture the content of the output stream. The HMAC signature is calculated on the content.
  * Internal class.
  *
- * @see HMACJerseyClientFilter
+ * @see de.otto.hmac.authentication.jersey.filter.HMACJerseyClientFilter
  */
 class HMACJerseyOutputStreamWrapper extends OutputStream {
 
@@ -34,25 +34,23 @@ class HMACJerseyOutputStreamWrapper extends OutputStream {
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
         tmpOut.write(b, off, len);
-        out.write(b, off, len);
     }
 
     @Override
     public void write(byte[] b) throws IOException {
         tmpOut.write(b);
-        out.write(b);
     }
 
     @Override
     public void write(int b) throws IOException {
         tmpOut.write(b);
-        out.write(b);
     }
 
     @Override
     public void flush() throws IOException {
         tmpOut.flush();
         HMACJerseyClientFilter.addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), tmpOut.toByteArray());
+        out.write(tmpOut.toByteArray());
         out.flush();
     }
 
@@ -61,6 +59,17 @@ class HMACJerseyOutputStreamWrapper extends OutputStream {
         tmpOut.close();
         HMACJerseyClientFilter.addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), tmpOut.toByteArray());
         out.close();
+    }
 
+    String getUser() {
+        return user;
+    }
+
+    String getSecretKey() {
+        return secretKey;
+    }
+
+    ClientRequest getClientRequest() {
+        return cr;
     }
 }
