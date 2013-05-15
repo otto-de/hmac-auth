@@ -6,13 +6,14 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import de.otto.hmac.HmacAttributes;
 import de.otto.hmac.authentication.RequestSigningUtil;
+import org.apache.commons.codec.Charsets;
 import org.joda.time.Instant;
 
 import javax.ws.rs.HttpMethod;
 
 /**
- * The {@link HMACJerseyClientFilter} calculates HMAC signatures for jersey client requests. Use this filter by simply adding it to
- * your jersey client:
+ * The {@link de.otto.hmac.authentication.jersey.filter.HMACJerseyClientFilter} calculates HMAC signatures for jersey client
+ * requests. Use this filter by simply adding it to your jersey client:
  * <code>
  *       try {
              client = Client.create(config);
@@ -47,7 +48,7 @@ public class HMACJerseyClientFilter extends ClientFilter {
     public static void addHmacHttpRequestHeaders(final ClientRequest cr, final String user, final String secretKey,
             Instant now, final byte[] body) {
         String signatureHeader = user + ":" + RequestSigningUtil.createRequestSignature(cr.getMethod(), now.toString(),
-                cr.getURI().getPath(), body != null ? new String(body) : "", secretKey);
+                cr.getURI().getPath(), body != null ? new String(body, Charsets.UTF_8) : "", secretKey);
         cr.getHeaders().add(HmacAttributes.X_HMAC_AUTH_SIGNATURE, signatureHeader);
         cr.getHeaders().add(HmacAttributes.X_HMAC_AUTH_DATE, now.toString());
     }
