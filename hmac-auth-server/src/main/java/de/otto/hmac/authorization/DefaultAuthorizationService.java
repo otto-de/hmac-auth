@@ -1,6 +1,6 @@
 package de.otto.hmac.authorization;
 
-import de.otto.hmac.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 
@@ -9,13 +9,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import static de.otto.hmac.StringUtils.isNullOrEmpty;
 import static java.lang.String.format;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class DefaultAuthorizationService implements AuthorizationService {
 
     private RoleRepository userRepository;
     private HmacConfiguration hmacConfiguration;
+    private static final Logger LOG = getLogger(DefaultAuthorizationService.class);
+    private static final String ANONYMOUS_USER = "Anonymous user";
 
     @Resource
     @Required
@@ -39,7 +43,9 @@ public class DefaultAuthorizationService implements AuthorizationService {
         final Set<String> userRoles = userRepository.getRolesForUser(userName);
 
         if (intersection(expectedRoles, userRoles).isEmpty()) {
-            throw new AuthorizationException(createErrorMessage(userName, expectedRoles));
+            final String displayUser = formatUsername(userName);
+            logAuthorizationFailure(displayUser, expectedRoles);
+            throw new AuthorizationException(displayUser);
         }
     }
 
@@ -54,9 +60,17 @@ public class DefaultAuthorizationService implements AuthorizationService {
         return set;
     }
 
-    private static String createErrorMessage(final String username, final Set<String> allowedForRoles) {
-        final String displayUser = StringUtils.isNullOrEmpty(username) ? "Anonymous user" : "[" + username + "]";
-        return format("%s is not in one of these groups: %s.", displayUser, allowedForRoles);
+    private void logAuthorizationFailure(final String displayUser, final Set<String> allowedForRoles) {
+        String message = format("%s is not in one of these groups: %s.", displayUser, allowedForRoles);
+        LOG.info(message);
+    }
+
+    private String formatUsername(String username) {
+
+        if (isNullOrEmpty(username)) {
+            username = ANONYMOUS_USER;
+        }
+        return "[" + username + "]";
     }
 
 }

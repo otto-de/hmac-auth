@@ -143,7 +143,7 @@ public class DefaultAuthorizationServiceTest {
             authComponent("").authorize("", roles);
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
-            assertThat(e.getMessage(), is("Anonymous user is not in one of these groups: [admin, shopoffice]."));
+            assertThat(e.getMessage(), is("[Anonymous user] is not in one of the required security groups."));
         }
     }
 
@@ -154,7 +154,7 @@ public class DefaultAuthorizationServiceTest {
             authComponent("someUnauthorizedUser").authorize("someUnauthorizedUser", roles);
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
-            assertThat(e.getMessage(), is("[someUnauthorizedUser] is not in one of these groups: [admin, shopoffice]."));
+            assertThat(e.getMessage(), is("[someUnauthorizedUser] is not in one of the required security groups."));
         }
     }
 
