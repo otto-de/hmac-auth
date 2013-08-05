@@ -26,8 +26,5 @@ public class HMACJerseyClientRequestAdapterTest {
         OutputStream result = adapter.adapt(clientRequestMock, outputStreamMock);
 
         assertTrue(result instanceof HMACJerseyOutputStreamWrapper);
-        assertEquals(((HMACJerseyOutputStreamWrapper) result).getUser(), "user");
-        assertEquals(((HMACJerseyOutputStreamWrapper) result).getSecretKey(), "secretKey");
-        assertSame(((HMACJerseyOutputStreamWrapper) result).getClientRequest(), clientRequestMock);
     }
 }

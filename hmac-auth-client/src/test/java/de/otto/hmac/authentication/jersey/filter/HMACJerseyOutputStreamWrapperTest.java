@@ -60,7 +60,7 @@ public class HMACJerseyOutputStreamWrapperTest {
         wrapper.write(new String("br").getBytes(), 0, 2);
         wrapper.write(new String("br").getBytes());
         wrapper.write((byte) 10);
-        wrapper.flush();
+        wrapper.close();
 
         verify(outputStreamMock).write(new byte[] {(byte) 'b', (byte) 'r', (byte) 'b', (byte) 'r', (byte) 10});
         assertNotNull(map.get(HmacAttributes.X_HMAC_AUTH_SIGNATURE));
