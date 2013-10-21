@@ -34,7 +34,7 @@ public class ProxyServer {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         toConfiguration(args);
 
         if (!ProxyConfiguration.isVerbose()) {
@@ -51,7 +51,9 @@ public class ProxyServer {
                     "    -p --password PASSWORD     password of user\n" +
                     "    -h --host HOST             target host\n" +
                     "    -tp --targetPort PORT      target port\n" +
-                    "    -v --verbose               display more stuff\n"
+                    "    -v --verbose               display more stuff\n" +
+                    "    -d --daemon                start proxy without waiting for input, so it\n" +
+                    "                               can be started as a daemon\n"
             );
             return;
         }
@@ -60,8 +62,14 @@ public class ProxyServer {
         System.out.println(String.format("HMAC-Proxy listens to [%s]", BASE_URI));
         System.out.println(String.format("HMAC-Proxy forwards to [%s:%d]", ProxyConfiguration.getTargetHost(), ProxyConfiguration.getPort()));
         System.out.println(String.format("As user [%s]", ProxyConfiguration.getUser()));
-        System.out.println("Hit enter to stop proxy...");
-        System.in.read();
+        if (ProxyConfiguration.isDaemon()) {
+            while(true) {
+                Thread.sleep(1000);
+            }
+        } else {
+            System.out.println("Hit enter to stop proxy...");
+            System.in.read();
+        }
         stopServer();
     }
 }

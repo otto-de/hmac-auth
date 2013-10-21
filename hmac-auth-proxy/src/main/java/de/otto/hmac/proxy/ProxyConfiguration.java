@@ -9,6 +9,7 @@ public class ProxyConfiguration {
     private static String password;
     private static boolean help;
     private static boolean verbose;
+    private static boolean daemon;
 
     public static int getPort() {
         return port;
@@ -56,5 +57,13 @@ public class ProxyConfiguration {
 
     public static boolean isVerbose() {
         return verbose;
+    }
+
+    public static boolean isDaemon() {
+        return daemon;
+    }
+
+    public static void setDaemon(boolean daemon) {
+        ProxyConfiguration.daemon = daemon;
     }
 }

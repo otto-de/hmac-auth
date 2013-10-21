@@ -23,6 +23,9 @@ public class CLIParameterToConfigurationReader {
 
         @Parameter(names = "--help", help = true)
         private boolean help;
+
+        @Parameter(names = {"-d", "--daemon"}, description = "Enable daemon mode")
+        private boolean useAsDaemon = false;
     }
 
     public static void toConfiguration(String[] strings) {
@@ -37,6 +40,7 @@ public class CLIParameterToConfigurationReader {
         ProxyConfiguration.setPassword(internalProxyConfiguration.password);
         ProxyConfiguration.setHelp(internalProxyConfiguration.help);
         ProxyConfiguration.setVerbose(internalProxyConfiguration.verbose);
+        ProxyConfiguration.setDaemon(internalProxyConfiguration.useAsDaemon);
     }
 
 }
