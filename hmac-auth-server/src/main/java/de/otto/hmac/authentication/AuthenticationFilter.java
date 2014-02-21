@@ -8,10 +8,11 @@ import javax.annotation.Resource;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.EOFException;
 import java.io.IOException;
 
 import static de.otto.hmac.HmacAttributes.AUTHENTICATED_USERNAME;
-import static de.otto.hmac.StringUtils.toMd5;
+import static de.otto.hmac.ByteArrayUtils.toMd5;
 import static de.otto.hmac.authentication.AuthenticationResult.Status.FAIL;
 import static de.otto.hmac.authentication.AuthenticationResult.Status.SUCCESS;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
@@ -55,6 +56,9 @@ public class AuthenticationFilter implements Filter {
                     wrapped.setAttribute(AUTHENTICATED_USERNAME, result.getUsername());
                 }
                 chain.doFilter(wrapped, response);
+            } catch (EOFException e) {
+                LOG.warn("EOFException reading InputStream from request. " + e.getMessage());
+                throw e;
             } catch (Exception e) {
                 LOG.error("Unerwartete Exception beim Validieren der Signatur.", e);
                 throw e;

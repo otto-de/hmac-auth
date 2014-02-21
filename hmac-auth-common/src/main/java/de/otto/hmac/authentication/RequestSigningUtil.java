@@ -65,7 +65,7 @@ public class RequestSigningUtil {
     }
 
     public static String createSignatureBase(final String method, final String dateHeader, final String requestUri,
-            final String body) {
+            final byte[] body) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(method).append("\n");
@@ -82,7 +82,7 @@ public class RequestSigningUtil {
             final SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
             final Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(keySpec);
-            final String signatureBase = createSignatureBase(method, dateHeader, requestUri, body);
+            final String signatureBase = createSignatureBase(method, dateHeader, requestUri, body.getBytes());
             final byte[] result = mac.doFinal(signatureBase.getBytes());
             return encodeBase64WithoutLinefeed(result);
 
@@ -110,12 +110,12 @@ public class RequestSigningUtil {
         return Base64.encodeBase64String(result).trim();
     }
 
-    private static String toMd5(final String body) {
+    private static String toMd5(final byte[] body) {
         try {
             final MessageDigest md = MessageDigest.getInstance("MD5");
-            return Hex.encodeHexString(md.digest(body.getBytes("UTF-8")));
+            return Hex.encodeHexString(md.digest(body));
         }
-        catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("should never happen", e);
         }
     }

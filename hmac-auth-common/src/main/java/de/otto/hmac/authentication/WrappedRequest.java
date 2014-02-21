@@ -1,22 +1,22 @@
 package de.otto.hmac.authentication;
 
-import de.otto.hmac.StringUtils;
+import de.otto.hmac.ByteArrayUtils;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 /**
  * A wrapper for a HttpServletRequest.
  * <p/>
  * The wrapper is needed to read the request body multiple times, for example during the authentication process
  * and later in the call stack to read the request body.
- *
  */
 public class WrappedRequest extends HttpServletRequestWrapper {
 
-    private final String body;
+    private final byte[] body;
 
     /**
      * Factory method used to create a WrappedRequest, wrapping a HttpServletRequest.
@@ -36,7 +36,7 @@ public class WrappedRequest extends HttpServletRequestWrapper {
     @Override
     public ServletInputStream getInputStream() throws IOException {
         return new ServletInputStream() {
-            final ByteArrayInputStream inputStream = new ByteArrayInputStream(body.getBytes());
+            final ByteArrayInputStream inputStream = new ByteArrayInputStream(body);
 
             public int read() throws IOException {
                 return inputStream.read();
@@ -44,16 +44,20 @@ public class WrappedRequest extends HttpServletRequestWrapper {
         };
     }
 
-    public String getBody() {
+    public byte[] getBody() {
         return body;
     }
 
     private WrappedRequest(final HttpServletRequest request) throws IOException {
         super(request);
-        String result;
-        try (final ServletInputStream inputStream = request.getInputStream()) {
-            result = inputStream != null ? StringUtils.toString(inputStream) : "";
+        byte[] result = new byte[]{};
+
+        if (request.getInputStream() != null) {
+            try (final ServletInputStream inputStream = request.getInputStream()) {
+                result = ByteArrayUtils.toByteArray(inputStream);
+            }
         }
+
         body = result;
     }
 
