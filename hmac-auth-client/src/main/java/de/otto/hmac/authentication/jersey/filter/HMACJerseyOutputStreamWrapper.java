@@ -15,17 +15,17 @@ import java.io.OutputStream;
  */
 class HMACJerseyOutputStreamWrapper extends OutputStream {
 
-    private OutputStream out;
-    private ByteArrayOutputStream tmpOut;
-    private ClientRequest cr;
-    private String user;
-    private String secretKey;
+    private final OutputStream out;
+    private final ByteArrayOutputStream tmpOut;
+    private final ClientRequest cr;
+    private final String user;
+    private final String secretKey;
 
 
     public HMACJerseyOutputStreamWrapper(final String user, final String secretKey, final ClientRequest cr,
             final OutputStream out) {
         this.out = out;
-        tmpOut = new ByteArrayOutputStream();
+        this.tmpOut = new ByteArrayOutputStream();
         this.cr = cr;
         this.user = user;
         this.secretKey = secretKey;
@@ -47,29 +47,12 @@ class HMACJerseyOutputStreamWrapper extends OutputStream {
     }
 
     @Override
-    public void flush() throws IOException {
-        tmpOut.flush();
-        HMACJerseyClientFilter.addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), tmpOut.toByteArray());
-        out.write(tmpOut.toByteArray());
-        out.flush();
-    }
-
-    @Override
     public void close() throws IOException {
-        tmpOut.close();
-        HMACJerseyClientFilter.addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), tmpOut.toByteArray());
+        final byte [] bodyBytes = tmpOut.toByteArray();
+        HMACJerseyClientFilter.addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), bodyBytes);
+        out.write(bodyBytes);
+        out.flush();
         out.close();
-    }
-
-    String getUser() {
-        return user;
-    }
-
-    String getSecretKey() {
-        return secretKey;
-    }
-
-    ClientRequest getClientRequest() {
-        return cr;
+        tmpOut.close();
     }
 }

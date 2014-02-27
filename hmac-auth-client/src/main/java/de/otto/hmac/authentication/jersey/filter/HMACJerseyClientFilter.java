@@ -49,7 +49,7 @@ public class HMACJerseyClientFilter extends ClientFilter {
             Instant now, final byte[] body) {
         String signatureHeader = user + ":" + RequestSigningUtil.createRequestSignature(cr.getMethod(), now.toString(),
                 cr.getURI().getPath(), body != null ? new String(body, Charsets.UTF_8) : "", secretKey);
-        cr.getHeaders().add(HmacAttributes.X_HMAC_AUTH_SIGNATURE, signatureHeader);
-        cr.getHeaders().add(HmacAttributes.X_HMAC_AUTH_DATE, now.toString());
+        cr.getHeaders().putSingle(HmacAttributes.X_HMAC_AUTH_SIGNATURE, signatureHeader);
+        cr.getHeaders().putSingle(HmacAttributes.X_HMAC_AUTH_DATE, now.toString());
     }
 }

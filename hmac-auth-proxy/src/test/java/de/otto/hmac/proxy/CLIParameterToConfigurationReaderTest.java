@@ -43,4 +43,18 @@ public class CLIParameterToConfigurationReaderTest {
         assertThat(ProxyConfiguration.getPort(), is(-23174891));
     }
 
+
+    @Test
+    public void shouldSetDaemonWithShortParameter() {
+        toConfiguration(new String[]{"-d"});
+        assertThat(ProxyConfiguration.isDaemon(), is(true));
+    }
+
+    @Test
+    public void shouldSetDaemonWithLongParameter() {
+        toConfiguration(new String[]{"--daemon"});
+        assertThat(ProxyConfiguration.isDaemon(), is(true));
+    }
+
+
 }

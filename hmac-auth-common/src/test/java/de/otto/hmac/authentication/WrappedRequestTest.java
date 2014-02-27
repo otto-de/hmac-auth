@@ -1,12 +1,23 @@
 package de.otto.hmac.authentication;
 
 
+import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.Test;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import static de.otto.hmac.authentication.WrappedRequest.wrap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Test
 public class WrappedRequestTest {
@@ -31,7 +42,7 @@ public class WrappedRequestTest {
         original.setContent(originalBody.getBytes());
 
         WrappedRequest fälschung = wrap(original);
-        assertThat(fälschung.getBody(), is(originalBody));
+        assertThat(fälschung.getBody(), is(originalBody.getBytes()));
     }
 
 
@@ -42,7 +53,7 @@ public class WrappedRequestTest {
         original.setContent(originalBody.getBytes());
 
         WrappedRequest fälschung = wrap(original);
-        assertThat(fälschung.getBody(), is(originalBody));
+        assertThat(fälschung.getBody(), is(originalBody.getBytes()));
     }
 
     @Test
@@ -51,7 +62,7 @@ public class WrappedRequestTest {
 
         WrappedRequest fälschung = wrap(original);
 
-        assertThat(fälschung.getBody(), is(""));
+        assertThat(fälschung.getBody(), is("".getBytes()));
     }
 
 
@@ -65,7 +76,30 @@ public class WrappedRequestTest {
         WrappedRequest wrapped = wrap(original);
 
 
-        assertThat(wrapped.getBody().getBytes(), is(originalContent.getBytes()));
+        assertThat(wrapped.getBody(), is(originalContent.getBytes()));
+
+    }
+
+    @Test
+    public void shouldReadReqeuestWithAsciiEncoding() throws Exception {
+        //given
+        HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
+        when(httpServletRequestMock.getMethod()).thenReturn("PUT");
+        when(httpServletRequestMock.getRequestURI()).thenReturn("/some/uri");
+        when(httpServletRequestMock.getCharacterEncoding()).thenReturn("ASCII");
+        final String originalContent = contentAreaJson("testId");
+        final InputStream inputStream = new ByteArrayInputStream(originalContent.getBytes("ASCII"));
+        ServletInputStream servletInputStream = new ServletInputStream() {
+            @Override
+            public int read() throws IOException {
+                return inputStream.read();
+            }
+        };
+        when(httpServletRequestMock.getInputStream()).thenReturn(servletInputStream);
+        //when
+        WrappedRequest wrapped = wrap(httpServletRequestMock);
+        //then
+        assertThat(wrapped.getBody(), is(originalContent.getBytes()));
 
     }
 
@@ -79,7 +113,6 @@ public class WrappedRequestTest {
                 "                  ]\n" +
                 "}";
     }
-
 
 
 
