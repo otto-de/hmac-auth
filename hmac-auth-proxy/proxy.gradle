@@ -7,7 +7,7 @@ targetCompatibility = 1.6
 
 
 dependencies {
-    compile project(path: ":hmac-auth-client")
+    compile project(path: ":hmac-auth-jersey-client")
 
     compile "com.sun.jersey:jersey-server:1.17.1"
     compile "com.sun.jersey:jersey-grizzly2:1.17.1"
@@ -25,15 +25,15 @@ artifacts {
     archives sourcesJar
 }
 
-signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask(":uploadArchives") }
-    sign configurations.archives
-}
+//signing {
+//    required { isReleaseVersion && gradle.taskGraph.hasTask(":uploadArchives") }
+//    sign configurations.archives
+//}
 
 uploadArchives {
     repositories {
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             pom.project {
                 name 'hmac-auth-proxy'

@@ -9,7 +9,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.3'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.4'
     }
 }
 
@@ -21,7 +21,7 @@ subprojects {
     apply plugin: 'signing'
 
     group = 'de.otto'
-    version = '1.2.4'
+    version = '1.2.10-jersey2'
     ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
     sourceCompatibility = 1.7
@@ -55,11 +55,11 @@ subprojects {
     uploadArchives {
         repositories {
             mavenDeployer {
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                repository(url: "http://nexus.lhotse.ov.otto.de:8080/content/repositories/releases/") {
+                    authentication(userName: "lhotse_release", password: "lhotse_release123")
                 }
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                snapshotRepository(url: "http://nexus.lhotse.ov.otto.de:8080/content/repositories/snapshots/") {
+                    authentication(userName: "lhotse_snapshot", password: "lhotse_snapshot123")
                 }
             }
         }
@@ -68,6 +68,6 @@ subprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.2'
+    gradleVersion = '1.11'
 }
 

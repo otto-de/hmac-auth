@@ -3,7 +3,7 @@ package de.otto.hmac.proxy;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
-import de.otto.hmac.authentication.HMACJerseyClient;
+import de.otto.hmac.authentication.jersey.HMACJerseyClient;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;

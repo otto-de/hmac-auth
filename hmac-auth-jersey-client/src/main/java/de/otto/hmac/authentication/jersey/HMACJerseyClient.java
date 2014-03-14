@@ -1,5 +1,6 @@
-package de.otto.hmac.authentication;
+package de.otto.hmac.authentication.jersey;
 
+import de.otto.hmac.authentication.RequestSigningUtil;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.joda.time.DateTime;

@@ -1,9 +1,8 @@
-package de.otto.hmac.authentication;
-
-import org.testng.Assert;
-import org.testng.annotations.Test;
+package de.otto.hmac.authentication.jersey;
 
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 public class HMACJerseyClientTest {
 
