@@ -1,15 +1,17 @@
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'java'
-apply plugin: 'versions'
+apply plugin: 'com.github.ben-manes.versions'
 
 // for gradle plugins
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.3'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.5'
+        classpath 'org.codehaus.groovy:groovy-backports-compat23:2.3.5'
     }
 }
 
