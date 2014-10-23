@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  * A wrapper for a HttpServletRequest.
- * <p/>
+ *
  * The wrapper is needed to read the request body multiple times, for example during the authentication process
  * and later in the call stack to read the request body.
  */
