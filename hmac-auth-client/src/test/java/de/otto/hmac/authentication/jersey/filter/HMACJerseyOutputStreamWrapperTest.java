@@ -6,6 +6,7 @@ import de.otto.hmac.HmacAttributes;
 import org.testng.annotations.Test;
 
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
 
 /**
@@ -51,7 +53,7 @@ public class HMACJerseyOutputStreamWrapperTest {
         when(clientRequestMock.getMethod()).thenReturn("GET");
         when(clientRequestMock.getURI()).thenReturn(new URI("http://localhost:8080/test"));
         when(clientRequestMock.getHeaders()).thenReturn(map);
-        OutputStream outputStreamMock = mock(OutputStream.class);
+        ByteArrayOutputStream outputStreamMock = new ByteArrayOutputStream();
 
         HMACJerseyOutputStreamWrapper wrapper =
                 new HMACJerseyOutputStreamWrapper("user", "secretKey", clientRequestMock, outputStreamMock);
@@ -62,7 +64,7 @@ public class HMACJerseyOutputStreamWrapperTest {
         wrapper.write((byte) 10);
         wrapper.close();
 
-        verify(outputStreamMock).write(new byte[] {(byte) 'b', (byte) 'r', (byte) 'b', (byte) 'r', (byte) 10});
+        assertEquals(new byte[] {(byte) 'b', (byte) 'r', (byte) 'b', (byte) 'r', (byte) 10}, outputStreamMock.toByteArray());
         assertNotNull(map.get(HmacAttributes.X_HMAC_AUTH_SIGNATURE));
         assertNotNull(map.get(HmacAttributes.X_HMAC_AUTH_DATE));
     }
