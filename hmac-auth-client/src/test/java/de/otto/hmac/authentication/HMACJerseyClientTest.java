@@ -1,5 +1,6 @@
 package de.otto.hmac.authentication;
 
+import com.google.common.io.ByteSource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -8,7 +9,7 @@ import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 public class HMACJerseyClientTest {
 
     @Test
-    public void shouldFailOnGetWithoutUser() {
+    public void shouldFailOnGetWithoutUser() throws Exception {
         final HMACJerseyClient client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
         try {
             client.withMethod("GET").withUri("testUri").auth(null, "key").authenticatedResource("/targetUri");
@@ -27,7 +28,7 @@ public class HMACJerseyClientTest {
     }
 
     @Test
-    public void shouldFailOnGetWithoutSecret() {
+    public void shouldFailOnGetWithoutSecret() throws Exception {
         final HMACJerseyClient client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
         try {
             client.withMethod("GET").withUri("testUri").auth("user", null).authenticatedResource("/targetUri");
@@ -46,7 +47,7 @@ public class HMACJerseyClientTest {
     }
 
     @Test
-    public void shouldFailOnGetWithoutUri() {
+    public void shouldFailOnGetWithoutUri() throws Exception {
         final HMACJerseyClient client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
         try {
             client.withMethod("GET").auth("user", "secret").authenticatedResource("/targetUri");
@@ -65,7 +66,7 @@ public class HMACJerseyClientTest {
     }
 
     @Test
-    public void shouldFailWithoutMethod() {
+    public void shouldFailWithoutMethod() throws Exception {
         final HMACJerseyClient client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
         try {
             client.withUri("testUri").auth("user", "secret").authenticatedResource("/targetUri");
@@ -84,7 +85,7 @@ public class HMACJerseyClientTest {
     }
 
     @Test
-    public void shouldFailOnPutWithoutBody() {
+    public void shouldFailOnPutWithoutBody() throws Exception {
         final HMACJerseyClient client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
         try {
             client.withMethod("PUT").withUri("testUri").auth("user", "secret").authenticatedResource("/targetUri");
@@ -94,7 +95,7 @@ public class HMACJerseyClientTest {
             // everything fine.
         }
         try {
-            client.withMethod("PUT").withUri("testUri").withBody("").auth("user", "secret").authenticatedResource("/targetUri");
+            client.withMethod("PUT").withUri("testUri").auth("user", "secret").authenticatedResource("/targetUri");
             Assert.fail("Exception expected");
         }
         catch (final IllegalArgumentException e) {
@@ -103,25 +104,25 @@ public class HMACJerseyClientTest {
     }
 
     @Test
-    public void shouldGetSuccessfulWithAllInformation() {
+    public void shouldGetSuccessfulWithAllInformation() throws Exception {
         final HMACJerseyClient client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
         client.withMethod("GET").withUri("testUri").auth("user", "secret").authenticatedResource("/targetUri");
     }
 
     @Test
-    public void shouldPutSuccessfulWithAllInformation() {
+    public void shouldPutSuccessfulWithAllInformation() throws Exception {
         final HMACJerseyClient client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
-        client.withMethod("PUT").withUri("testUri").withBody("body").auth("user", "secret").authenticatedResource("/targetUri");
+        client.withMethod("PUT").withUri("testUri").withBody(ByteSource.wrap("body".getBytes())).auth("user", "secret").authenticatedResource("/targetUri");
     }
 
     @Test
-    public void shouldPostSuccessfulWithAllInformation() {
+    public void shouldPostSuccessfulWithAllInformation() throws Exception {
         final HMACJerseyClient client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
-        client.withMethod("POST").withUri("testUri").withBody("body").auth("user", "secret").authenticatedResource("/targetUri");
+        client.withMethod("POST").withUri("testUri").withBody(ByteSource.wrap("body".getBytes())).auth("user", "secret").authenticatedResource("/targetUri");
     }
 
     @Test
-    public void shouldDeleteSuccessfulWithAllInformation() {
+    public void shouldDeleteSuccessfulWithAllInformation() throws Exception {
         final HMACJerseyClient client = HMACJerseyClient.create(new DefaultApacheHttpClientConfig());
         client.withMethod("DELETE").withUri("testUri").auth("user", "secret").authenticatedResource("/targetUri");
     }
