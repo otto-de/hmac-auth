@@ -51,7 +51,16 @@ public class ProxyResource {
         }
     }
 
-    protected StreamingOutput toStreamingOutput(final ByteSource byteSource) {
+    protected static StreamingOutput toStreamingOutput(final InputStream inputStream) {
+        return new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                ByteStreams.copy(inputStream, output);
+            }
+        };
+    }
+
+    protected static StreamingOutput toStreamingOutput(final ByteSource byteSource) {
         return new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
@@ -108,10 +117,38 @@ public class ProxyResource {
     private static Response clientResponseToResponse(ClientResponse clientResponse) {
         Response.ResponseBuilder rb = Response.status(clientResponse.getStatus());
         copyResponseHeaders(clientResponse, rb);
-        String content = clientResponse.getStatus() != 204 ? clientResponse.getEntity(String.class) : null;
-        System.out.println(String.format("Retrieved answer: HTTP-Code [%d]\nContent: \n%s\n\n", clientResponse.getStatus(), content));
-        rb.entity(content);
-        return rb.build();
+
+        FileBackedOutputStream bodySource = null;
+        try {
+            bodySource = toFileBackedOutputStream(clientResponse.getEntityInputStream());
+            ByteSource bodyAsByteSource = bodySource.asByteSource();
+            System.out.println(String.format("Retrieved answer: HTTP-Code [%d], Content-Length: %s\n\n", clientResponse.getStatus(), bodyAsByteSource.size()));
+            rb.entity(toStreamingOutput(bodyAsByteSource));
+            return rb.build();
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(bodySource != null) {
+                try {
+                    bodySource.close();
+                } catch (IOException ignore) {
+                    //
+                }
+            }
+        }
+    }
+
+    private static Response clientResponseToResponseDirect(ClientResponse clientResponse) {
+        // nicht schneller, man sieht am client nur eher, was passiert, clientResponseToResponse finde ich schöner :)
+        Response.ResponseBuilder rb = Response.status(clientResponse.getStatus());
+        copyResponseHeaders(clientResponse, rb);
+
+        try {
+            System.out.println(String.format("Retrieved answer: HTTP-Code [%d]\n", clientResponse.getStatus()));
+            rb.entity(toStreamingOutput(clientResponse.getEntityInputStream()));
+            return rb.build();
+        } finally {
+        }
     }
 
     private static void copyResponseHeaders(ClientResponse r, Response.ResponseBuilder rb) {
@@ -164,7 +201,7 @@ public class ProxyResource {
     }
 
 
-    protected FileBackedOutputStream toFileBackedOutputStream(InputStream in) throws IOException {
+    protected static FileBackedOutputStream toFileBackedOutputStream(InputStream in) throws IOException {
         FileBackedOutputStream out = new FileBackedOutputStream(10*1000*1000, true);
         try {
             ByteStreams.copy(in, out);
