@@ -19,8 +19,6 @@ import java.util.Map;
 @Path("/")
 public class ProxyResource {
 
-    public static final String ACCEPT_ENCODING = "accept-encoding";
-
     @Path("{resource:.*}")
     @GET
     public Response getRequest(@Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
@@ -181,7 +179,7 @@ public class ProxyResource {
         WebResource.Builder builder = webResourceWithAuth(body, method, targetUri);
 
         ArrayList<String> allIgnoreHeaders = of(ignoreHeaders);
-        allIgnoreHeaders.add(ACCEPT_ENCODING.toLowerCase());
+        allIgnoreHeaders.add(HttpHeaders.ACCEPT_ENCODING.toLowerCase());
 
         copyRequestHeaders(headers, builder, allIgnoreHeaders);
 
