@@ -6,10 +6,10 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import de.otto.hmac.HmacAttributes;
 import de.otto.hmac.authentication.RequestSigningUtil;
-import org.apache.commons.codec.Charsets;
 import org.joda.time.Instant;
 
 import javax.ws.rs.HttpMethod;
+import java.security.MessageDigest;
 
 /**
  * The {@link de.otto.hmac.authentication.jersey.filter.HMACJerseyClientFilter} calculates HMAC signatures for jersey client
@@ -40,15 +40,14 @@ public class HMACJerseyClientFilter extends ClientFilter {
         if (HttpMethod.POST.equalsIgnoreCase(cr.getMethod()) || HttpMethod.PUT.equalsIgnoreCase(cr.getMethod())) {
             cr.setAdapter(new HMACJerseyClientRequestAdapter(user, secretKey));
         } else {
-            addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), null);
+            addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), RequestSigningUtil.getMD5Digest());
         }
         return getNext().handle(cr);
     }
 
-    public static void addHmacHttpRequestHeaders(final ClientRequest cr, final String user, final String secretKey,
-            Instant now, final byte[] body) {
+    public static void addHmacHttpRequestHeaders(final ClientRequest cr, final String user, final String secretKey, Instant now, MessageDigest md5MessageDigest) {
         String signatureHeader = user + ":" + RequestSigningUtil.createRequestSignature(cr.getMethod(), now.toString(),
-                cr.getURI().getPath(), body != null ? new String(body, Charsets.UTF_8) : "", secretKey);
+                cr.getURI().getPath(), md5MessageDigest, secretKey);
         cr.getHeaders().putSingle(HmacAttributes.X_HMAC_AUTH_SIGNATURE, signatureHeader);
         cr.getHeaders().putSingle(HmacAttributes.X_HMAC_AUTH_DATE, now.toString());
     }

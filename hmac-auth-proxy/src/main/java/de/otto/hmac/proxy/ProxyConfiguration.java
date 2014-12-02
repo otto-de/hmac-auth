@@ -5,11 +5,22 @@ public class ProxyConfiguration {
 
     private static int port;
     private static String targetHost;
+
     private static String user;
     private static String password;
     private static boolean help;
     private static boolean verbose;
     private static boolean daemon;
+
+    private static int sourcePort;
+
+    public static int getSourcePort() {
+        return sourcePort;
+    }
+
+    public static void setSourcePort(int sourcePort) {
+        ProxyConfiguration.sourcePort = sourcePort;
+    }
 
     public static int getPort() {
         return port;

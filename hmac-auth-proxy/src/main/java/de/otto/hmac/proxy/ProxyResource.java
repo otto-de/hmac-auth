@@ -1,5 +1,8 @@
 package de.otto.hmac.proxy;
 
+import com.google.common.io.ByteSource;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.FileBackedOutputStream;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
@@ -7,6 +10,7 @@ import de.otto.hmac.authentication.HMACJerseyClient;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +18,6 @@ import java.util.Map;
 
 @Path("/")
 public class ProxyResource {
-
-    public static final String ACCEPT_ENCODING = "accept-encoding";
 
     @Path("{resource:.*}")
     @GET
@@ -26,16 +28,66 @@ public class ProxyResource {
 
     @Path("{resource:.*}")
     @POST
-    public Response postRequest(String body, @Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
-        ClientResponse clientResponse = createBuilder(uriInfo, body, request.getMethod(), headers).post(ClientResponse.class, body);
-        return clientResponseToResponse(clientResponse);
+    public Response postRequest(InputStream body, @Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
+        FileBackedOutputStream bodySource = null;
+        try {
+            bodySource = toFileBackedOutputStream(body);
+            ByteSource bodyAsByteSource = bodySource.asByteSource();
+            ClientResponse clientResponse = createBuilder(uriInfo, bodyAsByteSource, request.getMethod(), headers).post(ClientResponse.class, toStreamingOutput(bodyAsByteSource));
+            return clientResponseToResponse(clientResponse);
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(bodySource != null) {
+                try {
+                    bodySource.close();
+                } catch (IOException ignore) {
+                    //
+                }
+
+            }
+        }
+    }
+
+    protected static StreamingOutput toStreamingOutput(final InputStream inputStream) {
+        return new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                ByteStreams.copy(inputStream, output);
+            }
+        };
+    }
+
+    protected static StreamingOutput toStreamingOutput(final ByteSource byteSource) {
+        return new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                byteSource.copyTo(output);
+            }
+        };
     }
 
     @Path("{resource:.*}")
     @PUT
-    public Response putRequest(String body, @Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
-        ClientResponse clientResponse = createBuilder(uriInfo, body, request.getMethod(), headers).put(ClientResponse.class, body);
-        return clientResponseToResponse(clientResponse);
+    public Response putRequest(InputStream body, @Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
+        FileBackedOutputStream bodySource = null;
+        try {
+            bodySource = toFileBackedOutputStream(body);
+            ByteSource bodyAsByteSource = bodySource.asByteSource();
+            ClientResponse clientResponse = createBuilder(uriInfo, bodyAsByteSource, request.getMethod(), headers).put(ClientResponse.class, toStreamingOutput(bodyAsByteSource));
+            return clientResponseToResponse(clientResponse);
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(bodySource != null) {
+                try {
+                    bodySource.close();
+                } catch (IOException ignore) {
+                    //
+                }
+
+            }
+        }
     }
 
     @Path("{resource:.*}")
@@ -63,10 +115,38 @@ public class ProxyResource {
     private static Response clientResponseToResponse(ClientResponse clientResponse) {
         Response.ResponseBuilder rb = Response.status(clientResponse.getStatus());
         copyResponseHeaders(clientResponse, rb);
-        String content = clientResponse.getStatus() != 204 ? clientResponse.getEntity(String.class) : null;
-        System.out.println(String.format("Retrieved answer: HTTP-Code [%d]\nContent: \n%s\n\n", clientResponse.getStatus(), content));
-        rb.entity(content);
-        return rb.build();
+
+        FileBackedOutputStream bodySource = null;
+        try {
+            bodySource = toFileBackedOutputStream(clientResponse.getEntityInputStream());
+            ByteSource bodyAsByteSource = bodySource.asByteSource();
+            System.out.println(String.format("Retrieved answer: HTTP-Code [%d], Content-Length: %s\n\n", clientResponse.getStatus(), bodyAsByteSource.size()));
+            rb.entity(toStreamingOutput(bodyAsByteSource));
+            return rb.build();
+        } catch(IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if(bodySource != null) {
+                try {
+                    bodySource.close();
+                } catch (IOException ignore) {
+                    //
+                }
+            }
+        }
+    }
+
+    private static Response clientResponseToResponseDirect(ClientResponse clientResponse) {
+        // nicht schneller, man sieht am client nur eher, was passiert, clientResponseToResponse finde ich schöner :)
+        Response.ResponseBuilder rb = Response.status(clientResponse.getStatus());
+        copyResponseHeaders(clientResponse, rb);
+
+        try {
+            System.out.println(String.format("Retrieved answer: HTTP-Code [%d]\n", clientResponse.getStatus()));
+            rb.entity(toStreamingOutput(clientResponse.getEntityInputStream()));
+            return rb.build();
+        } finally {
+        }
     }
 
     private static void copyResponseHeaders(ClientResponse r, Response.ResponseBuilder rb) {
@@ -93,13 +173,13 @@ public class ProxyResource {
     }
 
 
-    private WebResource.Builder createBuilder(UriInfo uriInfo, String body, String method, HttpHeaders headers, String... ignoreHeaders) {
+    private WebResource.Builder createBuilder(UriInfo uriInfo, ByteSource body, String method, HttpHeaders headers, String... ignoreHeaders) {
         URI targetUri = withTargetHostAndPort(uriInfo.getRequestUriBuilder());
         System.out.println("Sending request to " + targetUri);
         WebResource.Builder builder = webResourceWithAuth(body, method, targetUri);
 
         ArrayList<String> allIgnoreHeaders = of(ignoreHeaders);
-        allIgnoreHeaders.add(ACCEPT_ENCODING.toLowerCase());
+        allIgnoreHeaders.add(HttpHeaders.ACCEPT_ENCODING.toLowerCase());
 
         copyRequestHeaders(headers, builder, allIgnoreHeaders);
 
@@ -115,20 +195,34 @@ public class ProxyResource {
     }
 
     protected WebResource.Builder createBuilder(UriInfo uriInfo, String method, HttpHeaders headers, String... ignoreHeaders) {
-        return createBuilder(uriInfo, "", method, headers, ignoreHeaders);
+        return createBuilder(uriInfo, ByteSource.wrap("".getBytes()), method, headers, ignoreHeaders);
     }
 
 
-    protected WebResource.Builder webResourceWithAuth(String body, String method, URI targetUri) {
-        WebResource.Builder builder = HMACJerseyClient
-                .create(new DefaultApacheHttpClientConfig())
-                .withMethod(method)
-                .withUri(targetUri.getPath())
-                .withBody(body)
-                .auth(ProxyConfiguration.getUser(), ProxyConfiguration.getPassword())
-                .authenticatedResource(targetUri.toString());
+    protected static FileBackedOutputStream toFileBackedOutputStream(InputStream in) throws IOException {
+        FileBackedOutputStream out = new FileBackedOutputStream(10*1000*1000, true);
+        try {
+            ByteStreams.copy(in, out);
+        } catch(IOException e) {
+            out.close();
+            throw e;
+        }
+        return out;
+    }
 
-        return builder;
+    protected WebResource.Builder webResourceWithAuth(ByteSource body, String method, URI targetUri) {
+        try {
+            WebResource.Builder builder = HMACJerseyClient
+                    .create(new DefaultApacheHttpClientConfig())
+                    .withMethod(method)
+                    .withUri(targetUri.getPath())
+                    .withBody(body)
+                    .auth(ProxyConfiguration.getUser(), ProxyConfiguration.getPassword())
+                    .authenticatedResource(targetUri.toString());
+            return builder;
+        } catch(IOException e) {
+            throw new WebApplicationException(e);
+        }
     }
 
     protected URI withTargetHostAndPort(UriBuilder uriBuilder) {

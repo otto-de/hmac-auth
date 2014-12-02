@@ -1,11 +1,17 @@
 package de.otto.hmac.authentication.jersey.filter;
 
+import com.google.common.io.ByteSource;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.FileBackedOutputStream;
 import com.sun.jersey.api.client.ClientRequest;
+import de.otto.hmac.authentication.RequestSigningUtil;
 import org.joda.time.Instant;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
 
 /**
  * Outputstream wrapper to capture the content of the output stream. The HMAC signature is calculated on the content.
@@ -16,7 +22,8 @@ import java.io.OutputStream;
 class HMACJerseyOutputStreamWrapper extends OutputStream {
 
     private final OutputStream out;
-    private final ByteArrayOutputStream tmpOut;
+    private final DigestOutputStream tmpOut;
+    private final ByteSource byteSource;
     private final ClientRequest cr;
     private final String user;
     private final String secretKey;
@@ -25,7 +32,10 @@ class HMACJerseyOutputStreamWrapper extends OutputStream {
     public HMACJerseyOutputStreamWrapper(final String user, final String secretKey, final ClientRequest cr,
             final OutputStream out) {
         this.out = out;
-        this.tmpOut = new ByteArrayOutputStream();
+        FileBackedOutputStream fileBackedOutputStream = new FileBackedOutputStream(10 * 1000 * 1000);
+        this.byteSource =  fileBackedOutputStream.asByteSource();
+        // this.tmpOut = fileBackedOutputStream;
+        this.tmpOut = new DigestOutputStream(fileBackedOutputStream, RequestSigningUtil.getMD5Digest());
         this.cr = cr;
         this.user = user;
         this.secretKey = secretKey;
@@ -48,9 +58,13 @@ class HMACJerseyOutputStreamWrapper extends OutputStream {
 
     @Override
     public void close() throws IOException {
-        final byte [] bodyBytes = tmpOut.toByteArray();
-        HMACJerseyClientFilter.addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), bodyBytes);
-        out.write(bodyBytes);
+
+        MessageDigest digest = tmpOut.getMessageDigest();
+
+        HMACJerseyClientFilter.addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), digest);
+        try(InputStream in = byteSource.openBufferedStream()) {
+            ByteStreams.copy(in, out);
+        }
         out.flush();
         out.close();
         tmpOut.close();
