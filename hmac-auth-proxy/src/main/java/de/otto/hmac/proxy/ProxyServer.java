@@ -18,14 +18,12 @@ public class ProxyServer {
     private static HttpServer httpServer;
 
     private static URI getBaseURI() {
-        return UriBuilder.fromUri("http://localhost/").port(9998).build();
+        return UriBuilder.fromUri("http://localhost/").port(ProxyConfiguration.getSourcePort()).build();
     }
-
-    public static final URI BASE_URI = getBaseURI();
 
     protected static void startServer() throws IOException {
         ResourceConfig rc = new PackagesResourceConfig("de.otto.hmac.proxy");
-        httpServer = GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
+        httpServer = GrizzlyServerFactory.createHttpServer(getBaseURI(), rc);
     }
 
     protected static void stopServer() {
@@ -50,6 +48,7 @@ public class ProxyServer {
                     "    -u --user USER             authenticated username\n" +
                     "    -p --password PASSWORD     password of user\n" +
                     "    -h --host HOST             target host\n" +
+                    "    -sp --sourcePort PORT      proxy port, defaults to 9998\n" +
                     "    -tp --targetPort PORT      target port\n" +
                     "    -v --verbose               display more stuff\n" +
                     "    -d --daemon                start proxy without waiting for input, so it\n" +
@@ -59,7 +58,7 @@ public class ProxyServer {
         }
 
 
-        System.out.println(String.format("HMAC-Proxy listens to [%s]", BASE_URI));
+        System.out.println(String.format("HMAC-Proxy listens to [%s]", getBaseURI()));
         System.out.println(String.format("HMAC-Proxy forwards to [%s:%d]", ProxyConfiguration.getTargetHost(), ProxyConfiguration.getPort()));
         System.out.println(String.format("As user [%s]", ProxyConfiguration.getUser()));
         if (ProxyConfiguration.isDaemon()) {
