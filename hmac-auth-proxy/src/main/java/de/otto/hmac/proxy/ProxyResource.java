@@ -5,12 +5,13 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.FileBackedOutputStream;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import de.otto.hmac.authentication.HMACJerseyClient;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -213,7 +214,7 @@ public class ProxyResource {
     protected WebResource.Builder webResourceWithAuth(ByteSource body, String method, URI targetUri) {
         try {
             WebResource.Builder builder = HMACJerseyClient
-                    .create(new DefaultApacheHttpClientConfig())
+                    .create()
                     .withMethod(method)
                     .withUri(targetUri.getPath())
                     .withBody(body)

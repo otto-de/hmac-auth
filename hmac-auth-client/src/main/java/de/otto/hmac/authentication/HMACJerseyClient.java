@@ -6,6 +6,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.ApacheHttpClientHandler;
+import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import de.otto.hmac.HmacAttributes;
 import de.otto.hmac.StringUtils;
@@ -80,11 +81,9 @@ public class HMACJerseyClient extends ApacheHttpClient {
     }
 
     public static HMACJerseyClient create() {
-        return create(new DefaultApacheHttpClientConfig());
-    }
-
-    public static HMACJerseyClient create(final ClientConfig cc) {
-        return new HMACJerseyClient(cc);
+        DefaultApacheHttpClientConfig config = new DefaultApacheHttpClientConfig();
+        config.getProperties().put(ApacheHttpClientConfig.PROPERTY_CHUNKED_ENCODING_SIZE, 50000);
+        return new HMACJerseyClient(config);
     }
 
     public HMACJerseyClient withMethod(final String method) {
