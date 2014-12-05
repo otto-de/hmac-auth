@@ -36,10 +36,10 @@ public class ProxyResource {
             ByteSource bodyAsByteSource = bodySource.asByteSource();
             ClientResponse clientResponse = createBuilder(uriInfo, bodyAsByteSource, request.getMethod(), headers).post(ClientResponse.class, toStreamingOutput(bodyAsByteSource));
             return clientResponseToResponse(clientResponse);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if(bodySource != null) {
+            if (bodySource != null) {
                 try {
                     bodySource.close();
                 } catch (IOException ignore) {
@@ -77,17 +77,16 @@ public class ProxyResource {
             ByteSource bodyAsByteSource = bodySource.asByteSource();
             ClientResponse clientResponse = createBuilder(uriInfo, bodyAsByteSource, request.getMethod(), headers).put(ClientResponse.class, toStreamingOutput(bodyAsByteSource));
             return clientResponseToResponse(clientResponse);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if(bodySource != null) {
+            if (bodySource != null) {
                 try {
                     bodySource.close();
                 } catch (IOException ignore) {
                     //
                 }
-
-            }
+             }
         }
     }
 
@@ -181,6 +180,7 @@ public class ProxyResource {
 
         ArrayList<String> allIgnoreHeaders = of(ignoreHeaders);
         allIgnoreHeaders.add(HttpHeaders.ACCEPT_ENCODING.toLowerCase());
+        allIgnoreHeaders.add(HttpHeaders.CONTENT_LENGTH.toLowerCase());
 
         copyRequestHeaders(headers, builder, allIgnoreHeaders);
 
