@@ -1,7 +1,7 @@
 package de.otto.hmac.authentication;
 
 
-import org.mockito.Mockito;
+import com.google.common.io.ByteStreams;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.Test;
 
@@ -9,9 +9,9 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 
 import static de.otto.hmac.authentication.WrappedRequest.wrap;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,8 +41,8 @@ public class WrappedRequestTest {
         String originalBody = "{ \"some\" : \"json\" }";
         original.setContent(originalBody.getBytes());
 
-        WrappedRequest fälschung = wrap(original);
-        assertThat(fälschung.getBody(), is(originalBody.getBytes()));
+        WrappedRequest faelschung = wrap(original);
+        assertThat(extractContent(faelschung), is(originalBody.getBytes()));
     }
 
 
@@ -52,17 +52,18 @@ public class WrappedRequestTest {
         String originalBody = "{ \"some\" : \"jsön\" }";
         original.setContent(originalBody.getBytes());
 
-        WrappedRequest fälschung = wrap(original);
-        assertThat(fälschung.getBody(), is(originalBody.getBytes()));
+        WrappedRequest faelschung = wrap(original);
+
+        assertThat(extractContent(faelschung), is(originalBody.getBytes()));
     }
 
     @Test
     public void shouldHaveEmptyBodyWhenEmpty() throws Exception {
         MockHttpServletRequest original = new MockHttpServletRequest("PUT", "/some/uri");
 
-        WrappedRequest fälschung = wrap(original);
+        WrappedRequest faelschung = wrap(original);
 
-        assertThat(fälschung.getBody(), is("".getBytes()));
+        assertThat(extractContent(faelschung), is("".getBytes()));
     }
 
 
@@ -75,9 +76,14 @@ public class WrappedRequestTest {
         original.setContent(originalContent.getBytes());
         WrappedRequest wrapped = wrap(original);
 
+        assertThat(extractContent(wrapped), is(originalContent.getBytes()));
 
-        assertThat(wrapped.getBody(), is(originalContent.getBytes()));
+    }
 
+    private byte[] extractContent(WrappedRequest wrapped) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ByteStreams.copy(wrapped.getInputStream(), out);
+        return out.toByteArray();
     }
 
     @Test
@@ -99,7 +105,7 @@ public class WrappedRequestTest {
         //when
         WrappedRequest wrapped = wrap(httpServletRequestMock);
         //then
-        assertThat(wrapped.getBody(), is(originalContent.getBytes()));
+        assertThat(extractContent(wrapped), is(originalContent.getBytes()));
 
     }
 

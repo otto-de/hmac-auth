@@ -1,7 +1,9 @@
 
 dependencies {
     compile("org.glassfish:javax.servlet:3.1.1") { ext.provided = true }
-   
+
+    compile 'com.sun.jersey.contribs:jersey-apache-client4:1.18.1'
+
     compile 'org.aspectj:aspectjweaver:1.8.2'
 
     compile 'org.springframework:spring-beans:4.0.6.RELEASE'

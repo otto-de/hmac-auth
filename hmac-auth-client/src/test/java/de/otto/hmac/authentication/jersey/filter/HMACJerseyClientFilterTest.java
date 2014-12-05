@@ -1,5 +1,6 @@
 package de.otto.hmac.authentication.jersey.filter;
 
+import com.google.common.io.ByteSource;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.client.impl.ClientRequestImpl;
 import de.otto.hmac.HmacAttributes;
@@ -23,10 +24,9 @@ public class HMACJerseyClientFilterTest {
         ClientRequest cr = new ClientRequestImpl(new URI("/uri"), HttpMethod.POST);
 
         // test
-        MessageDigest md5MessageDigest = RequestSigningUtil.getMD5Digest();
-        md5MessageDigest.update(new String("abcd").getBytes());
+        ByteSource body = ByteSource.wrap("abcd".getBytes());
         HMACJerseyClientFilter
-                .addHmacHttpRequestHeaders(cr, "user", "secretKey", new Instant(123456789), md5MessageDigest);
+                .addHmacHttpRequestHeaders(cr, "user", "secretKey", new Instant(123456789), body);
 
         // assertions
         assertEquals(cr.getHeaders().get(HmacAttributes.X_HMAC_AUTH_SIGNATURE).get(0), "user:0xGKsmKRrbz6txscdugd3PBTpNKlVfAohDS4js9k4sQ=");

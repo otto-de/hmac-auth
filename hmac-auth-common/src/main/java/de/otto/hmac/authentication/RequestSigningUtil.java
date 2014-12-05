@@ -1,13 +1,16 @@
 package de.otto.hmac.authentication;
 
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
 import org.joda.time.Instant;
 import org.slf4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -58,40 +61,32 @@ public class RequestSigningUtil {
     }
 
     public static String createSignatureBase(final WrappedRequest request) {
-        MessageDigest md5MessageDigest = getMD5Digest();
-        md5MessageDigest.update(request.getBody());
-        return createSignatureBase(request.getMethod(), request.getHeader(X_HMAC_AUTH_DATE), request.getRequestURI(), md5MessageDigest);
+        return createSignatureBase(request.getMethod(), request.getHeader(X_HMAC_AUTH_DATE), request.getRequestURI(), request.getBody());
     }
 
-    public static String createSignatureBase(final String method, final String dateHeader, final String requestUri,
-            MessageDigest md5MessageDigest) {
+    public static String createSignatureBase(final String method, final String dateHeader, final String requestUri, ByteSource body) {
         final StringBuilder builder = new StringBuilder();
 
         builder.append(method).append("\n");
         builder.append(dateHeader).append("\n");
         builder.append(requestUri).append("\n");
-        builder.append(toMd5(md5MessageDigest));
+        builder.append(toMd5Hex(body));
 
         return builder.toString();
     }
 
-    public static String createRequestSignature(final String method, final String dateHeader, final String requestUri,
-                                                final String body, final String secretKey) {
-        MessageDigest md5MessageDigest = getMD5Digest();
-        md5MessageDigest.update(body.getBytes());
-        return createRequestSignature(method, dateHeader, requestUri, md5MessageDigest, secretKey);
+    public static String createRequestSignature(final String method, final String dateHeader, final String requestUri, ByteSource body, final String secretKey) {
+        final String signatureBase = createSignatureBase(method, dateHeader, requestUri, body);
+        return createRequestSignature(signatureBase, secretKey);
     }
 
-    public static String createRequestSignature(final String method, final String dateHeader, final String requestUri,
-            final MessageDigest md5MessageDigest, final String secretKey) {
+    public static String createRequestSignature(String signatureBase, String secretKey) {
         try {
             final SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
             final Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(keySpec);
-            final String signatureBase = createSignatureBase(method, dateHeader, requestUri, md5MessageDigest);
             final byte[] result = mac.doFinal(signatureBase.getBytes());
             return encodeBase64WithoutLinefeed(result);
-
         }
         catch (final Exception e) {
             throw new RuntimeException("should never happen", e);
@@ -99,17 +94,8 @@ public class RequestSigningUtil {
     }
 
     public static String createRequestSignature(final WrappedRequest request, final String secretKey) {
-        try {
-            final SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
-            final Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(keySpec);
-            final String signatureBase = createSignatureBase(request);
-            final byte[] result = mac.doFinal(signatureBase.getBytes());
-            return encodeBase64WithoutLinefeed(result);
-        }
-        catch (final Exception e) {
-            throw new RuntimeException("should never happen", e);
-        }
+        final String signatureBase = createSignatureBase(request);
+        return createRequestSignature(signatureBase, secretKey);
     }
 
     protected static String encodeBase64WithoutLinefeed(byte[] result) {
@@ -123,17 +109,6 @@ public class RequestSigningUtil {
             throw new RuntimeException("should never happen", e);
         }
     }
-
-    private static String toMd5(final byte[] body) {
-        final MessageDigest md = getMD5Digest();
-        md.update(body);
-        return toMd5(md);
-    }
-
-    private static String toMd5(MessageDigest md) {
-        return Hex.encodeHexString(md.digest());
-    }
-
 
     public static boolean hasSignature(final HttpServletRequest request) {
         return request.getHeader(X_HMAC_AUTH_SIGNATURE) != null;
@@ -149,5 +124,14 @@ public class RequestSigningUtil {
             return "";
         }
         return header;
+    }
+
+    public static String toMd5Hex(ByteSource byteSource) {
+        try {
+            HashCode md5 = byteSource.hash(Hashing.md5());
+            return md5.toString();
+        } catch (IOException e) {
+            throw new RuntimeException("error evaluating md5 sum", e);
+        }
     }
 }

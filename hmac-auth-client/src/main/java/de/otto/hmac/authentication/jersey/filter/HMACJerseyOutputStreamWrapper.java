@@ -22,20 +22,15 @@ import java.security.MessageDigest;
 class HMACJerseyOutputStreamWrapper extends OutputStream {
 
     private final OutputStream out;
-    private final DigestOutputStream tmpOut;
-    private final ByteSource byteSource;
+    private final FileBackedOutputStream tmpOut;
     private final ClientRequest cr;
     private final String user;
     private final String secretKey;
 
-
     public HMACJerseyOutputStreamWrapper(final String user, final String secretKey, final ClientRequest cr,
             final OutputStream out) {
         this.out = out;
-        FileBackedOutputStream fileBackedOutputStream = new FileBackedOutputStream(10 * 1000 * 1000);
-        this.byteSource =  fileBackedOutputStream.asByteSource();
-        // this.tmpOut = fileBackedOutputStream;
-        this.tmpOut = new DigestOutputStream(fileBackedOutputStream, RequestSigningUtil.getMD5Digest());
+        tmpOut = new FileBackedOutputStream(10 * 1000 * 1000);
         this.cr = cr;
         this.user = user;
         this.secretKey = secretKey;
@@ -59,10 +54,9 @@ class HMACJerseyOutputStreamWrapper extends OutputStream {
     @Override
     public void close() throws IOException {
 
-        MessageDigest digest = tmpOut.getMessageDigest();
+        HMACJerseyClientFilter.addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), tmpOut.asByteSource());
 
-        HMACJerseyClientFilter.addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), digest);
-        try(InputStream in = byteSource.openBufferedStream()) {
+        try(InputStream in = tmpOut.asByteSource().openBufferedStream()) {
             ByteStreams.copy(in, out);
         }
         out.flush();

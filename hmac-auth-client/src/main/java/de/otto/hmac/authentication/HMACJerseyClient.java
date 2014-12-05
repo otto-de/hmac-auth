@@ -1,28 +1,21 @@
 package de.otto.hmac.authentication;
 
 import com.google.common.io.ByteSource;
-import com.google.common.io.ByteStreams;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.client.apache4.ApacheHttpClient4;
 import com.sun.jersey.client.apache4.ApacheHttpClient4Handler;
-import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config;
 import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 import de.otto.hmac.HmacAttributes;
 import de.otto.hmac.StringUtils;
-import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.DefaultedHttpParams;
 import org.apache.http.params.HttpParams;
 import org.joda.time.DateTime;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
 
 public class HMACJerseyClient extends ApacheHttpClient4 {
 
@@ -31,7 +24,7 @@ public class HMACJerseyClient extends ApacheHttpClient4 {
     private String method;
     private String date;
     private String requestUri;
-    private ByteSource body;
+    private ByteSource body = ByteSource.empty();
 
     private HMACJerseyClient(final ClientConfig cc) {
         super(createDefaultClientHander(cc));
@@ -46,16 +39,11 @@ public class HMACJerseyClient extends ApacheHttpClient4 {
     public WebResource.Builder authenticatedResource(final String url) throws IOException {
         assertAuthentificationPossible();
         date = new DateTime().toString();
-        MessageDigest md5MessageDigest = evaluateMessageDigest(body);
         final StringBuilder builder = new StringBuilder(user);
         builder.append(":");
-        builder.append(RequestSigningUtil.createRequestSignature(method, date, requestUri, md5MessageDigest, secretKey));
+        builder.append(RequestSigningUtil.createRequestSignature(method, date, requestUri, body, secretKey));
         return resource(url).header(HmacAttributes.X_HMAC_AUTH_SIGNATURE, builder.toString()).header(
                 HmacAttributes.X_HMAC_AUTH_DATE, date);
-    }
-
-    private MessageDigest evaluateMessageDigest(ByteSource byteSource) throws IOException {
-        return RequestSigningUtil.evaluateMessageDigest(byteSource);
     }
 
     private void assertAuthentificationPossible() throws IOException {
@@ -83,7 +71,6 @@ public class HMACJerseyClient extends ApacheHttpClient4 {
 
     public static HMACJerseyClient create() {
         DefaultApacheHttpClient4Config config = new DefaultApacheHttpClient4Config();
-        //config.getProperties().put(ApacheHttpClient4Config.PROPERTY_CHUNKED_ENCODING_SIZE, 50000);
         return new HMACJerseyClient(config);
     }
 
