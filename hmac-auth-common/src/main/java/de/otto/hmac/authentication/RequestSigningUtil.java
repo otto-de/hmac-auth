@@ -11,8 +11,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
 import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
@@ -28,7 +26,7 @@ public class RequestSigningUtil {
             return false;
         }
 
-        final String requestSignature = request.getHeader(X_HMAC_AUTH_SIGNATURE);
+        final String requestSignature = getSignature(request);
 
         final String[] split = requestSignature.split(":");
         final String sentSignature = split[1];
@@ -61,7 +59,7 @@ public class RequestSigningUtil {
     }
 
     public static String createSignatureBase(final WrappedRequest request) {
-        return createSignatureBase(request.getMethod(), request.getHeader(X_HMAC_AUTH_DATE), request.getRequestURI(), request.getBody());
+        return createSignatureBase(request.getMethod(), getDateFromHeader(request), request.getRequestURI(), request.getBody());
     }
 
     public static String createSignatureBase(final String method, final String dateHeader, final String requestUri, ByteSource body) {
@@ -100,14 +98,6 @@ public class RequestSigningUtil {
 
     protected static String encodeBase64WithoutLinefeed(byte[] result) {
         return Base64.encodeBase64String(result).trim();
-    }
-
-    public static MessageDigest getMD5Digest() {
-        try {
-            return MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("should never happen", e);
-        }
     }
 
     public static boolean hasSignature(final HttpServletRequest request) {
