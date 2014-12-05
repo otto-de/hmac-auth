@@ -17,6 +17,13 @@ class WrappedServletInputStream extends ServletInputStream {
     }
 
     @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        // using default InputStream.read method would blow
+        // runtime as it falls back to single byte reading
+        return inputStream.read(b, off, len);
+    }
+
+    @Override
     public int available() throws IOException {
         return inputStream.available();
     }
@@ -39,4 +46,5 @@ class WrappedServletInputStream extends ServletInputStream {
     public boolean markSupported() {
         return inputStream.markSupported();
     }
+
 }

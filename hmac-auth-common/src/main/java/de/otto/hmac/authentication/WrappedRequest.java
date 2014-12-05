@@ -37,7 +37,7 @@ public class WrappedRequest extends HttpServletRequestWrapper implements AutoClo
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        return new WrappedServletInputStream(getBody().openStream());
+        return new WrappedServletInputStream(getBody().openBufferedStream());
     }
 
     public ByteSource getBody() {
