@@ -1,35 +1,33 @@
 package de.otto.hmac.authentication;
 
 import com.google.common.io.ByteSource;
-import com.google.common.io.ByteStreams;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.client.apache.ApacheHttpClient;
-import com.sun.jersey.client.apache.ApacheHttpClientHandler;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
+import com.sun.jersey.client.apache4.ApacheHttpClient4;
+import com.sun.jersey.client.apache4.ApacheHttpClient4Handler;
+import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 import de.otto.hmac.HmacAttributes;
 import de.otto.hmac.StringUtils;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
 import org.joda.time.DateTime;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
 
-public class HMACJerseyClient extends ApacheHttpClient {
+public class HMACJerseyClient extends ApacheHttpClient4 {
 
     private String user;
     private String secretKey;
     private String method;
     private String date;
     private String requestUri;
-    private ByteSource body;
+    private ByteSource body = ByteSource.empty();
 
     private HMACJerseyClient(final ClientConfig cc) {
-        super(createDefaultClientHander(cc), null);
+        super(createDefaultClientHander(cc));
     }
 
     public HMACJerseyClient auth(final String user, final String secretKey) {
@@ -41,22 +39,11 @@ public class HMACJerseyClient extends ApacheHttpClient {
     public WebResource.Builder authenticatedResource(final String url) throws IOException {
         assertAuthentificationPossible();
         date = new DateTime().toString();
-        MessageDigest md5MessageDigest = evaluateMessageDigest(body);
         final StringBuilder builder = new StringBuilder(user);
         builder.append(":");
-        builder.append(RequestSigningUtil.createRequestSignature(method, date, requestUri, md5MessageDigest, secretKey));
+        builder.append(RequestSigningUtil.createRequestSignature(method, date, requestUri, body, secretKey));
         return resource(url).header(HmacAttributes.X_HMAC_AUTH_SIGNATURE, builder.toString()).header(
                 HmacAttributes.X_HMAC_AUTH_DATE, date);
-    }
-
-    private MessageDigest evaluateMessageDigest(ByteSource byteSource) throws IOException {
-        MessageDigest md5MessageDigest = RequestSigningUtil.getMD5Digest();
-        if(byteSource != null) {
-            try (OutputStream out = new DigestOutputStream(ByteStreams.nullOutputStream(), md5MessageDigest)) {
-                byteSource.copyTo(out);
-            }
-        }
-        return md5MessageDigest;
     }
 
     private void assertAuthentificationPossible() throws IOException {
@@ -73,18 +60,18 @@ public class HMACJerseyClient extends ApacheHttpClient {
         return byteSource == null || byteSource.isEmpty();
     }
 
-    private static ApacheHttpClientHandler createDefaultClientHander(final ClientConfig cc) {
-        final HttpClient client = new HttpClient(new MultiThreadedHttpConnectionManager());
-
-        return new ApacheHttpClientHandler(client, cc);
+    private static ApacheHttpClient4Handler createDefaultClientHander(final ClientConfig cc) {
+        final HttpParams params = new BasicHttpParams();
+        final int maxConnections = 20;
+        final ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager();
+        manager.setDefaultMaxPerRoute(maxConnections);
+        manager.setMaxTotal(maxConnections);
+        return new ApacheHttpClient4Handler(new DefaultHttpClient(manager, params), null, false);
     }
 
     public static HMACJerseyClient create() {
-        return create(new DefaultApacheHttpClientConfig());
-    }
-
-    public static HMACJerseyClient create(final ClientConfig cc) {
-        return new HMACJerseyClient(cc);
+        DefaultApacheHttpClient4Config config = new DefaultApacheHttpClient4Config();
+        return new HMACJerseyClient(config);
     }
 
     public HMACJerseyClient withMethod(final String method) {

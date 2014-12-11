@@ -1,5 +1,6 @@
 package de.otto.hmac.authentication.jersey.filter;
 
+import com.google.common.io.ByteSource;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
@@ -40,14 +41,14 @@ public class HMACJerseyClientFilter extends ClientFilter {
         if (HttpMethod.POST.equalsIgnoreCase(cr.getMethod()) || HttpMethod.PUT.equalsIgnoreCase(cr.getMethod())) {
             cr.setAdapter(new HMACJerseyClientRequestAdapter(user, secretKey));
         } else {
-            addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), RequestSigningUtil.getMD5Digest());
+            addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), ByteSource.empty());
         }
         return getNext().handle(cr);
     }
 
-    public static void addHmacHttpRequestHeaders(final ClientRequest cr, final String user, final String secretKey, Instant now, MessageDigest md5MessageDigest) {
+    public static void addHmacHttpRequestHeaders(final ClientRequest cr, final String user, final String secretKey, Instant now, ByteSource body) {
         String signatureHeader = user + ":" + RequestSigningUtil.createRequestSignature(cr.getMethod(), now.toString(),
-                cr.getURI().getPath(), md5MessageDigest, secretKey);
+                cr.getURI().getPath(), body, secretKey);
         cr.getHeaders().putSingle(HmacAttributes.X_HMAC_AUTH_SIGNATURE, signatureHeader);
         cr.getHeaders().putSingle(HmacAttributes.X_HMAC_AUTH_DATE, now.toString());
     }

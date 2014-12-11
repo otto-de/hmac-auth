@@ -12,7 +12,6 @@ import java.io.EOFException;
 import java.io.IOException;
 
 import static de.otto.hmac.HmacAttributes.AUTHENTICATED_USERNAME;
-import static de.otto.hmac.ByteArrayUtils.toMd5;
 import static de.otto.hmac.authentication.AuthenticationResult.Status.FAIL;
 import static de.otto.hmac.authentication.AuthenticationResult.Status.SUCCESS;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
@@ -40,8 +39,7 @@ public class AuthenticationFilter implements Filter {
         if (!RequestSigningUtil.hasSignature(httpRequest)) {
             chain.doFilter(httpRequest, httpResponse);
         } else {
-            try {
-                WrappedRequest wrapped = WrappedRequest.wrap(httpRequest);
+            try(WrappedRequest wrapped = WrappedRequest.wrap(httpRequest)) {
                 logDebug(wrapped);
                 AuthenticationResult result = service.validate(wrapped);
 
@@ -83,7 +81,7 @@ public class AuthenticationFilter implements Filter {
             sb.append("Validiere Request.\n");
             sb.append("Signatur: ").append(RequestSigningUtil.getSignature(request)).append("\n");
             sb.append("Body: " + request.getBody()).append("\n");
-            sb.append("Body-MD5: " + toMd5(request.getBody())).append("\n");
+            sb.append("Body-MD5: " + RequestSigningUtil.toMd5Hex(request.getBody())).append("\n");
             sb.append("Timestamp: " + RequestSigningUtil.getDateFromHeader(request)).append("\n");
             sb.append("Uri: " + request.getRequestURI()).append("\n");
             sb.append("Method: " + request.getMethod()).append("\n");

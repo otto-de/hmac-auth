@@ -5,12 +5,13 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.FileBackedOutputStream;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import de.otto.hmac.authentication.HMACJerseyClient;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +36,10 @@ public class ProxyResource {
             ByteSource bodyAsByteSource = bodySource.asByteSource();
             ClientResponse clientResponse = createBuilder(uriInfo, bodyAsByteSource, request.getMethod(), headers).post(ClientResponse.class, toStreamingOutput(bodyAsByteSource));
             return clientResponseToResponse(clientResponse);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if(bodySource != null) {
+            if (bodySource != null) {
                 try {
                     bodySource.close();
                 } catch (IOException ignore) {
@@ -76,17 +77,16 @@ public class ProxyResource {
             ByteSource bodyAsByteSource = bodySource.asByteSource();
             ClientResponse clientResponse = createBuilder(uriInfo, bodyAsByteSource, request.getMethod(), headers).put(ClientResponse.class, toStreamingOutput(bodyAsByteSource));
             return clientResponseToResponse(clientResponse);
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if(bodySource != null) {
+            if (bodySource != null) {
                 try {
                     bodySource.close();
                 } catch (IOException ignore) {
                     //
                 }
-
-            }
+             }
         }
     }
 
@@ -180,6 +180,7 @@ public class ProxyResource {
 
         ArrayList<String> allIgnoreHeaders = of(ignoreHeaders);
         allIgnoreHeaders.add(HttpHeaders.ACCEPT_ENCODING.toLowerCase());
+        allIgnoreHeaders.add(HttpHeaders.CONTENT_LENGTH.toLowerCase());
 
         copyRequestHeaders(headers, builder, allIgnoreHeaders);
 
@@ -213,7 +214,7 @@ public class ProxyResource {
     protected WebResource.Builder webResourceWithAuth(ByteSource body, String method, URI targetUri) {
         try {
             WebResource.Builder builder = HMACJerseyClient
-                    .create(new DefaultApacheHttpClientConfig())
+                    .create()
                     .withMethod(method)
                     .withUri(targetUri.getPath())
                     .withBody(body)

@@ -1,12 +1,14 @@
 package de.otto.hmac.authentication;
 
-import de.otto.hmac.ByteArrayUtils;
+import com.google.common.io.ByteSource;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.FileBackedOutputStream;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * A wrapper for a HttpServletRequest.
@@ -14,9 +16,9 @@ import java.io.IOException;
  * The wrapper is needed to read the request body multiple times, for example during the authentication process
  * and later in the call stack to read the request body.
  */
-public class WrappedRequest extends HttpServletRequestWrapper {
+public class WrappedRequest extends HttpServletRequestWrapper implements AutoCloseable {
 
-    private final byte[] body;
+    private FileBackedOutputStream body = new FileBackedOutputStream(10*1000*1000, true);
 
     /**
      * Factory method used to create a WrappedRequest, wrapping a HttpServletRequest.
@@ -35,30 +37,24 @@ public class WrappedRequest extends HttpServletRequestWrapper {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        return new ServletInputStream() {
-            final ByteArrayInputStream inputStream = new ByteArrayInputStream(body);
-
-            public int read() throws IOException {
-                return inputStream.read();
-            }
-        };
+        return new WrappedServletInputStream(getBody().openBufferedStream());
     }
 
-    public byte[] getBody() {
-        return body;
+    public ByteSource getBody() {
+        return body.asByteSource();
     }
 
     private WrappedRequest(final HttpServletRequest request) throws IOException {
         super(request);
-        byte[] result = new byte[]{};
-
         if (request.getInputStream() != null) {
-            try (final ServletInputStream inputStream = request.getInputStream()) {
-                result = ByteArrayUtils.toByteArray(inputStream);
+            try (final InputStream inputStream = request.getInputStream()) {
+                ByteStreams.copy(inputStream, body);
             }
         }
-
-        body = result;
     }
 
+    @Override
+    public void close() throws IOException {
+        body.close();
+    }
 }
