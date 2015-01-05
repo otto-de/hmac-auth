@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -114,7 +115,7 @@ public class ProxyResource {
 
     private static Response clientResponseToResponse(ClientResponse clientResponse) {
         Response.ResponseBuilder rb = Response.status(clientResponse.getStatus());
-        copyResponseHeaders(clientResponse, rb);
+        copyResponseHeaders(clientResponse, rb, ignoreResponseHeaders);
 
         FileBackedOutputStream bodySource = null;
         try {
@@ -136,10 +137,12 @@ public class ProxyResource {
         }
     }
 
+    private static List<String> ignoreResponseHeaders = Arrays.asList("Transfer-Encoding".toLowerCase(), HttpHeaders.CONTENT_LENGTH.toLowerCase());
+
     private static Response clientResponseToResponseDirect(ClientResponse clientResponse) {
         // nicht schneller, man sieht am client nur eher, was passiert, clientResponseToResponse finde ich schöner :)
         Response.ResponseBuilder rb = Response.status(clientResponse.getStatus());
-        copyResponseHeaders(clientResponse, rb);
+        copyResponseHeaders(clientResponse, rb, ignoreResponseHeaders);
 
         try {
             System.out.println(String.format("Retrieved answer: HTTP-Code [%d]\n", clientResponse.getStatus()));
@@ -149,9 +152,12 @@ public class ProxyResource {
         }
     }
 
-    private static void copyResponseHeaders(ClientResponse r, Response.ResponseBuilder rb) {
+    private static void copyResponseHeaders(ClientResponse r, Response.ResponseBuilder rb, List<String> ignoreHeaders) {
         for (Map.Entry<String, List<String>> entry : r.getHeaders().entrySet()) {
             for (String value : entry.getValue()) {
+                if (ignoreHeaders.contains(entry.getKey().toLowerCase())) {
+                    continue;
+                }
                 rb.header(entry.getKey(), value);
             }
         }
