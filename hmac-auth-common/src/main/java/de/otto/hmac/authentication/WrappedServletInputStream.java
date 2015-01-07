@@ -20,6 +20,7 @@ class WrappedServletInputStream extends ServletInputStream {
     public int read(byte[] b, int off, int len) throws IOException {
         // using default InputStream.read method would blow
         // runtime as it falls back to single byte reading
+        // in ServletInputStream. Be smarter, offer larger read chunk
         return inputStream.read(b, off, len);
     }
 
