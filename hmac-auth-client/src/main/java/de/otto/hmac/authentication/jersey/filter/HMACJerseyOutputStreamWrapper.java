@@ -1,17 +1,13 @@
 package de.otto.hmac.authentication.jersey.filter;
 
-import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.FileBackedOutputStream;
 import com.sun.jersey.api.client.ClientRequest;
-import de.otto.hmac.authentication.RequestSigningUtil;
 import org.joda.time.Instant;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.DigestOutputStream;
-import java.security.MessageDigest;
 
 /**
  * Outputstream wrapper to capture the content of the output stream. The HMAC signature is calculated on the content.
