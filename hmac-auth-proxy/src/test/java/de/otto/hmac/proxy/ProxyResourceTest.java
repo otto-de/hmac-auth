@@ -37,19 +37,19 @@ public class ProxyResourceTest {
     @Test
     public void shouldUseCompletePathForRequest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         UriInfo uriInfo = mock(UriInfo.class);
-        when(uriInfo.getRequestUriBuilder()).thenReturn(fromUri("http://localhost:9998/p13n/menuItemConfigs/damenmode"));
+        when(uriInfo.getRequestUriBuilder()).thenReturn(fromUri("http://localhost:9998/bar/damenmode"));
 
         ProxyConfiguration.setPort(80);
         ProxyConfiguration.setUser("user");
         ProxyConfiguration.setPassword("secret");
-        ProxyConfiguration.setTargetHost("develop.lhotse.ov.otto.de");
+        ProxyConfiguration.setTargetHost("foo.otto.de");
 
         ProxyResource proxyResource = new ProxyResource();
         WebResource.Builder target = proxyResource.createBuilder(uriInfo, "GET", NO_HEADERS);
 
         ClientRequestImpl clientRequest = getRequestFromWebresourceBuilder(target);
 
-        assertThat(clientRequest.getURI().toString(), is("http://develop.lhotse.ov.otto.de:80/p13n/menuItemConfigs/damenmode"));
+        assertThat(clientRequest.getURI().toString(), is("http://foo.otto.de:80/bar/damenmode"));
     }
 
     private ClientRequestImpl getRequestFromWebresourceBuilder(WebResource.Builder target) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {

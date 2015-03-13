@@ -21,14 +21,14 @@ public class CLIParameterToConfigurationReaderTest {
 
     @Test
     public void shouldSetTargetHostWithLongParameter() {
-        toConfiguration(new String[]{"--host", "develop-ci.lhotse.ov.otto.de"});
-        assertThat(ProxyConfiguration.getTargetHost(), is("develop-ci.lhotse.ov.otto.de"));
+        toConfiguration(new String[]{"--host", "foo.otto.de"});
+        assertThat(ProxyConfiguration.getTargetHost(), is("foo.otto.de"));
     }
 
     @Test
     public void shouldSetTargetHostWithShortParameter() {
-        toConfiguration(new String[]{"-h", "develop-ci.lhotse.ov.otto.de"});
-        assertThat(ProxyConfiguration.getTargetHost(), is("develop-ci.lhotse.ov.otto.de"));
+        toConfiguration(new String[]{"-h", "foo.otto.de"});
+        assertThat(ProxyConfiguration.getTargetHost(), is("foo.otto.de"));
     }
 
     @Test
