@@ -57,6 +57,9 @@ public class AuthenticationFilter implements Filter {
             } catch (EOFException e) {
                 LOG.warn("EOFException reading InputStream from request. " + e.getMessage());
                 throw e;
+            } catch (IOException e) {
+                LOG.warn("IO Exception happened while processing request " + e.getMessage());
+                throw e;
             } catch (Exception e) {
                 LOG.error("Unerwartete Exception beim Validieren der Signatur.", e);
                 throw e;
