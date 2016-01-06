@@ -5,7 +5,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.FileBackedOutputStream;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import de.otto.hmac.authentication.HMACJerseyClient;
+import de.otto.hmac.authentication.jersey.HMACJerseyClient;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;

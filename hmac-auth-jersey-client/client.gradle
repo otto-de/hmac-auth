@@ -44,7 +44,7 @@ uploadArchives {
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
                 pom.project {
-                    name 'hmac-auth-client'
+                    name 'hmac-auth-jersey-client'
                     packaging 'jar'
                     description 'client library of the hmac-auth project.'
                     url 'http://github.com/otto-de/hmac-auth'

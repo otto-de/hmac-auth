@@ -1,4 +1,4 @@
-package de.otto.hmac.authentication;
+package de.otto.hmac.authentication.jersey;
 
 import com.google.common.io.ByteSource;
 import org.testng.Assert;

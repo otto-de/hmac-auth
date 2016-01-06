@@ -1,4 +1,4 @@
-package de.otto.hmac.authentication;
+package de.otto.hmac.authentication.jersey;
 
 import com.google.common.io.ByteSource;
 import com.sun.jersey.api.client.WebResource;
@@ -8,6 +8,7 @@ import com.sun.jersey.client.apache4.ApacheHttpClient4Handler;
 import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 import de.otto.hmac.HmacAttributes;
 import de.otto.hmac.StringUtils;
+import de.otto.hmac.authentication.RequestSigningUtil;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
