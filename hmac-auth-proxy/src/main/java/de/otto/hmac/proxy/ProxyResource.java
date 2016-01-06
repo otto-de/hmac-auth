@@ -187,10 +187,15 @@ public class ProxyResource {
         ArrayList<String> allIgnoreHeaders = of(ignoreHeaders);
         allIgnoreHeaders.add(HttpHeaders.ACCEPT_ENCODING.toLowerCase());
         allIgnoreHeaders.add(HttpHeaders.CONTENT_LENGTH.toLowerCase());
+        allIgnoreHeaders.add(HttpHeaders.HOST.toLowerCase());
 
         copyRequestHeaders(headers, builder, allIgnoreHeaders);
 
-        return builder;
+        return addHostRequestHeader(builder);
+    }
+
+    private WebResource.Builder addHostRequestHeader(WebResource.Builder builder) {
+        return builder.header(HttpHeaders.HOST, ProxyConfiguration.getTargetHost());
     }
 
     private static ArrayList<String> of(String[] ignoreHeaders) {
