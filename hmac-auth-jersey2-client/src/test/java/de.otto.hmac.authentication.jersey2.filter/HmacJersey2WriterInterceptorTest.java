@@ -116,7 +116,6 @@ public class HmacJersey2WriterInterceptorTest extends JerseyServletTest {
     @Override
     protected void configureClient(ClientConfig config) {
         config.register(new HmacJersey2ClientRequestFilter("user", "secrectKey"));
-        config.register(new HmacJersey2WriterInterceptor("user", "secrectKey"));
     }
 
     private String createRequestSignature(final String httpMethod, final String dateHeaderString, final String requestUri,

@@ -1,11 +1,13 @@
 package de.otto.hmac.authentication.jersey2.filter;
 
+import com.google.common.io.ByteSource;
+import de.otto.hmac.authentication.WrappedOutputStream;
+import de.otto.hmac.authentication.WrappedOutputStreamContext;
 import org.joda.time.Instant;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import java.io.IOException;
-import java.net.URI;
 
 /**
  * Jersey2 ClientRequestFilter for HMAC request signatures. Register a HMAC client request filter and writer interceptor combination
@@ -20,10 +22,6 @@ import java.net.URI;
  */
 public class HmacJersey2ClientRequestFilter implements ClientRequestFilter {
 
-    public static final String HTTP_METHOD = "httpMethod";
-    public static final String HTTP_URI = "httpUri";
-    public static final String NOW = "now";
-
     private String user;
     private String secretKey;
 
@@ -34,15 +32,21 @@ public class HmacJersey2ClientRequestFilter implements ClientRequestFilter {
 
     @Override
     public void filter(final ClientRequestContext requestContext) throws IOException {
-        final Instant now = new Instant();
-        final String httpMethod = requestContext.getMethod();
-        final URI uri = requestContext.getUri();
-        requestContext.setProperty(HTTP_METHOD, httpMethod);
-        requestContext.setProperty(HTTP_URI, uri);
-        requestContext.setProperty(NOW, now);
-
-        // set the HMAC request header attributes assuming that there is no entity to serialize
-        // if there is a entity to serialize these attributes are overriden in interceptor
-        HmacJerseyHelper.addHmacHttpRequestHeaders(httpMethod, uri, user, secretKey, now, null, requestContext.getHeaders());
+        WrappedOutputStreamContext wrappedOutputStreamContext = new Jersey2WrappedOutputStreamContext(requestContext);
+        if(requestContext.hasEntity()) {
+            requestContext.setEntityStream(new WrappedOutputStream(
+                    user,
+                    secretKey,
+                    wrappedOutputStreamContext,
+                    requestContext.getEntityStream()));
+        } else {
+            WrappedOutputStream.addHmacHttpRequestHeaders(
+                    wrappedOutputStreamContext,
+                    user,
+                    secretKey,
+                    new Instant(),
+                    ByteSource.empty());
+        }
     }
+
 }

@@ -7,6 +7,8 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import de.otto.hmac.HmacAttributes;
 import de.otto.hmac.authentication.RequestSigningUtil;
+import de.otto.hmac.authentication.WrappedOutputStream;
+import de.otto.hmac.authentication.WrappedOutputStreamContext;
 import org.joda.time.Instant;
 
 import javax.ws.rs.HttpMethod;
@@ -47,9 +49,6 @@ public class HMACJerseyClientFilter extends ClientFilter {
     }
 
     public static void addHmacHttpRequestHeaders(final ClientRequest cr, final String user, final String secretKey, Instant now, ByteSource body) {
-        String signatureHeader = user + ":" + RequestSigningUtil.createRequestSignature(cr.getMethod(), now.toString(),
-                cr.getURI().getPath(), body, secretKey);
-        cr.getHeaders().putSingle(HmacAttributes.X_HMAC_AUTH_SIGNATURE, signatureHeader);
-        cr.getHeaders().putSingle(HmacAttributes.X_HMAC_AUTH_DATE, now.toString());
+        WrappedOutputStream.addHmacHttpRequestHeaders(new JerseyWrappedOutputStreamContext(cr), user, secretKey, now, body);
     }
 }

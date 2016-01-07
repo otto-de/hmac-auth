@@ -1,39 +1,29 @@
-package de.otto.hmac.authentication.jersey.filter;
+package de.otto.hmac.authentication;
 
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.core.util.StringKeyObjectValueIgnoreCaseMultivaluedMap;
 import de.otto.hmac.HmacAttributes;
 import org.testng.annotations.Test;
 
-import javax.ws.rs.core.MultivaluedMap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyByte;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNotNull;
 
-/**
- * Unit Test for {@link HMACJerseyOutputStreamWrapper} class.
- */
-public class HMACJerseyOutputStreamWrapperTest {
+public class WrappedOutputStreamTest {
 
     @Test
     public void shouldNotWriteOutputStreamOnWriteMethods() throws IOException {
         // setup
-        ClientRequest clientRequestMock = mock(ClientRequest.class);
+        WrappedOutputStreamContext clientRequestMock = mock(WrappedOutputStreamContext.class);
         OutputStream outputStreamMock = mock(OutputStream.class);
-        HMACJerseyOutputStreamWrapper wrapper =
-                new HMACJerseyOutputStreamWrapper("user", "secretKey", clientRequestMock, outputStreamMock);
+        WrappedOutputStream wrapper =
+                new WrappedOutputStream("user", "secretKey", clientRequestMock, outputStreamMock);
 
         // test
         wrapper.write(new String("br").getBytes(), 0, 2);
@@ -48,15 +38,14 @@ public class HMACJerseyOutputStreamWrapperTest {
     @Test
     public void shouldWriteOutputStreamOnFlush() throws IOException, URISyntaxException {
         // setup
-        MultivaluedMap<String, Object> map = new StringKeyObjectValueIgnoreCaseMultivaluedMap();
-        ClientRequest clientRequestMock = mock(ClientRequest.class);
+        WrappedOutputStreamContext clientRequestMock = mock(WrappedOutputStreamContext.class);
         when(clientRequestMock.getMethod()).thenReturn("GET");
-        when(clientRequestMock.getURI()).thenReturn(new URI("http://localhost:8080/test"));
-        when(clientRequestMock.getHeaders()).thenReturn(map);
+        when(clientRequestMock.getRequestUri()).thenReturn("/test");
+
         ByteArrayOutputStream outputStreamMock = new ByteArrayOutputStream();
 
-        HMACJerseyOutputStreamWrapper wrapper =
-                new HMACJerseyOutputStreamWrapper("user", "secretKey", clientRequestMock, outputStreamMock);
+        WrappedOutputStream wrapper =
+                new WrappedOutputStream("user", "secretKey", clientRequestMock, outputStreamMock);
 
         // test
         wrapper.write(new String("br").getBytes(), 0, 2);
@@ -65,7 +54,9 @@ public class HMACJerseyOutputStreamWrapperTest {
         wrapper.close();
 
         assertEquals(new byte[] {(byte) 'b', (byte) 'r', (byte) 'b', (byte) 'r', (byte) 10}, outputStreamMock.toByteArray());
-        assertNotNull(map.get(HmacAttributes.X_HMAC_AUTH_SIGNATURE));
-        assertNotNull(map.get(HmacAttributes.X_HMAC_AUTH_DATE));
+
+        verify(clientRequestMock).putSingle(eq(HmacAttributes.X_HMAC_AUTH_SIGNATURE), anyString());
+        verify(clientRequestMock).putSingle(eq(HmacAttributes.X_HMAC_AUTH_DATE), anyString());
     }
+
 }

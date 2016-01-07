@@ -1,13 +1,12 @@
 package de.otto.hmac.authentication.jersey.filter;
 
 import com.sun.jersey.api.client.ClientRequest;
+import de.otto.hmac.authentication.WrappedOutputStream;
 import org.testng.annotations.Test;
 
 import java.io.OutputStream;
 
 import static org.mockito.Mockito.mock;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 /**
@@ -25,6 +24,6 @@ public class HMACJerseyClientRequestAdapterTest {
         // test
         OutputStream result = adapter.adapt(clientRequestMock, outputStreamMock);
 
-        assertTrue(result instanceof HMACJerseyOutputStreamWrapper);
+        assertTrue(result instanceof WrappedOutputStream);
     }
 }
