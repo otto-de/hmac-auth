@@ -23,7 +23,7 @@ subprojects {
     apply plugin: 'signing'
 
     group = 'de.otto'
-    version = '2.0.0'
+    version = '2.0.0-SNAPSHOT'
     ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
     sourceCompatibility = 1.7
@@ -67,6 +67,20 @@ subprojects {
         }
     }
 
+    task uploadInternal(type: Upload) {
+        configuration = configurations.archives
+        uploadDescriptor = true
+        repositories {
+           mavenDeployer {
+               repository(url: nexusReleaseUrl) {
+                  authentication(userName: nexusReleaseUsername, password: nexusReleasePassword)
+               }
+               snapshotRepository(url: nexusSnapshotUrl) {
+                   authentication(userName: nexusSnapshotUsername, password: nexusSnapshotPassword)
+               }
+           }
+        }
+    }
 }
 
 task wrapper(type: Wrapper) {

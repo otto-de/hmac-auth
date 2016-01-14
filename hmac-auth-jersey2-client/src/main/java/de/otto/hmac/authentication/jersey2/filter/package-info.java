@@ -1,7 +1,6 @@
 /**
  * HMAC filter and interceptors for Jersey2 clients. Register a HMAC client request filter and writer interceptor combination
  * with the HmacJerseyHelper for example:
- * <p/>
  * <code>
  * Client client = ClientBuilder.newBuilder().build();
  * HmacJerseyHelper.registerHmacFilter(client, "user", "hmacSecret");
