@@ -81,6 +81,15 @@ subprojects {
            }
         }
     }
+
+    task uploadLocal(type: Upload) {
+        configuration = configurations.archives
+        uploadDescriptor = true
+        repositories {
+            mavenLocal()
+        }
+    }
+
 }
 
 task wrapper(type: Wrapper) {

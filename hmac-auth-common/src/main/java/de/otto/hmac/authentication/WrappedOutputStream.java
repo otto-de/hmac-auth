@@ -17,7 +17,6 @@ public class WrappedOutputStream extends OutputStream {
     private final WrappedOutputStreamContext cr;
     private final String user;
     private final String secretKey;
-    private boolean wroteHeader;
 
     public WrappedOutputStream(final String user, final String secretKey, final WrappedOutputStreamContext cr,
                                          final OutputStream out) {
@@ -47,6 +46,16 @@ public class WrappedOutputStream extends OutputStream {
     public void close() throws IOException {
         addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), tmpOut.asByteSource());
 
+        if (tmpOut.asByteSource().isEmpty()) {
+            // workaround for bug in jersey: without writing a single byte to the
+            // underlying CommittingOutputStream, its method commit/commitStream will not be executed.
+            // This is responsible to write lately added headers either via
+            // abstract method getOutputStream() (jersey1) or
+            // OutboundMessageContext.StreamProvider.getOutputStream()
+            //
+            // this call enforces a commit call and does nothing else
+            out.write("".getBytes(), 0 , 0);
+        }
         try (InputStream in = tmpOut.asByteSource().openBufferedStream()) {
             ByteStreams.copy(in, out);
         }
