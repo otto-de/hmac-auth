@@ -23,7 +23,7 @@ subprojects {
     apply plugin: 'signing'
 
     group = 'de.otto'
-    version = '2.0.0-SNAPSHOT'
+    version = '2.0.0'
     ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
     sourceCompatibility = 1.7
