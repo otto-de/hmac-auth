@@ -7,7 +7,7 @@ targetCompatibility = 1.6
 
 
 dependencies {
-    compile project(path: ":hmac-auth-client")
+    compile project(path: ":hmac-auth-jersey-client")
 
     compile "com.sun.jersey:jersey-server:1.18.1"
     compile "com.sun.jersey:jersey-grizzly2:1.18.1"
