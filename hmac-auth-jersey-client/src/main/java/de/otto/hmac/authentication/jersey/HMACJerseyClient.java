@@ -52,9 +52,6 @@ public class HMACJerseyClient extends ApacheHttpClient4 {
         Assert.isTrue(!StringUtils.isNullOrEmpty(secretKey), "Secret key is desired for authentication");
         Assert.isTrue(!StringUtils.isNullOrEmpty(method), "Method is desired for authentication");
         Assert.isTrue(!StringUtils.isNullOrEmpty(requestUri), "URI is desired for authentication");
-        if (method.equals("PUT") || method.equals("POST")) {
-            Assert.isTrue(!isNullOrEmpty(body), "Body is required in PUT and POST");
-        }
     }
 
     private boolean isNullOrEmpty(ByteSource byteSource) throws  IOException {
