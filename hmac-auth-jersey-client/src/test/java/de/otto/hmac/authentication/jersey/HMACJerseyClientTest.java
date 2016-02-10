@@ -83,25 +83,6 @@ public class HMACJerseyClientTest {
     }
 
     @Test
-    public void shouldFailOnPutWithoutBody() throws Exception {
-        final HMACJerseyClient client = HMACJerseyClient.create();
-        try {
-            client.withMethod("PUT").withUri("testUri").auth("user", "secret").authenticatedResource("/targetUri");
-            Assert.fail("Exception expected");
-        }
-        catch (final IllegalArgumentException e) {
-            // everything fine.
-        }
-        try {
-            client.withMethod("PUT").withUri("testUri").auth("user", "secret").authenticatedResource("/targetUri");
-            Assert.fail("Exception expected");
-        }
-        catch (final IllegalArgumentException e) {
-            // everything fine.
-        }
-    }
-
-    @Test
     public void shouldGetSuccessfulWithAllInformation() throws Exception {
         final HMACJerseyClient client = HMACJerseyClient.create();
         client.withMethod("GET").withUri("testUri").auth("user", "secret").authenticatedResource("/targetUri");
