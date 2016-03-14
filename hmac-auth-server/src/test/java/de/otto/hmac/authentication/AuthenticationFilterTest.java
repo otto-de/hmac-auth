@@ -27,7 +27,7 @@ public class AuthenticationFilterTest {
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain filterChain = mock(FilterChain.class);
-        AuthenticationFilter filter = new AuthenticationFilter();
+        AuthenticationFilter filter = new AuthenticationFilter(null);
 
         // When
         filter.doFilter(request, response, filterChain);
@@ -44,7 +44,7 @@ public class AuthenticationFilterTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain filterChain = mock(FilterChain.class);
 
-        AuthenticationFilter filter = new AuthenticationFilter();
+        AuthenticationFilter filter = new AuthenticationFilter(null);
 
         // When
         filter.doFilter(request, response, filterChain);
@@ -52,7 +52,6 @@ public class AuthenticationFilterTest {
         // Then
         verify(filterChain, times(1)).doFilter(any(WrappedRequest.class), any(MockHttpServletResponse.class));
     }
-
 
     @Test
     public void shouldAddUserNameToRequest() throws Exception {
@@ -64,16 +63,14 @@ public class AuthenticationFilterTest {
         final String body = "{ \"key\": \"value\"}";
         request.setContent(body.getBytes());
 
-        AuthenticationFilter filter = new AuthenticationFilter();
         AuthenticationService authService = mock(AuthenticationService.class);
         when(authService.validate((WrappedRequest) anyObject())).thenReturn(AuthenticationResult.success("username"));
+        AuthenticationFilter filter = new AuthenticationFilter(authService);
 
         UserRepository userRepository = mock(UserRepository.class);
         when(userRepository.getKey(anyString())).thenReturn("secretKey");
-        authService.setUserRepository(userRepository);
 
         FilterChainStub filterChain = new FilterChainStub();
-        filter.setService(authService);
 
         // when
         filter.doFilter(request, response, filterChain);
@@ -93,16 +90,13 @@ public class AuthenticationFilterTest {
         final String body = "{ \"key\": \"value\"}";
         request.setContent(body.getBytes());
 
-
-        AuthenticationFilter filter = new AuthenticationFilter();
-        AuthenticationService authService = new AuthenticationService();
-
         UserRepository userRepository = mock(UserRepository.class);
         when(userRepository.getKey(anyString())).thenReturn("secretKey");
-        authService.setUserRepository(userRepository);
+
+        AuthenticationService authService = new AuthenticationService(userRepository);
+        AuthenticationFilter filter = new AuthenticationFilter(authService);
 
         FilterChainStub filterChain = new FilterChainStub();
-        filter.setService(authService);
 
         // when
         filter.doFilter(request, response, filterChain);

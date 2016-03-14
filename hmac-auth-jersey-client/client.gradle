@@ -6,9 +6,6 @@ dependencies {
 
     compile 'org.aspectj:aspectjweaver:1.8.2'
 
-    compile 'org.springframework:spring-beans:4.0.6.RELEASE'
-    compile 'org.springframework:spring-context:4.0.6.RELEASE'
-
     compile 'commons-codec:commons-codec:1.9'
 
     compile 'joda-time:joda-time:2.5'

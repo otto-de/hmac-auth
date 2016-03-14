@@ -57,8 +57,7 @@ public class AuthenticationServiceTest {
         UserRepository userRepository = Mockito.mock(UserRepository.class);
         Mockito.when(userRepository.getKey(eq("username"))).thenReturn("secretKey");
 
-        AuthenticationService service = new AuthenticationService();
-        service.setUserRepository(userRepository);
+        AuthenticationService service = new AuthenticationService(userRepository);
         return service;
     }
 

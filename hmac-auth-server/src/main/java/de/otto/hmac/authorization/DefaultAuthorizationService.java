@@ -1,10 +1,7 @@
 package de.otto.hmac.authorization;
 
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,26 +10,19 @@ import static de.otto.hmac.StringUtils.isNullOrEmpty;
 import static java.lang.String.format;
 import static org.slf4j.LoggerFactory.getLogger;
 
-@Service
 public class DefaultAuthorizationService implements AuthorizationService {
 
-    private RoleRepository userRepository;
-    private HmacConfiguration hmacConfiguration;
+    private final RoleRepository userRepository;
+    private final HmacConfiguration hmacConfiguration;
+
     private static final Logger LOG = getLogger(DefaultAuthorizationService.class);
     private static final String ANONYMOUS_USER = "Anonymous user";
 
-    @Resource
-    @Required
-    public void setUserRepository(final RoleRepository userRepository) {
+    public DefaultAuthorizationService(final RoleRepository userRepository,
+                                       final HmacConfiguration hmacConfiguration) {
         this.userRepository = userRepository;
-    }
-
-    @Resource
-    @Required
-    public void setHmacConfiguration(HmacConfiguration hmacConfiguration) {
         this.hmacConfiguration = hmacConfiguration;
     }
-
 
     @Override
     public void authorize(final String userName, final Set<String> expectedRoles) {
@@ -72,5 +62,4 @@ public class DefaultAuthorizationService implements AuthorizationService {
         }
         return "[" + username + "]";
     }
-
 }

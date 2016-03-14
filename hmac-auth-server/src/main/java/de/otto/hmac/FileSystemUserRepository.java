@@ -2,17 +2,12 @@ package de.otto.hmac;
 
 import de.otto.hmac.authentication.UserRepository;
 import de.otto.hmac.authorization.RoleRepository;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.annotation.PostConstruct;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,21 +20,21 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import static java.util.Arrays.asList;
 import static javax.xml.parsers.DocumentBuilderFactory.newInstance;
 
-@Repository
 public class FileSystemUserRepository implements UserRepository, RoleRepository {
 
     private final ConcurrentMap<String, String> userToKey = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Set<String>> userToRole = new ConcurrentHashMap<>();
-    private Resource resource;
 
-    @Value("${hmac.auth.xml}")
-    public void setResource(final String authXml) {
-        this.resource = new ClassPathResource(authXml);
+    public FileSystemUserRepository(final String authXmlResource) {
+        try {
+            loadAuthXml(FileSystemUserRepository.class.getResourceAsStream(authXmlResource));
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            throw new RuntimeException("failed to load auth xml", e);
+        }
     }
 
-    @PostConstruct
-    public void postConstruct() throws IOException, ParserConfigurationException, SAXException {
-        try (final InputStream inputStream = resource.getInputStream()) {
+    private void loadAuthXml(final InputStream authXml) throws IOException, ParserConfigurationException, SAXException {
+        try (final InputStream inputStream = authXml) {
             final Document document = newInstance().newDocumentBuilder().parse(inputStream);
             loadAuthXml(document, userToKey, userToRole);
         }

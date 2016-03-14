@@ -1,19 +1,10 @@
 package de.otto.hmac.authentication;
 
-
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-
-@Service
 public class AuthenticationService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Resource
-    @Required
-    public void setUserRepository(UserRepository userRepository) {
+    public AuthenticationService(final UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -32,5 +23,4 @@ public class AuthenticationService {
         }
         return AuthenticationResult.fail();
     }
-
 }

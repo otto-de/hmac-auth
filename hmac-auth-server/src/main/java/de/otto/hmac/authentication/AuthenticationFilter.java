@@ -1,10 +1,7 @@
 package de.otto.hmac.authentication;
 
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,17 +14,13 @@ import static de.otto.hmac.authentication.AuthenticationResult.Status.SUCCESS;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.slf4j.LoggerFactory.getLogger;
 
-
-@Component("AuthenticationFilter")
 public class AuthenticationFilter implements Filter {
 
     private static final Logger LOG = getLogger(AuthenticationFilter.class);
 
-    private AuthenticationService service;
+    private final AuthenticationService service;
 
-    @Required
-    @Resource
-    public void setService(AuthenticationService service) {
+    public AuthenticationFilter(final AuthenticationService service) {
         this.service = service;
     }
 

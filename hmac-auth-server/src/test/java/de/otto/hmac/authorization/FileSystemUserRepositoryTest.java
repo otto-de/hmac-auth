@@ -27,7 +27,7 @@ public class FileSystemUserRepositoryTest {
         FileSystemUserRepository userRepository = userRepository();
         assertThat(userRepository.getKey("whoeverThisMayBe"), is(nullValue()));
     }
-    
+
     @Test
     public void shouldKnowUserRoles() throws Exception {
         FileSystemUserRepository userRepository = userRepository();
@@ -47,10 +47,7 @@ public class FileSystemUserRepositoryTest {
     }
 
     private FileSystemUserRepository userRepository() throws IOException, SAXException, ParserConfigurationException {
-        final FileSystemUserRepository repository = new FileSystemUserRepository();
-        repository.setResource("/hmac/auth.xml");
-        repository.postConstruct();
+        final FileSystemUserRepository repository = new FileSystemUserRepository("/hmac/auth.xml");
         return repository;
     }
-
 }

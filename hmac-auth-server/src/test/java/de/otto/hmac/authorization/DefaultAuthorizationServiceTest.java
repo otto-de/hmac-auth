@@ -41,31 +41,27 @@ public class DefaultAuthorizationServiceTest {
 
     @Test
     public void shouldAcceptNullInUnrestrictedGroupWithDisabledAuth() throws Exception {
-        DefaultAuthorizationService service = authComponent(null);
-        service.setHmacConfiguration(ConfigWithAuthSet.configWithoutAuth());
+        DefaultAuthorizationService service = authComponent(null, ConfigWithAuthSet.configWithoutAuth());
         service.authorize(null, singleton("everybody"));
     }
 
     @Test
     public void shouldAcceptNullUserInSpecificGroupWithDisabledAuth() throws Exception {
-        DefaultAuthorizationService service = authComponent(null);
-        service.setHmacConfiguration(ConfigWithAuthSet.configWithoutAuth());
+        DefaultAuthorizationService service = authComponent(null, ConfigWithAuthSet.configWithoutAuth());
         service.authorize(null, singleton("admin"));
     }
 
     @Test
     public void shouldAcceptNullUserEverywhereWithDisabledAuth() {
         final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
-        DefaultAuthorizationService service = authComponent(null);
-        service.setHmacConfiguration(ConfigWithAuthSet.configWithoutAuth());
+        DefaultAuthorizationService service = authComponent(null, ConfigWithAuthSet.configWithoutAuth());
         service.authorize(null, roles);
     }
 
     @Test
     public void shouldNotAcceptNullUserInSpecificGroupWithEnabledAuth() throws Exception {
         try {
-            DefaultAuthorizationService service = authComponent(null);
-            service.setHmacConfiguration(ConfigWithAuthSet.configWithAuth());
+            DefaultAuthorizationService service = authComponent(null, ConfigWithAuthSet.configWithAuth());
             service.authorize(null, singleton("admin"));
             fail("Should not authorize null user");
         } catch (AuthorizationException e) {
@@ -77,8 +73,7 @@ public class DefaultAuthorizationServiceTest {
         final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
 
         try {
-            DefaultAuthorizationService service = authComponent(null);
-            service.setHmacConfiguration(ConfigWithAuthSet.configWithAuth());
+            DefaultAuthorizationService service = authComponent(null, ConfigWithAuthSet.configWithAuth());
             service.authorize(null, roles);
             fail("Should not authorize null user");
         } catch (AuthorizationException e) {
@@ -89,7 +84,7 @@ public class DefaultAuthorizationServiceTest {
     @Test
     public void shouldNotAcceptEmptyUserInSpecificGroup() throws Exception {
         try {
-            authComponent("").authorize("", singleton("admin"));
+            authComponent("", ConfigWithAuthSet.configWithAuth()).authorize("", singleton("admin"));
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
         }
@@ -98,7 +93,7 @@ public class DefaultAuthorizationServiceTest {
     @Test
     public void shouldNotAcceptSomeUserInSpecificGroup() throws Exception {
         try {
-            authComponent("someUser").authorize("someUser", singleton("admin"));
+            authComponent("someUser", ConfigWithAuthSet.configWithAuth()).authorize("someUser", singleton("admin"));
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
 
@@ -107,21 +102,21 @@ public class DefaultAuthorizationServiceTest {
 
     @Test
     public void shouldAcceptExistingUserInSpecificGroup() throws Exception {
-        authComponent("tom").authorize("tom", singleton("admin"));
+        authComponent("tom", ConfigWithAuthSet.configWithAuth()).authorize("tom", singleton("admin"));
     }
 
 
     @Test
     public void shouldAcceptEmptyInUnrestrictedGroup() throws Exception {
-        authComponent("").authorize("", singleton("everybody"));
+        authComponent("", ConfigWithAuthSet.configWithAuth()).authorize("", singleton("everybody"));
     }
 
     @Test
     public void shouldAcceptSomeStringInUnrestrictedGroup() throws Exception {
-        authComponent("someUser").authorize("someUser", singleton("everybody"));
+        authComponent("someUser", ConfigWithAuthSet.configWithAuth()).authorize("someUser", singleton("everybody"));
     }
 
-    private DefaultAuthorizationService authComponent(String someUser) {
+    private DefaultAuthorizationService authComponent(String someUser, HmacConfiguration hmacConfiguration) {
         FileSystemUserRepository apiUserRepository = mock(FileSystemUserRepository.class);
         when(apiUserRepository.getRolesForUser(eq("tom"))).thenReturn(singleton("admin"));
         when(apiUserRepository.getRolesForUser(eq("someUser"))).thenReturn(singleton("everybody"));
@@ -130,9 +125,7 @@ public class DefaultAuthorizationServiceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getAttribute(AUTHENTICATED_USERNAME)).thenReturn(someUser);
 
-        DefaultAuthorizationService defaultAuthorizationComponent = new DefaultAuthorizationService();
-        defaultAuthorizationComponent.setUserRepository(apiUserRepository);
-        defaultAuthorizationComponent.setHmacConfiguration(ConfigWithAuthSet.configWithAuth());
+        DefaultAuthorizationService defaultAuthorizationComponent = new DefaultAuthorizationService(apiUserRepository, hmacConfiguration);
         return defaultAuthorizationComponent;
     }
 
@@ -140,7 +133,7 @@ public class DefaultAuthorizationServiceTest {
     public void shouldGiveValuableErrorMessageWithEmptyUser() {
         try {
             final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
-            authComponent("").authorize("", roles);
+            authComponent("", ConfigWithAuthSet.configWithAuth()).authorize("", roles);
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
             assertThat(e.getMessage(), is("[Anonymous user] is not in one of the required security groups."));
@@ -151,7 +144,7 @@ public class DefaultAuthorizationServiceTest {
     public void shouldGiveValuableErrorMessageWithNamesUser() {
         try {
             final Set<String> roles = new HashSet<>(asList("admin", "shopoffice"));
-            authComponent("someUnauthorizedUser").authorize("someUnauthorizedUser", roles);
+            authComponent("someUnauthorizedUser", ConfigWithAuthSet.configWithAuth()).authorize("someUnauthorizedUser", roles);
             fail("Should not authorize if user is not in Group");
         } catch (AuthorizationException e) {
             assertThat(e.getMessage(), is("[someUnauthorizedUser] is not in one of the required security groups."));

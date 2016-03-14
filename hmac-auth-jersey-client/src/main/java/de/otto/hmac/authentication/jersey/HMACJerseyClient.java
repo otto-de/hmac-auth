@@ -14,7 +14,6 @@ import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.joda.time.DateTime;
-import org.springframework.util.Assert;
 
 import java.io.IOException;
 
@@ -48,14 +47,16 @@ public class HMACJerseyClient extends ApacheHttpClient4 {
     }
 
     private void assertAuthentificationPossible() throws IOException {
-        Assert.isTrue(!StringUtils.isNullOrEmpty(user), "User is desired for authentication");
-        Assert.isTrue(!StringUtils.isNullOrEmpty(secretKey), "Secret key is desired for authentication");
-        Assert.isTrue(!StringUtils.isNullOrEmpty(method), "Method is desired for authentication");
-        Assert.isTrue(!StringUtils.isNullOrEmpty(requestUri), "URI is desired for authentication");
+        validateNullOrEmpty(user);
+        validateNullOrEmpty(secretKey);
+        validateNullOrEmpty(method);
+        validateNullOrEmpty(requestUri);
     }
 
-    private boolean isNullOrEmpty(ByteSource byteSource) throws  IOException {
-        return byteSource == null || byteSource.isEmpty();
+    private void validateNullOrEmpty(String property) {
+        if (StringUtils.isNullOrEmpty(property)) {
+            throw new IllegalArgumentException("argument " + property + " is empty or null");
+        }
     }
 
     private static ApacheHttpClient4Handler createDefaultClientHander(final ClientConfig cc) {
