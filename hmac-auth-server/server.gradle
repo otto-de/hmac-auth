@@ -1,12 +1,9 @@
 dependencies {
     compile("org.glassfish:javax.servlet:3.1.1") { ext.provided = true }
-
     compile 'org.aspectj:aspectjweaver:1.8.2'
-
     compile 'commons-codec:commons-codec:1.9'
-
     compile 'joda-time:joda-time:2.5'
-
+    compile "com.google.code.gson:gson:2.6.2"
     compile 'org.slf4j:slf4j-api:1.7.7'
 
     compile project(path: ":hmac-auth-common")

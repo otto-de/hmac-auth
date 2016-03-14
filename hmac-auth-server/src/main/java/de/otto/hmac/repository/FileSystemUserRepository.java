@@ -1,4 +1,4 @@
-package de.otto.hmac;
+package de.otto.hmac.repository;
 
 import de.otto.hmac.authentication.UserRepository;
 import de.otto.hmac.authorization.RoleRepository;

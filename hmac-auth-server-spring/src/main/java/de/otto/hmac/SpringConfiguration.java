@@ -4,6 +4,7 @@ import de.otto.hmac.authentication.AuthenticationFilter;
 import de.otto.hmac.authentication.AuthenticationService;
 import de.otto.hmac.authorization.DefaultAuthorizationService;
 import de.otto.hmac.authorization.RolesAuthorizationAspect;
+import de.otto.hmac.repository.FileSystemUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

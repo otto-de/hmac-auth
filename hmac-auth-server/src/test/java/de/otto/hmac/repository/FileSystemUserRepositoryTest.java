@@ -1,6 +1,5 @@
-package de.otto.hmac.authorization;
+package de.otto.hmac.repository;
 
-import de.otto.hmac.FileSystemUserRepository;
 import org.testng.annotations.Test;
 import org.xml.sax.SAXException;
 

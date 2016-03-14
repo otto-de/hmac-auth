@@ -1,6 +1,6 @@
 package de.otto.hmac.authorization;
 
-import de.otto.hmac.FileSystemUserRepository;
+import de.otto.hmac.repository.FileSystemUserRepository;
 import org.testng.annotations.Test;
 
 import javax.servlet.http.HttpServletRequest;
