@@ -5,6 +5,33 @@ HMAC authentication for RESTful web applications
 
 * Current release: 2.1.0 (in Maven Central repo)
 
+# Release 2.2.0
+
+Add property based user repository (PropertyUserRepository). You can inject a json file with the following structure:
+
+    [
+      {
+        "user": "user1",
+        "password": "password1",
+        "roles": [
+          "role1"
+        ]
+      },
+      {
+        "user": "user2",
+        "password": "password2",
+        "roles": [
+          "role1",
+          "role2"
+        ]
+      },
+      {
+        "user": "user3",
+        "password": "password3",
+        "roles": []
+      }
+    ]
+
 # Release 2.1.0
 
 Separation of hmac-auth-server and spring configuration.
