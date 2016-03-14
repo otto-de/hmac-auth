@@ -3,7 +3,7 @@ hmac-auth
 
 HMAC authentication for RESTful web applications
 
-* Current release: 2.1.0 (in Maven Central repo)
+* Current release: 2.2.0
 
 # Release 2.2.0
 
