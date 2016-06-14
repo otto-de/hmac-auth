@@ -4,13 +4,11 @@ import com.google.common.io.ByteSource;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.client.impl.ClientRequestImpl;
 import de.otto.hmac.HmacAttributes;
-import de.otto.hmac.authentication.RequestSigningUtil;
-import org.joda.time.Instant;
 import org.testng.annotations.Test;
 
 import javax.ws.rs.HttpMethod;
 import java.net.URI;
-import java.security.MessageDigest;
+import java.time.Instant;
 
 import static org.testng.Assert.assertEquals;
 
@@ -26,7 +24,7 @@ public class HMACJerseyClientFilterTest {
         // test
         ByteSource body = ByteSource.wrap("abcd".getBytes());
         HMACJerseyClientFilter
-                .addHmacHttpRequestHeaders(cr, "user", "secretKey", new Instant(123456789), body);
+                .addHmacHttpRequestHeaders(cr, "user", "secretKey", Instant.ofEpochMilli(123456789), body);
 
         // assertions
         assertEquals(cr.getHeaders().get(HmacAttributes.X_HMAC_AUTH_SIGNATURE).get(0), "user:0xGKsmKRrbz6txscdugd3PBTpNKlVfAohDS4js9k4sQ=");

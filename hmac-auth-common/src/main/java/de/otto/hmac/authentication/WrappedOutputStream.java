@@ -4,11 +4,11 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.FileBackedOutputStream;
 import de.otto.hmac.HmacAttributes;
-import org.joda.time.Instant;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.time.Instant;
 
 public class WrappedOutputStream extends OutputStream {
 
@@ -44,7 +44,7 @@ public class WrappedOutputStream extends OutputStream {
 
     @Override
     public void close() throws IOException {
-        addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), tmpOut.asByteSource());
+        addHmacHttpRequestHeaders(cr, user, secretKey, Instant.now(), tmpOut.asByteSource());
 
         if (tmpOut.asByteSource().isEmpty()) {
             // workaround for bug in jersey: without writing a single byte to the

@@ -3,11 +3,11 @@ package de.otto.hmac.authentication.jersey2.filter;
 import com.google.common.io.ByteSource;
 import de.otto.hmac.authentication.WrappedOutputStream;
 import de.otto.hmac.authentication.WrappedOutputStreamContext;
-import org.joda.time.Instant;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
 import java.io.IOException;
+import java.time.Instant;
 
 /**
  * Jersey2 ClientRequestFilter for HMAC request signatures. Register a HMAC client request filter and writer interceptor combination
@@ -44,7 +44,7 @@ public class HmacJersey2ClientRequestFilter implements ClientRequestFilter {
                     wrappedOutputStreamContext,
                     user,
                     secretKey,
-                    new Instant(),
+                    Instant.now(),
                     ByteSource.empty());
         }
     }

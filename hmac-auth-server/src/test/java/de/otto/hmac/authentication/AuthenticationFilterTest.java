@@ -1,7 +1,5 @@
 package de.otto.hmac.authentication;
 
-import org.joda.time.DateTime;
-import org.joda.time.Instant;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.testng.annotations.Test;
@@ -11,6 +9,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -108,7 +108,7 @@ public class AuthenticationFilterTest {
     }
 
     static String formattedDateOfXmas() {
-        return new Instant(new DateTime(2012, 12, 24, 0, 0, 0, 0)).toString();
+        return LocalDateTime.of(2012,12,24,0,0,0,0).toInstant(ZoneOffset.UTC).toString();
     }
 
 

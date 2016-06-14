@@ -5,14 +5,10 @@ import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.filter.ClientFilter;
-import de.otto.hmac.HmacAttributes;
-import de.otto.hmac.authentication.RequestSigningUtil;
 import de.otto.hmac.authentication.WrappedOutputStream;
-import de.otto.hmac.authentication.WrappedOutputStreamContext;
-import org.joda.time.Instant;
 
 import javax.ws.rs.HttpMethod;
-import java.security.MessageDigest;
+import java.time.Instant;
 
 /**
  * The {@link de.otto.hmac.authentication.jersey.filter.HMACJerseyClientFilter} calculates HMAC signatures for jersey client
@@ -43,7 +39,7 @@ public class HMACJerseyClientFilter extends ClientFilter {
         if (HttpMethod.POST.equalsIgnoreCase(cr.getMethod()) || HttpMethod.PUT.equalsIgnoreCase(cr.getMethod())) {
             cr.setAdapter(new HMACJerseyClientRequestAdapter(user, secretKey));
         } else {
-            addHmacHttpRequestHeaders(cr, user, secretKey, new Instant(), ByteSource.empty());
+            addHmacHttpRequestHeaders(cr, user, secretKey, Instant.now(), ByteSource.empty());
         }
         return getNext().handle(cr);
     }
