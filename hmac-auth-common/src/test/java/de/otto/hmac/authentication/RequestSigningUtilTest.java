@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -100,7 +101,7 @@ public class RequestSigningUtilTest {
         String requestSignatur = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
         request.addHeader("x-hmac-auth-signature", "username:" + requestSignatur);
 
-        boolean valid = RequestSigningUtil.checkRequest(wrap(request), "secretKey");
+        boolean valid = RequestSigningUtil.checkRequest(wrap(request), "secretKey", Clock.systemUTC());
         assertThat(valid, is(true));
     }
 
@@ -114,7 +115,7 @@ public class RequestSigningUtilTest {
         String requestSignatur = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
         request.addHeader("x-hmac-auth-signature", "username:" + requestSignatur);
 
-        boolean valid = RequestSigningUtil.hasValidRequestTimeStamp(wrap(request));
+        boolean valid = RequestSigningUtil.hasValidRequestTimeStamp(wrap(request), Clock.systemUTC());
         assertThat(valid, is(false));
     }
 
@@ -130,7 +131,7 @@ public class RequestSigningUtilTest {
         request.addHeader("x-hmac-auth-signature", "username:" + requestSignatur);
 
 
-        boolean valid = RequestSigningUtil.hasValidRequestTimeStamp(wrap(request));
+        boolean valid = RequestSigningUtil.hasValidRequestTimeStamp(wrap(request), Clock.systemUTC());
         assertThat(valid, is(false));
     }
 
@@ -141,7 +142,7 @@ public class RequestSigningUtilTest {
         request.addHeader("x-hmac-auth-signature", "username:FalscheSignatur=");
         request.setContent("{ \"key\": \"value\"}".getBytes());
 
-        boolean valid = RequestSigningUtil.checkRequest(wrap(request), "secretKey");
+        boolean valid = RequestSigningUtil.checkRequest(wrap(request), "secretKey", Clock.systemUTC());
         assertThat(valid, is(false));
     }
 

@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -93,7 +94,7 @@ public class AuthenticationFilterTest {
         UserRepository userRepository = mock(UserRepository.class);
         when(userRepository.getKey(anyString())).thenReturn("secretKey");
 
-        AuthenticationService authService = new AuthenticationService(userRepository);
+        AuthenticationService authService = new AuthenticationService(userRepository, Clock.systemUTC());
         AuthenticationFilter filter = new AuthenticationFilter(authService);
 
         FilterChainStub filterChain = new FilterChainStub();

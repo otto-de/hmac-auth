@@ -5,6 +5,7 @@ import de.otto.hmac.authentication.WrappedOutputStream;
 import org.testng.annotations.Test;
 
 import java.io.OutputStream;
+import java.time.Clock;
 
 import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertTrue;
@@ -17,7 +18,7 @@ public class HMACJerseyClientRequestAdapterTest {
     @Test
     public void shouldAdapt() throws Exception {
         // setup
-        HMACJerseyClientRequestAdapter adapter = new HMACJerseyClientRequestAdapter("user", "secretKey");
+        HMACJerseyClientRequestAdapter adapter = new HMACJerseyClientRequestAdapter("user", "secretKey", Clock.systemUTC());
         ClientRequest clientRequestMock = mock(ClientRequest.class);
         OutputStream outputStreamMock = mock(OutputStream.class);
 

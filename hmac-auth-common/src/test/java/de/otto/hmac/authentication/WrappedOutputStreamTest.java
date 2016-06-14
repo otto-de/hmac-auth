@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.time.Clock;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyByte;
@@ -23,7 +24,7 @@ public class WrappedOutputStreamTest {
         WrappedOutputStreamContext clientRequestMock = mock(WrappedOutputStreamContext.class);
         OutputStream outputStreamMock = mock(OutputStream.class);
         WrappedOutputStream wrapper =
-                new WrappedOutputStream("user", "secretKey", clientRequestMock, outputStreamMock);
+                new WrappedOutputStream("user", "secretKey", clientRequestMock, outputStreamMock, Clock.systemUTC());
 
         // test
         wrapper.write(new String("br").getBytes(), 0, 2);
@@ -45,7 +46,7 @@ public class WrappedOutputStreamTest {
         ByteArrayOutputStream outputStreamMock = new ByteArrayOutputStream();
 
         WrappedOutputStream wrapper =
-                new WrappedOutputStream("user", "secretKey", clientRequestMock, outputStreamMock);
+                new WrappedOutputStream("user", "secretKey", clientRequestMock, outputStreamMock, Clock.systemUTC());
 
         // test
         wrapper.write(new String("br").getBytes(), 0, 2);

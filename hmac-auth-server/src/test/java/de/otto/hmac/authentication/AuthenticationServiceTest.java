@@ -4,6 +4,7 @@ import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.Test;
 
+import java.time.Clock;
 import java.time.Instant;
 
 import static de.otto.hmac.authentication.AuthenticationResult.Status.FAIL;
@@ -58,7 +59,7 @@ public class AuthenticationServiceTest {
         UserRepository userRepository = Mockito.mock(UserRepository.class);
         Mockito.when(userRepository.getKey(eq("username"))).thenReturn("secretKey");
 
-        AuthenticationService service = new AuthenticationService(userRepository);
+        AuthenticationService service = new AuthenticationService(userRepository, Clock.systemUTC());
         return service;
     }
 

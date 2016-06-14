@@ -10,6 +10,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.TemporalAmount;
@@ -22,9 +23,9 @@ public class RequestSigningUtil {
 
     private static final Logger LOG = getLogger(RequestSigningUtil.class);
 
-    public static boolean checkRequest(final WrappedRequest request, final String secretKey) {
+    public static boolean checkRequest(final WrappedRequest request, final String secretKey, final Clock clock) {
 
-        if (!hasValidRequestTimeStamp(request)) {
+        if (!hasValidRequestTimeStamp(request, clock)) {
             return false;
         }
 
@@ -38,14 +39,14 @@ public class RequestSigningUtil {
         return generatedSignature.equals(sentSignature);
     }
 
-    public static boolean hasValidRequestTimeStamp(final WrappedRequest request) {
+    public static boolean hasValidRequestTimeStamp(final WrappedRequest request, final Clock clock) {
         final String requestTimeString = getDateFromHeader(request);
         if (requestTimeString == null || requestTimeString.isEmpty()) {
             LOG.error("Signierter Request enthält kein Datum.");
             return false;
         }
 
-        final Instant serverTime = Instant.now();
+        final Instant serverTime = Instant.now(clock);
         final Instant requestTime = Instant.parse(requestTimeString);
 
         final TemporalAmount fiveMinutes = Duration.ofMinutes(5);

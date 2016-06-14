@@ -9,7 +9,6 @@ import org.apache.commons.io.IOUtils;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.TestProperties;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.crypto.Mac;
@@ -25,6 +24,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -32,18 +34,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * Integration test for Jersey2 client request filter and writer interceptor combination.
  */
-@Ignore("disabled because we cannot set the clock any more")
 public class HmacJersey2WriterInterceptorTest extends JerseyServletTest {
 
-//    @Before
-//    public void before() {
-//        DateTimeUtils.setCurrentMillisFixed(new DateTime(2014, 2, 28, 10, 25).getMillis());
-//    }
-//
-//    @After
-//    public void after() {
-//        DateTimeUtils.setCurrentMillisSystem();
-//    }
+    private static final Clock TEST_CLOCK = Clock.fixed(LocalDateTime.of(2014, 2, 28, 9, 25).toInstant(ZoneOffset.UTC), ZoneOffset.UTC);
 
     @Test
     public void shouldSetHmacHeadersOnGetRequest() {
@@ -51,8 +44,8 @@ public class HmacJersey2WriterInterceptorTest extends JerseyServletTest {
 
         final String requestSignature = result.split(";")[0];
         final String requestHeaderDateTime = result.split(";")[1];
-        assertEquals("2014-02-28T09:25:00.000Z", requestHeaderDateTime);
-        assertEquals("user:es2fBTAuWtw/eJrkF6PRpFGQjGDodp4HlJvJJ/r4lAk=", requestSignature);
+        assertEquals("user:E4XWVFmMHFBO+NQvrQWhJY7hU8qUJsLQzyAJk0+UnBo=", requestSignature);
+        assertEquals("2014-02-28T09:25:00Z", requestHeaderDateTime);
 
         // verify if signature has been correctly calculated
         final String hmacSignature = requestSignature.split(":")[1];
@@ -73,8 +66,8 @@ public class HmacJersey2WriterInterceptorTest extends JerseyServletTest {
         final String result = new String(buffer, "UTF-8");
         final String requestSignature = result.split(";")[0];
         final String requestHeaderDateTime = result.split(";")[1];
-        assertEquals("user:niP5kqthuNz9WhKZUGn6L+BlHk/XVIgRG77OKHO4QV4=", requestSignature);
-        assertEquals("2014-02-28T09:25:00.000Z", requestHeaderDateTime);
+        assertEquals("user:+BvBUgz//6jg1EFvdf0iDqJTcTEc+dykuBYVo53kakU=", requestSignature);
+        assertEquals("2014-02-28T09:25:00Z", requestHeaderDateTime);
 
         // verify if signature has been correctly calculated
         final String hmacSignature = requestSignature.split(":")[1];
@@ -91,15 +84,15 @@ public class HmacJersey2WriterInterceptorTest extends JerseyServletTest {
 
         @GET
         public String returnHmacSignatureOnGet(@HeaderParam("x-hmac-auth-signature") String hmacAuthSignature,
-                @HeaderParam("x-hmac-auth-date") String hmacAuthDate) throws IOException {
-            assertTrue(RequestSigningUtil.checkRequest(WrappedRequest.wrap(httpServletRequest), "secrectKey"));
+                                               @HeaderParam("x-hmac-auth-date") String hmacAuthDate) throws IOException {
+            assertTrue(RequestSigningUtil.checkRequest(WrappedRequest.wrap(httpServletRequest), "secrectKey", TEST_CLOCK));
             return hmacAuthSignature + ";" + hmacAuthDate;
         }
 
         @POST
         public String returnHmacSignatureOnPost(@HeaderParam("x-hmac-auth-signature") String hmacAuthSignature,
-                @HeaderParam("x-hmac-auth-date") String hmacAuthDate) throws IOException {
-            assertTrue(RequestSigningUtil.checkRequest(WrappedRequest.wrap(httpServletRequest), "secrectKey"));
+                                                @HeaderParam("x-hmac-auth-date") String hmacAuthDate) throws IOException {
+            assertTrue(RequestSigningUtil.checkRequest(WrappedRequest.wrap(httpServletRequest), "secrectKey", TEST_CLOCK));
             return hmacAuthSignature + ";" + hmacAuthDate;
         }
     }
@@ -113,11 +106,11 @@ public class HmacJersey2WriterInterceptorTest extends JerseyServletTest {
 
     @Override
     protected void configureClient(ClientConfig config) {
-        config.register(new HmacJersey2ClientRequestFilter("user", "secrectKey"));
+        config.register(new HmacJersey2ClientRequestFilter("user", "secrectKey", TEST_CLOCK));
     }
 
     private String createRequestSignature(final String httpMethod, final String dateHeaderString, final String requestUri,
-            final byte[] body, final String secretKey) {
+                                          final byte[] body, final String secretKey) {
         try {
             final SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
             final Mac mac = Mac.getInstance("HmacSHA256");

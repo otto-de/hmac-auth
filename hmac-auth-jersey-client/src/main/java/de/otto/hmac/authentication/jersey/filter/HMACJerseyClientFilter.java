@@ -8,6 +8,7 @@ import com.sun.jersey.api.client.filter.ClientFilter;
 import de.otto.hmac.authentication.WrappedOutputStream;
 
 import javax.ws.rs.HttpMethod;
+import java.time.Clock;
 import java.time.Instant;
 
 /**
@@ -28,18 +29,20 @@ public class HMACJerseyClientFilter extends ClientFilter {
 
     private String user;
     private String secretKey;
+    private final Clock clock;
 
-    public HMACJerseyClientFilter(String user, String secretKey) {
+    public HMACJerseyClientFilter(String user, String secretKey, Clock clock) {
         this.user = user;
         this.secretKey = secretKey;
+        this.clock = clock;
     }
 
     @Override
     public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
         if (HttpMethod.POST.equalsIgnoreCase(cr.getMethod()) || HttpMethod.PUT.equalsIgnoreCase(cr.getMethod())) {
-            cr.setAdapter(new HMACJerseyClientRequestAdapter(user, secretKey));
+            cr.setAdapter(new HMACJerseyClientRequestAdapter(user, secretKey, clock));
         } else {
-            addHmacHttpRequestHeaders(cr, user, secretKey, Instant.now(), ByteSource.empty());
+            addHmacHttpRequestHeaders(cr, user, secretKey, Instant.now(clock), ByteSource.empty());
         }
         return getNext().handle(cr);
     }
