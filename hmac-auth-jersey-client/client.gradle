@@ -8,8 +8,6 @@ dependencies {
 
     compile 'commons-codec:commons-codec:1.9'
 
-    compile 'joda-time:joda-time:2.5'
-
     compile 'org.slf4j:slf4j-api:1.7.7'
 
     compile 'com.sun.jersey:jersey-client:1.18.1'

@@ -1,7 +1,5 @@
 package de.otto.hmac.authentication;
 
-
-import org.joda.time.Instant;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.Test;
 
@@ -9,6 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 
 import static de.otto.hmac.authentication.WrappedRequest.wrap;
 import static org.hamcrest.CoreMatchers.is;
@@ -100,21 +101,21 @@ public class RequestSigningUtilTest {
         String requestSignatur = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
         request.addHeader("x-hmac-auth-signature", "username:" + requestSignatur);
 
-        boolean valid = RequestSigningUtil.checkRequest(wrap(request), "secretKey");
+        boolean valid = RequestSigningUtil.checkRequest(wrap(request), "secretKey", Clock.systemUTC());
         assertThat(valid, is(true));
     }
 
     @Test
     public void shouldRejectCorrectlySignedRequestIfRequestTimeStampIsTooMuchInTheFuture() throws NoSuchAlgorithmException, IOException {
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
-        Instant timeStampToMuchInFuture = new Instant().plus(500000);
+        Instant timeStampToMuchInFuture = Instant.now().plus(Duration.ofMillis(500000L));
         request.addHeader("x-p13n-date", timeStampToMuchInFuture);
         request.setContent("{ \"key\": \"value\"}".getBytes());
 
         String requestSignatur = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
         request.addHeader("x-hmac-auth-signature", "username:" + requestSignatur);
 
-        boolean valid = RequestSigningUtil.hasValidRequestTimeStamp(wrap(request));
+        boolean valid = RequestSigningUtil.hasValidRequestTimeStamp(wrap(request), Clock.systemUTC());
         assertThat(valid, is(false));
     }
 
@@ -122,7 +123,7 @@ public class RequestSigningUtilTest {
     public void shouldRejectCorrectlySignedRequestIfRequestTimeStampIsExpired() throws NoSuchAlgorithmException, IOException {
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
 
-        Instant timeStampExpired = new Instant().minus(500000L);
+        Instant timeStampExpired = Instant.now().minus(Duration.ofMillis(500000L));
         request.addHeader("x-p13n-date", timeStampExpired.toString());
         request.setContent("{ \"key\": \"value\"}".getBytes());
 
@@ -130,7 +131,7 @@ public class RequestSigningUtilTest {
         request.addHeader("x-hmac-auth-signature", "username:" + requestSignatur);
 
 
-        boolean valid = RequestSigningUtil.hasValidRequestTimeStamp(wrap(request));
+        boolean valid = RequestSigningUtil.hasValidRequestTimeStamp(wrap(request), Clock.systemUTC());
         assertThat(valid, is(false));
     }
 
@@ -141,12 +142,12 @@ public class RequestSigningUtilTest {
         request.addHeader("x-hmac-auth-signature", "username:FalscheSignatur=");
         request.setContent("{ \"key\": \"value\"}".getBytes());
 
-        boolean valid = RequestSigningUtil.checkRequest(wrap(request), "secretKey");
+        boolean valid = RequestSigningUtil.checkRequest(wrap(request), "secretKey", Clock.systemUTC());
         assertThat(valid, is(false));
     }
 
     private static String formattedDateOfNow() {
-        return new Instant().toString();
+        return Instant.now().toString();
     }
 
 

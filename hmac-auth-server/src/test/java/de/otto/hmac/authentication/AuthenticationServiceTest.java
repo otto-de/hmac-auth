@@ -1,9 +1,11 @@
 package de.otto.hmac.authentication;
 
-import org.joda.time.Instant;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.Test;
+
+import java.time.Clock;
+import java.time.Instant;
 
 import static de.otto.hmac.authentication.AuthenticationResult.Status.FAIL;
 import static de.otto.hmac.authentication.AuthenticationResult.Status.SUCCESS;
@@ -20,7 +22,7 @@ public class AuthenticationServiceTest {
     public void shouldAcceptValidRequest() throws Exception {
 
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
-        request.addHeader("x-hmac-auth-date", new Instant().toString());
+        request.addHeader("x-hmac-auth-date", Instant.now().toString());
 
         request.setContent("{ \"key\": \"value\"}".getBytes());
         String requestSignatur = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
@@ -38,7 +40,7 @@ public class AuthenticationServiceTest {
     @Test
     public void shouldRejectRequestIfUserUnknown() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
-        request.addHeader("x-hmac-auth-date", new Instant().toString());
+        request.addHeader("x-hmac-auth-date", Instant.now().toString());
 
         String body = "{ \"key\": \"value\"}";
         request.setContent(body.getBytes());
@@ -57,7 +59,7 @@ public class AuthenticationServiceTest {
         UserRepository userRepository = Mockito.mock(UserRepository.class);
         Mockito.when(userRepository.getKey(eq("username"))).thenReturn("secretKey");
 
-        AuthenticationService service = new AuthenticationService(userRepository);
+        AuthenticationService service = new AuthenticationService(userRepository, Clock.systemUTC());
         return service;
     }
 

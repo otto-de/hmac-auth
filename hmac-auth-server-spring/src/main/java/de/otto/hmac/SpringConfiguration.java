@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.Clock;
 
 @Configuration
 public class SpringConfiguration {
@@ -28,7 +29,7 @@ public class SpringConfiguration {
 
     @Bean
     public AuthenticationService authenticationService() {
-        return new AuthenticationService(userRepository());
+        return new AuthenticationService(userRepository(), Clock.systemUTC());
     }
 
     @Bean

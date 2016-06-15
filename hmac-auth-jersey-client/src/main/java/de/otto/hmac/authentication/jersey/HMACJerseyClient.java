@@ -13,9 +13,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
-import org.joda.time.DateTime;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.ZonedDateTime;
 
 public class HMACJerseyClient extends ApacheHttpClient4 {
 
@@ -25,9 +26,11 @@ public class HMACJerseyClient extends ApacheHttpClient4 {
     private String date;
     private String requestUri;
     private ByteSource body = ByteSource.empty();
+    private final Clock clock;
 
-    private HMACJerseyClient(final ClientConfig cc) {
+    private HMACJerseyClient(final ClientConfig cc, final Clock clock) {
         super(createDefaultClientHander(cc));
+        this.clock = clock;
     }
 
     public HMACJerseyClient auth(final String user, final String secretKey) {
@@ -38,7 +41,7 @@ public class HMACJerseyClient extends ApacheHttpClient4 {
 
     public WebResource.Builder authenticatedResource(final String url) throws IOException {
         assertAuthentificationPossible();
-        date = new DateTime().toString();
+        date = ZonedDateTime.now(clock).toString();
         final StringBuilder builder = new StringBuilder(user);
         builder.append(":");
         builder.append(RequestSigningUtil.createRequestSignature(method, date, requestUri, body, secretKey));
@@ -69,8 +72,12 @@ public class HMACJerseyClient extends ApacheHttpClient4 {
     }
 
     public static HMACJerseyClient create() {
+        return create(Clock.systemUTC());
+    }
+
+    public static HMACJerseyClient create(final Clock clock) {
         DefaultApacheHttpClient4Config config = new DefaultApacheHttpClient4Config();
-        return new HMACJerseyClient(config);
+        return new HMACJerseyClient(config, clock);
     }
 
     public HMACJerseyClient withMethod(final String method) {

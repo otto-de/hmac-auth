@@ -4,13 +4,16 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
 import org.apache.commons.codec.binary.Base64;
-import org.joda.time.Instant;
 import org.slf4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.TemporalAmount;
 
 import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
 import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
@@ -20,9 +23,9 @@ public class RequestSigningUtil {
 
     private static final Logger LOG = getLogger(RequestSigningUtil.class);
 
-    public static boolean checkRequest(final WrappedRequest request, final String secretKey) {
+    public static boolean checkRequest(final WrappedRequest request, final String secretKey, final Clock clock) {
 
-        if (!hasValidRequestTimeStamp(request)) {
+        if (!hasValidRequestTimeStamp(request, clock)) {
             return false;
         }
 
@@ -36,17 +39,17 @@ public class RequestSigningUtil {
         return generatedSignature.equals(sentSignature);
     }
 
-    public static boolean hasValidRequestTimeStamp(final WrappedRequest request) {
+    public static boolean hasValidRequestTimeStamp(final WrappedRequest request, final Clock clock) {
         final String requestTimeString = getDateFromHeader(request);
         if (requestTimeString == null || requestTimeString.isEmpty()) {
             LOG.error("Signierter Request enthält kein Datum.");
             return false;
         }
 
-        final Instant serverTime = new Instant();
-        final Instant requestTime = new Instant(requestTimeString);
+        final Instant serverTime = Instant.now(clock);
+        final Instant requestTime = Instant.parse(requestTimeString);
 
-        final long fiveMinutes = 60 * 5000L;
+        final TemporalAmount fiveMinutes = Duration.ofMinutes(5);
 
         final boolean inRange = requestTime.isAfter(serverTime.minus(fiveMinutes))
                 && requestTime.isBefore(serverTime.plus(fiveMinutes));

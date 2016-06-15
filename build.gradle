@@ -23,10 +23,10 @@ subprojects {
     apply plugin: 'signing'
 
     group = 'de.otto'
-    version = '2.2.0'
+    version = '2.3.0'
     ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-    sourceCompatibility = 1.7
+    sourceCompatibility = 1.8
 
     repositories {
         mavenCentral()
