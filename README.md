@@ -3,7 +3,13 @@ hmac-auth
 
 HMAC authentication for RESTful web applications
 
-* Current release: 2.2.0
+* Current release: 2.3.0
+
+# Release 2.3.0
+
+Remove dependency of joda-time library and use java.time package instead.
+
+By that Java8 is required to use this library.
 
 # Release 2.2.0
 
