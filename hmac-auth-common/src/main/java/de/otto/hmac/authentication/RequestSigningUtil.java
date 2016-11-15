@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAmount;
 
 import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
@@ -47,7 +48,7 @@ public class RequestSigningUtil {
         }
 
         final Instant serverTime = Instant.now(clock);
-        final Instant requestTime = Instant.parse(requestTimeString);
+        final Instant requestTime = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(requestTimeString, Instant::from);
 
         final TemporalAmount fiveMinutes = Duration.ofMinutes(5);
 

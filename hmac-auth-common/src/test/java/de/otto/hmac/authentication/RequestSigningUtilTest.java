@@ -6,10 +6,10 @@ import org.testng.annotations.Test;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneOffset;
 
 import static de.otto.hmac.authentication.WrappedRequest.wrap;
 import static org.hamcrest.CoreMatchers.is;
@@ -26,8 +26,6 @@ public class RequestSigningUtilTest {
     <REQUEST-URI>\n
     MD5(<BODY>)
     */
-
-    private static SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd-HH:mm:ss");
 
     @Test
     public void shouldBeginSignatureBaseWithHttpMethod() throws IOException {
@@ -144,6 +142,18 @@ public class RequestSigningUtilTest {
 
         boolean valid = RequestSigningUtil.checkRequest(wrap(request), "secretKey", Clock.systemUTC());
         assertThat(valid, is(false));
+    }
+
+    @Test
+    public void shouldParseDateTimeStringInISO8601FormatWithTimeZone() throws IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
+        request.addHeader("x-hmac-auth-date", "2016-11-07T16:44:49.1+01:00");
+        request.setContent("{ \"key\": \"value\"}".getBytes());
+        Clock fixedClock = Clock.fixed(Instant.parse("2016-11-07T15:44:49.1Z"), ZoneOffset.UTC);
+
+        boolean validRequestTimeStamp = RequestSigningUtil.hasValidRequestTimeStamp(wrap(request), fixedClock);
+
+        assertThat(validRequestTimeStamp, is(true));
     }
 
     private static String formattedDateOfNow() {
