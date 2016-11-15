@@ -1,24 +1,31 @@
 package de.otto.hmac.authentication;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.Hashing;
-import com.google.common.io.ByteSource;
-import org.apache.commons.codec.binary.Base64;
-import org.slf4j.Logger;
+import static org.slf4j.LoggerFactory.getLogger;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
+import static com.google.common.base.Strings.isNullOrEmpty;
+
+import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
+import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
+
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAmount;
 
-import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
-import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
-import static org.slf4j.LoggerFactory.getLogger;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
 
 public class RequestSigningUtil {
 
@@ -83,14 +90,16 @@ public class RequestSigningUtil {
     }
 
     public static String createRequestSignature(String signatureBase, String secretKey) {
+        if (isNullOrEmpty(secretKey)) {
+            throw new IllegalArgumentException("Secret Key provided to HMAC SigningUtils was null or empty.");
+        }
         try {
             final SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
             final Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(keySpec);
             final byte[] result = mac.doFinal(signatureBase.getBytes());
             return encodeBase64WithoutLinefeed(result);
-        }
-        catch (final Exception e) {
+        } catch (final NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException("should never happen", e);
         }
     }
