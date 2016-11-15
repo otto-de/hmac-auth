@@ -83,11 +83,18 @@ public class RequestSigningUtilTest {
         String encrypted = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
         String encrypted2 = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
 
-        System.out.println(encrypted);
-
         assertThat(encrypted, is(encrypted2));
 
         assertThat(encrypted, not(startsWith("PUT\n2012.12.24-00:00:00\nsome/URI\n")));
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenSecretKeyIsNull() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
+        request.addHeader("x-hmac-auth-date", formattedDateOfNow());
+        request.setContent("{ \"key\": \"value\"}".getBytes());
+
+        RequestSigningUtil.createRequestSignature(wrap(request), null);
     }
 
     @Test
