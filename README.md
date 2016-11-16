@@ -3,7 +3,10 @@ hmac-auth
 
 HMAC authentication for RESTful web applications
 
-* Current release: 2.3.0
+# Current release: 2.3.1
+
+* Fixed bug DateTimeParseException when validating hmac requests with version 2.3.0 #23
+* Throw explicit exception if no secretKey is provided #25
 
 # Release 2.3.0
 
