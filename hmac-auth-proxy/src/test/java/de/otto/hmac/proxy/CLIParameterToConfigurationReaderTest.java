@@ -43,6 +43,10 @@ public class CLIParameterToConfigurationReaderTest {
         assertThat(ProxyConfiguration.getPort(), is(-23174891));
     }
 
+    public void shouldSetSecureProtocol() {
+        toConfiguration(new String[]{"-s"});
+        assertThat(ProxyConfiguration.isSecure(), is(true));
+    }
 
     @Test
     public void shouldSetDaemonWithShortParameter() {

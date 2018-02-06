@@ -240,6 +240,9 @@ public class ProxyResource {
     protected URI withTargetHostAndPort(UriBuilder uriBuilder) {
         uriBuilder.host(ProxyConfiguration.getTargetHost());
         uriBuilder.port(ProxyConfiguration.getPort());
+        if (ProxyConfiguration.isSecure()) {
+            uriBuilder.scheme("https");
+        }
         return uriBuilder.build();
     }
 

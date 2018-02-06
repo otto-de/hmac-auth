@@ -24,6 +24,9 @@ public class CLIParameterToConfigurationReader {
         @Parameter(names = {"-v", "--verbose"}, description = "Enable logging.")
         boolean verbose = false;
 
+        @Parameter(names = {"-s", "--secure"}, description = "Use secure (HTTPS).")
+        boolean secure  = false;
+
         @Parameter(names = "--help", help = true)
         private boolean help;
 
@@ -39,6 +42,7 @@ public class CLIParameterToConfigurationReader {
 
         ProxyConfiguration.setTargetHost(internalProxyConfiguration.targetHost);
         ProxyConfiguration.setPort(internalProxyConfiguration.port);
+        ProxyConfiguration.setSecure(internalProxyConfiguration.secure);
         ProxyConfiguration.setSourcePort(internalProxyConfiguration.sourcePort);
         ProxyConfiguration.setUser(internalProxyConfiguration.user);
         ProxyConfiguration.setPassword(internalProxyConfiguration.password);
