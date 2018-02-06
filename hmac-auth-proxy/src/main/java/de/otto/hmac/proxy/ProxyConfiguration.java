@@ -5,6 +5,7 @@ public class ProxyConfiguration {
 
     private static int port;
     private static String targetHost;
+    private static boolean secure;
 
     private static String user;
     private static String password;
@@ -28,6 +29,14 @@ public class ProxyConfiguration {
 
     public static void setPort(int port) {
         ProxyConfiguration.port = port;
+    }
+
+    public static boolean isSecure() {
+        return secure;
+    }
+
+    public static void setSecure(boolean secure) {
+        ProxyConfiguration.secure = secure;
     }
 
     public static String getTargetHost() {

@@ -47,6 +47,7 @@ public class ProxyServer {
                     "USAGE:\n" +
                     "    -u --user USER             authenticated username\n" +
                     "    -p --password PASSWORD     password of user\n" +
+                    "    -s --secure                use HTTPs requests\n" +
                     "    -h --host HOST             target host\n" +
                     "    -sp --sourcePort PORT      proxy port, defaults to 9998\n" +
                     "    -tp --targetPort PORT      target port\n" +

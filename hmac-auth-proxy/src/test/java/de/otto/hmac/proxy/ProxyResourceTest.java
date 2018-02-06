@@ -52,6 +52,27 @@ public class ProxyResourceTest {
         assertThat(clientRequest.getURI().toString(), is("http://foo.otto.de:80/bar/damenmode"));
     }
 
+    @Test
+    public void shouldUseSecurePort() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // GIVEN
+        ProxyConfiguration.setSecure(true);
+        ProxyConfiguration.setPort(443);
+        ProxyConfiguration.setUser("user");
+        ProxyConfiguration.setPassword("secret");
+        ProxyConfiguration.setTargetHost("foo.otto.de");
+
+        // WHEN
+        UriInfo uriInfo = mock(UriInfo.class);
+        when(uriInfo.getRequestUriBuilder()).thenReturn(fromUri("http://localhost:9998/bar/xyz"));
+
+        ProxyResource proxyResource = new ProxyResource();
+        WebResource.Builder target = proxyResource.createBuilder(uriInfo, "GET", NO_HEADERS);
+
+        // THEN
+        ClientRequestImpl clientRequest = getRequestFromWebresourceBuilder(target);
+        assertThat(clientRequest.getURI().toString(), is("https://foo.otto.de:443/bar/xyz"));
+    }
+
     private ClientRequestImpl getRequestFromWebresourceBuilder(WebResource.Builder target) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Method buildMethod = WebResource.Builder.class.getDeclaredMethod("build", String.class);
         buildMethod.setAccessible(true);
