@@ -50,45 +50,18 @@ public class ProxyResource {
             }
         }
     }
-
-    protected static StreamingOutput toStreamingOutput(final InputStream inputStream) {
-        return new StreamingOutput() {
-            @Override
-            public void write(OutputStream output) throws IOException, WebApplicationException {
-                ByteStreams.copy(inputStream, output);
-            }
-        };
-    }
-
-    protected static StreamingOutput toStreamingOutput(final ByteSource byteSource) {
-        return new StreamingOutput() {
-            @Override
-            public void write(OutputStream output) throws IOException, WebApplicationException {
-                byteSource.copyTo(output);
-            }
-        };
-    }
-
     @Path("{resource:.*}")
     @PUT
     public Response putRequest(InputStream body, @Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
         FileBackedOutputStream bodySource = null;
-        try {
-            bodySource = toFileBackedOutputStream(body);
-            ByteSource bodyAsByteSource = bodySource.asByteSource();
-            ClientResponse clientResponse = createBuilder(uriInfo, bodyAsByteSource, request.getMethod(), headers).put(ClientResponse.class, toStreamingOutput(bodyAsByteSource));
-            return clientResponseToResponse(clientResponse);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (bodySource != null) {
-                try {
-                    bodySource.close();
-                } catch (IOException ignore) {
-                    //
-                }
-             }
-        }
+        return sendRequestAndReceiveClientResponse(body, uriInfo, request, headers, bodySource);
+    }
+
+    @Path("{resource:.*}")
+    @PATCH
+    public Response patchRequest(InputStream body, @Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers) {
+        FileBackedOutputStream bodySource = null;
+        return sendRequestAndReceiveClientResponse(body, uriInfo, request, headers, bodySource);
     }
 
     @Path("{resource:.*}")
@@ -113,6 +86,45 @@ public class ProxyResource {
         return clientResponseToResponse(clientResponse);
     }
 
+    protected static StreamingOutput toStreamingOutput(final InputStream inputStream) {
+        return new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                ByteStreams.copy(inputStream, output);
+            }
+        };
+    }
+
+    protected static StreamingOutput toStreamingOutput(final ByteSource byteSource) {
+        return new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                byteSource.copyTo(output);
+            }
+        };
+    }
+
+    private Response sendRequestAndReceiveClientResponse(InputStream body, @Context UriInfo uriInfo, @Context Request request, @Context HttpHeaders headers, FileBackedOutputStream bodySource) {
+        try {
+            bodySource = toFileBackedOutputStream(body);
+            ByteSource bodyAsByteSource = bodySource.asByteSource();
+            ClientResponse clientResponse = createBuilder(uriInfo, bodyAsByteSource, request.getMethod(), headers)
+                    .method(request.getMethod(), ClientResponse.class, toStreamingOutput(bodyAsByteSource));
+            return clientResponseToResponse(clientResponse);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (bodySource != null) {
+                try {
+                    bodySource.close();
+                } catch (IOException ignore) {
+                    //
+                }
+            }
+        }
+    }
+
+
     private static Response clientResponseToResponse(ClientResponse clientResponse) {
         Response.ResponseBuilder rb = Response.status(clientResponse.getStatus());
         copyResponseHeaders(clientResponse, rb, ignoreResponseHeaders);
@@ -124,10 +136,10 @@ public class ProxyResource {
             System.out.println(String.format("Retrieved answer: HTTP-Code [%d], Content-Length: %s\n\n", clientResponse.getStatus(), bodyAsByteSource.size()));
             rb.entity(toStreamingOutput(bodyAsByteSource));
             return rb.build();
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            if(bodySource != null) {
+            if (bodySource != null) {
                 try {
                     bodySource.close();
                 } catch (IOException ignore) {
@@ -212,10 +224,10 @@ public class ProxyResource {
 
 
     protected static FileBackedOutputStream toFileBackedOutputStream(InputStream in) throws IOException {
-        FileBackedOutputStream out = new FileBackedOutputStream(10*1000*1000, true);
+        FileBackedOutputStream out = new FileBackedOutputStream(10 * 1000 * 1000, true);
         try {
             ByteStreams.copy(in, out);
-        } catch(IOException e) {
+        } catch (IOException e) {
             out.close();
             throw e;
         }
@@ -232,7 +244,7 @@ public class ProxyResource {
                     .auth(ProxyConfiguration.getUser(), ProxyConfiguration.getPassword())
                     .authenticatedResource(targetUri.toString());
             return builder;
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new WebApplicationException(e);
         }
     }
