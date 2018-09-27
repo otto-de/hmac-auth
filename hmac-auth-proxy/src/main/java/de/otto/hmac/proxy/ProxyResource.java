@@ -6,6 +6,7 @@ import com.google.common.io.FileBackedOutputStream;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import de.otto.hmac.authentication.jersey.HMACJerseyClient;
+import de.otto.hmac.proxy.annotation.PATCH;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
