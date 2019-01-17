@@ -3,7 +3,15 @@ hmac-auth
 
 HMAC authentication for RESTful web applications
 
-# Current release 2.3.2
+# Release 2.3.4
+
+* Add jaxb dependency for Java 11+ compatibility
+
+# Release 2.3.3
+
+* Add PATCH functionality
+
+# Release 2.3.2
 
 * Added secure HTTPs destination option to hmac auth proxy application 
 
