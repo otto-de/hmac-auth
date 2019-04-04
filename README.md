@@ -3,6 +3,10 @@ hmac-auth
 
 HMAC authentication for RESTful web applications
 
+# Release 2.3.5
+
+* Use explicit utf-8 encoding for signature calculation
+
 # Release 2.3.4
 
 * Add jaxb dependency for Java 11+ compatibility
