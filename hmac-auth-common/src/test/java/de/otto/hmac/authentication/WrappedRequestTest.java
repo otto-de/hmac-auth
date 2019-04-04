@@ -87,7 +87,7 @@ public class WrappedRequestTest {
     }
 
     @Test
-    public void shouldReadReqeuestWithAsciiEncoding() throws Exception {
+    public void shouldReadRequestWithAsciiEncoding() throws Exception {
         //given
         HttpServletRequest httpServletRequestMock = mock(HttpServletRequest.class);
         when(httpServletRequestMock.getMethod()).thenReturn("PUT");

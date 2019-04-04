@@ -1,5 +1,6 @@
 package de.otto.hmac.authentication;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -8,6 +9,7 @@ import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
 import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
@@ -94,10 +96,10 @@ public class RequestSigningUtil {
             throw new IllegalArgumentException("Secret Key provided to HMAC SigningUtils was null or empty.");
         }
         try {
-            final SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "HmacSHA256");
+            final SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(UTF_8), "HmacSHA256");
             final Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(keySpec);
-            final byte[] result = mac.doFinal(signatureBase.getBytes());
+            final byte[] result = mac.doFinal(signatureBase.getBytes(UTF_8));
             return encodeBase64WithoutLinefeed(result);
         } catch (final NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException("should never happen", e);
