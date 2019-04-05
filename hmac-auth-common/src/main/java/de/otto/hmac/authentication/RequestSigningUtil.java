@@ -1,15 +1,15 @@
 package de.otto.hmac.authentication;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.slf4j.LoggerFactory.getLogger;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
+import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-
-import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
-import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
-
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
@@ -18,16 +18,11 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAmount;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.codec.binary.Base64;
-import org.slf4j.Logger;
-
-import com.google.common.hash.HashCode;
-import com.google.common.hash.Hashing;
-import com.google.common.io.ByteSource;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_DATE;
+import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class RequestSigningUtil {
 
