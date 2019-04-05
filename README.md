@@ -3,6 +3,10 @@ hmac-auth
 
 HMAC authentication for RESTful web applications
 
+# Release 2.3.6
+
+* Add urldecode before signature calculation to fix issues with non-ascii characters in urls
+
 # Release 2.3.5
 
 * Use explicit utf-8 encoding for signature calculation
