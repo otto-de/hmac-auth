@@ -49,6 +49,22 @@ public class RequestSigningUtilTest {
     }
 
     @Test
+    public void shouldHandleEncodedUrlsWhenCalculatingSignature() throws IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URIäüö");
+        String nowAsString = formattedDateOfNow();
+        request.addHeader("x-hmac-auth-date", nowAsString);
+
+        String signatureBaseUnencoded = RequestSigningUtil.createSignatureBase(wrap(request));
+
+        request = new MockHttpServletRequest("PUT", "some/URI%C3%A4%C3%BC%C3%B6");
+        request.addHeader("x-hmac-auth-date", nowAsString);
+
+        String signatureBaseUrlEncoded = RequestSigningUtil.createSignatureBase(wrap(request));
+
+        assertThat(signatureBaseUnencoded, is(signatureBaseUrlEncoded));
+    }
+
+    @Test
     public void shouldAddRequestUriToSignatureBase() throws IOException {
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
         String nowAsString = formattedDateOfNow();
