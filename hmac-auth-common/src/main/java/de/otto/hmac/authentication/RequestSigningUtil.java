@@ -10,6 +10,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
@@ -71,11 +73,20 @@ public class RequestSigningUtil {
     }
 
     public static String createSignatureBase(final String method, final String dateHeader, final String requestUri, ByteSource body) {
+
+        String decodedRequestUri;
+        try {
+            decodedRequestUri = URLDecoder.decode(requestUri, UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            //Should never happen
+            decodedRequestUri = requestUri;
+        }
+
         final StringBuilder builder = new StringBuilder();
 
         builder.append(method).append("\n");
         builder.append(dateHeader).append("\n");
-        builder.append(requestUri).append("\n");
+        builder.append(decodedRequestUri).append("\n");
         builder.append(toMd5Hex(body));
 
         return builder.toString();
