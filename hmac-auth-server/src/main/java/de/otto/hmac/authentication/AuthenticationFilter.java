@@ -38,7 +38,7 @@ public class AuthenticationFilter implements Filter {
 
                 if (result.getStatus() == FAIL) {
                     httpResponse.sendError(SC_UNAUTHORIZED);
-                    LOG.error("Validierung der Signatur fehlgeschlagen.");
+                    LOG.warn("Validierung der Signatur fehlgeschlagen.");
                     return;
                 }
 
