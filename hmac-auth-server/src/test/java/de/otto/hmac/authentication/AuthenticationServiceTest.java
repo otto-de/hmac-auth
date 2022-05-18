@@ -13,7 +13,8 @@ import static de.otto.hmac.authentication.WrappedRequest.wrap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
+
 
 @Test
 public class AuthenticationServiceTest {
@@ -25,12 +26,12 @@ public class AuthenticationServiceTest {
         request.addHeader("x-hmac-auth-date", Instant.now().toString());
 
         request.setContent("{ \"key\": \"value\"}".getBytes());
-        String requestSignatur = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
+        WrappedRequest wrappedRequest = wrap(request);
+        String requestSignature = RequestSigningUtil.createRequestSignature(wrappedRequest, "secretKey");
 
-        request.addHeader("x-hmac-auth-signature", "username:" + requestSignatur);
+        request.addHeader("x-hmac-auth-signature", "username:" + requestSignature);
 
-
-        AuthenticationResult result = authService().validate(wrap(request));
+        AuthenticationResult result = authService().validate(wrappedRequest);
 
         assertThat(result.getStatus(), is(SUCCESS));
         assertThat(result.getUsername(), is("username"));

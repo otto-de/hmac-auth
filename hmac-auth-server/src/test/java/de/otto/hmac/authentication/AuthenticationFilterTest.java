@@ -13,6 +13,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import static de.otto.hmac.HmacAttributes.X_HMAC_AUTH_SIGNATURE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -43,9 +44,12 @@ public class AuthenticationFilterTest {
         // Given
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
         MockHttpServletResponse response = new MockHttpServletResponse();
+        request.addHeader("x-hmac-auth-signature", "username:AssumedToBeValid=");
         FilterChain filterChain = mock(FilterChain.class);
 
-        AuthenticationFilter filter = new AuthenticationFilter(null);
+        AuthenticationService authService = mock(AuthenticationService.class);
+        when(authService.validate(any())).thenReturn(AuthenticationResult.success("username"));
+        AuthenticationFilter filter = new AuthenticationFilter(authService);
 
         // When
         filter.doFilter(request, response, filterChain);
@@ -65,7 +69,7 @@ public class AuthenticationFilterTest {
         request.setContent(body.getBytes());
 
         AuthenticationService authService = mock(AuthenticationService.class);
-        when(authService.validate((WrappedRequest) anyObject())).thenReturn(AuthenticationResult.success("username"));
+        when(authService.validate(any())).thenReturn(AuthenticationResult.success("username"));
         AuthenticationFilter filter = new AuthenticationFilter(authService);
 
         UserRepository userRepository = mock(UserRepository.class);

@@ -17,10 +17,10 @@ import java.util.Collections;
 /**
  * JerseyTest class extended for tests with suppport of
  * <code>
- * @Context
- * private HttpServletRequest request;
- * </code>
  *
+ * @Context private HttpServletRequest request;
+ * </code>
+ * <p>
  * attributes.
  */
 public class JerseyServletTest extends JerseyTest {
@@ -50,9 +50,7 @@ public class JerseyServletTest extends JerseyTest {
                                     baseUri,
                                     Collections.singletonMap("jersey.config.server.provider.packages", "de.otto.hmac.authentication.jersey2.filter")
                             );
-                        } catch (ProcessingException e) {
-                            throw new TestContainerException(e);
-                        } catch (IOException e) {
+                        } catch (ProcessingException | IOException e) {
                             throw new TestContainerException(e);
                         }
                     }

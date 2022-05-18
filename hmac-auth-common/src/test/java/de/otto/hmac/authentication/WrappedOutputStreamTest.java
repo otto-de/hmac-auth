@@ -9,9 +9,6 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.time.Clock;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyByte;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 import static org.testng.AssertJUnit.assertEquals;

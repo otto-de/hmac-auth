@@ -24,6 +24,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -63,7 +64,7 @@ public class HmacJersey2WriterInterceptorTest extends JerseyServletTest {
         final InputStream responseContent = response.readEntity(InputStream.class);
         byte[] buffer = new byte[responseContent.available()];
         IOUtils.readFully(responseContent, buffer);
-        final String result = new String(buffer, "UTF-8");
+        final String result = new String(buffer, StandardCharsets.UTF_8);
         final String requestSignature = result.split(";")[0];
         final String requestHeaderDateTime = result.split(";")[1];
         assertEquals("user:+BvBUgz//6jg1EFvdf0iDqJTcTEc+dykuBYVo53kakU=", requestSignature);
@@ -79,20 +80,20 @@ public class HmacJersey2WriterInterceptorTest extends JerseyServletTest {
 
     @Path("returnHmacSignature")
     public static class HmacTestResource {
-        @Context
-        private HttpServletRequest httpServletRequest;
 
         @GET
         public String returnHmacSignatureOnGet(@HeaderParam("x-hmac-auth-signature") String hmacAuthSignature,
-                                               @HeaderParam("x-hmac-auth-date") String hmacAuthDate) throws IOException {
-            assertTrue(RequestSigningUtil.checkRequest(WrappedRequest.wrap(httpServletRequest), "secrectKey", TEST_CLOCK));
+                                               @HeaderParam("x-hmac-auth-date") String hmacAuthDate,
+                                               @Context HttpServletRequest request) throws IOException {
+            assertTrue(RequestSigningUtil.checkRequest(WrappedRequest.wrap(request), "secrectKey", TEST_CLOCK));
             return hmacAuthSignature + ";" + hmacAuthDate;
         }
 
         @POST
         public String returnHmacSignatureOnPost(@HeaderParam("x-hmac-auth-signature") String hmacAuthSignature,
-                                                @HeaderParam("x-hmac-auth-date") String hmacAuthDate) throws IOException {
-            assertTrue(RequestSigningUtil.checkRequest(WrappedRequest.wrap(httpServletRequest), "secrectKey", TEST_CLOCK));
+                                                @HeaderParam("x-hmac-auth-date") String hmacAuthDate,
+                                                @Context HttpServletRequest request) throws IOException {
+            assertTrue(RequestSigningUtil.checkRequest(WrappedRequest.wrap(request), "secrectKey", TEST_CLOCK));
             return hmacAuthSignature + ";" + hmacAuthDate;
         }
     }

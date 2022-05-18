@@ -90,14 +90,15 @@ public class RequestSigningUtilTest {
     }
 
     @Test
-    public void shouldEncryptRequestInfo() throws NoSuchAlgorithmException, IOException {
+    public void shouldEncryptRequestInfo() throws IOException {
 
         MockHttpServletRequest request = new MockHttpServletRequest("PUT", "some/URI");
         request.addHeader("x-hmac-auth-date", formattedDateOfNow());
         request.setContent("{ \"key\": \"value\"}".getBytes());
 
-        String encrypted = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
-        String encrypted2 = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
+        WrappedRequest wrappedRequest = wrap(request);
+        String encrypted = RequestSigningUtil.createRequestSignature(wrappedRequest, "secretKey");
+        String encrypted2 = RequestSigningUtil.createRequestSignature(wrappedRequest, "secretKey");
 
         assertThat(encrypted, is(encrypted2));
 
@@ -119,10 +120,11 @@ public class RequestSigningUtilTest {
         request.addHeader("x-hmac-auth-date", formattedDateOfNow());
         request.setContent("{ \"key\": \"value\"}".getBytes());
 
-        String requestSignatur = RequestSigningUtil.createRequestSignature(wrap(request), "secretKey");
-        request.addHeader("x-hmac-auth-signature", "username:" + requestSignatur);
+        WrappedRequest wrappedRequest = wrap(request);
+        String requestSignature = RequestSigningUtil.createRequestSignature(wrappedRequest, "secretKey");
+        request.addHeader("x-hmac-auth-signature", "username:" + requestSignature);
 
-        boolean valid = RequestSigningUtil.checkRequest(wrap(request), "secretKey", Clock.systemUTC());
+        boolean valid = RequestSigningUtil.checkRequest(wrappedRequest, "secretKey", Clock.systemUTC());
         assertThat(valid, is(true));
     }
 

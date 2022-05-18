@@ -1,10 +1,17 @@
 dependencies {
-    compile 'org.springframework:spring-beans:4.0.6.RELEASE'
-    compile 'org.springframework:spring-context:4.0.6.RELEASE'
+    compile("org.glassfish:javax.servlet:3.1.1") { ext.provided = true }
+    compile 'org.aspectj:aspectjweaver:1.9.9.1'
+    compile 'commons-codec:commons-codec:1.15'
+    compile 'com.google.code.gson:gson:2.9.0'
+    compile 'org.slf4j:slf4j-api:1.7.36'
 
-    compile 'org.slf4j:slf4j-api:1.7.7'
+    compile project(path: ":hmac-auth-common")
 
-    compile project(path: ":hmac-auth-server")
+    testCompile 'org.testng:testng:7.5'
+    testCompile 'org.hamcrest:hamcrest-core:2.2'
+    testCompile 'org.hamcrest:hamcrest-library:2.2'
+    testCompile 'org.mockito:mockito-core:4.5.1'
+    testCompile 'org.springframework:spring-test:5.3.19'
 }
 
 artifacts {
@@ -24,9 +31,9 @@ uploadArchives {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             pom.project {
-                name 'hmac-auth-server-spring'
+                name 'hmac-auth-server'
                 packaging 'jar'
-                description 'server library configuration for spring of the hmac-auth project.'
+                description 'server library of the hmac-auth project.'
                 url 'http://github.com/otto-de/hmac-auth'
 
                 scm {

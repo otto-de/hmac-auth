@@ -45,7 +45,6 @@ public class WrappedRequestTest {
         assertThat(extractContent(faelschung), is(originalBody.getBytes()));
     }
 
-
     @Test
     public void shouldNotChangeRequestBodyWithUmlauts() throws Exception {
         MockHttpServletRequest original = new MockHttpServletRequest("PUT", "/some/uri");

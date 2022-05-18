@@ -48,7 +48,7 @@ public class RequestSigningUtil {
 
     public static boolean hasValidRequestTimeStamp(final WrappedRequest request, final Clock clock) {
         final String requestTimeString = getDateFromHeader(request);
-        if (requestTimeString == null || requestTimeString.isEmpty()) {
+        if (requestTimeString.isEmpty()) {
             LOG.error("Signierter Request enthält kein Datum.");
             return false;
         }
@@ -79,17 +79,14 @@ public class RequestSigningUtil {
             decodedRequestUri = URLDecoder.decode(requestUri, UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             //Should never happen
+            LOG.warn("Could not decode requestUri");
             decodedRequestUri = requestUri;
         }
 
-        final StringBuilder builder = new StringBuilder();
-
-        builder.append(method).append("\n");
-        builder.append(dateHeader).append("\n");
-        builder.append(decodedRequestUri).append("\n");
-        builder.append(toMd5Hex(body));
-
-        return builder.toString();
+        return method + "\n" +
+                dateHeader + "\n" +
+                decodedRequestUri + "\n" +
+                toMd5Hex(body);
     }
 
     public static String createRequestSignature(final String method, final String dateHeader, final String requestUri, ByteSource body, final String secretKey) {

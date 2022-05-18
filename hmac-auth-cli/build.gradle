@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(path: ":hmac-auth-common")
+
+    compile 'com.beust:jcommander:1.82'
+
+    testCompile 'org.testng:testng:7.5'
+    testCompile 'org.hamcrest:hamcrest-library:2.2'
+    testCompile 'org.mockito:mockito-core:4.5.1'
+}
