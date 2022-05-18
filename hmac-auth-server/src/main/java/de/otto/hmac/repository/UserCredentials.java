@@ -1,7 +1,6 @@
 package de.otto.hmac.repository;
 
-import jdk.nashorn.internal.ir.annotations.Immutable;
-
+import javax.annotation.concurrent.Immutable;
 import java.util.Set;
 
 @Immutable

@@ -3,6 +3,14 @@ hmac-auth
 
 HMAC authentication for RESTful web applications
 
+# Release 2.3.8
+
+* Dependency updates (Spring 4 -> 5 etc.)
+
+# Release 2.3.7
+
+* Log authentication failures as WARN, not ERROR
+
 # Release 2.3.6
 
 * Add urldecode before signature calculation to fix issues with non-ascii characters in urls
