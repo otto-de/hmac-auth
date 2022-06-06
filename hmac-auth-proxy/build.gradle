@@ -12,7 +12,7 @@ dependencies {
     compile 'com.sun.jersey:jersey-server:1.19.4'
     compile 'com.sun.jersey:jersey-grizzly2:1.19.4'
     compile 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
-    compile 'com.sun.xml.bind:jaxb-impl:3.0.2'
+    compile 'com.sun.xml.bind:jaxb-impl:4.0.0'
     compile 'com.sun.xml.bind:jaxb-core:3.0.2'
     compile 'javax.activation:activation:1.1.1'
     compile 'com.beust:jcommander:1.82'
