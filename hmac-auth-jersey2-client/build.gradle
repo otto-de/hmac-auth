@@ -1,6 +1,6 @@
 
 dependencies {
-    compile 'org.glassfish.jersey.core:jersey-client:2.35'
+    compile 'org.glassfish.jersey.core:jersey-client:3.0.5'
 
     compile 'commons-codec:commons-codec:1.15'
     compile 'org.slf4j:slf4j-api:1.7.36'
