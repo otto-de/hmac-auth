@@ -17,7 +17,7 @@ dependencies {
     compile 'javax.activation:activation:1.1.1'
     compile 'com.beust:jcommander:1.82'
 
-    runtime 'org.slf4j:slf4j-log4j12:1.7.36'
+    runtime 'org.slf4j:slf4j-log4j12:2.0.4'
 
     testCompile 'org.testng:testng:7.5'
     testCompile 'org.hamcrest:hamcrest-library:2.2'
