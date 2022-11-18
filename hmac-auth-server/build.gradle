@@ -3,7 +3,7 @@ dependencies {
     compile 'org.aspectj:aspectjweaver:1.9.9.1'
     compile 'commons-codec:commons-codec:1.15'
     compile 'com.google.code.gson:gson:2.9.0'
-    compile 'org.slf4j:slf4j-api:1.7.36'
+    compile 'org.slf4j:slf4j-api:2.0.4'
 
     compile project(path: ":hmac-auth-common")
 
