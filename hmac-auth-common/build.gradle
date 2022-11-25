@@ -8,7 +8,7 @@ dependencies {
 
     compile 'commons-codec:commons-codec:1.15'
 
-    compile 'org.slf4j:slf4j-api:1.7.36'
+    compile 'org.slf4j:slf4j-api:2.0.5'
 
     testCompile 'org.testng:testng:7.5'
     testCompile 'org.hamcrest:hamcrest-core:2.2'

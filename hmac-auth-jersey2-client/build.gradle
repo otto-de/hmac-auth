@@ -3,7 +3,7 @@ dependencies {
     compile 'org.glassfish.jersey.core:jersey-client:2.35'
 
     compile 'commons-codec:commons-codec:1.15'
-    compile 'org.slf4j:slf4j-api:1.7.36'
+    compile 'org.slf4j:slf4j-api:2.0.5'
     
     compile project(path: ":hmac-auth-common")
     
