@@ -13,7 +13,7 @@ dependencies {
     testCompile 'org.mockito:mockito-core:4.10.0'
     // jersey test framework container with servlet support
     testCompile 'org.glassfish.jersey.test-framework:jersey-test-framework-core:2.35'
-    testCompile 'org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.35'
+    testCompile 'org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.1.1'
     testCompile 'org.glassfish.jersey.inject:jersey-hk2:2.35'
 }
 
