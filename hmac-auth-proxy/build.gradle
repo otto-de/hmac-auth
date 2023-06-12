@@ -7,21 +7,21 @@ targetCompatibility = 1.8
 
 
 dependencies {
-    compile project(path: ":hmac-auth-jersey-client")
+    implementation project(path: ":hmac-auth-jersey-client")
 
-    compile 'com.sun.jersey:jersey-server:1.19.4'
-    compile 'com.sun.jersey:jersey-grizzly2:1.19.4'
-    compile 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
-    compile 'com.sun.xml.bind:jaxb-impl:4.0.1'
-    compile 'com.sun.xml.bind:jaxb-core:4.0.1'
-    compile 'javax.activation:activation:1.1.1'
-    compile 'com.beust:jcommander:1.82'
+    implementation 'com.sun.jersey:jersey-server:1.19.4'
+    implementation 'com.sun.jersey:jersey-grizzly2:1.19.4'
+    implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+    implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
+    implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
+    implementation 'javax.activation:activation:1.1.1'
+    implementation 'com.beust:jcommander:1.82'
 
-    runtime 'org.slf4j:slf4j-log4j12:1.7.36'
+    implementation 'org.slf4j:slf4j-log4j12:1.7.36'
 
-    testCompile 'org.testng:testng:7.5'
-    testCompile 'org.hamcrest:hamcrest-library:2.2'
-    testCompile 'org.mockito:mockito-core:4.10.0'
+    testImplementation 'org.testng:testng:7.5'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
+    testImplementation 'org.mockito:mockito-core:4.10.0'
 }
 
 artifacts {
@@ -33,44 +33,4 @@ artifacts {
 signing {
     required { isReleaseVersion && gradle.taskGraph.hasTask(":uploadArchives") }
     sign configurations.archives
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            pom.project {
-                name "hmac-auth-proxy"
-                packaging "distZip"
-                description "Proxy-Application of the hmac-auth project."
-                url "http://github.com/otto-de/hmac-auth"
-
-                scm {
-                    url "scm:git@github.com:otto-de/hmac-auth.git"
-                    connection "scm:git@github.com:otto-de/hmac-auth.git"
-                    developerConnection "scm:git@github.com:otto-de/hmac-auth.git"
-                }
-
-                licenses {
-                    license {
-                        name "The Apache Software License, Version 2.0"
-                        url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                        distribution "repo"
-                    }
-                }
-
-                developers {
-                    developer {
-                        id "tvollert"
-                        name "Tom Vollerthun"
-                    }
-                    developer {
-                        id "drolfes"
-                        name "Daniel Rolfes"
-                    }
-                }
-            }
-        }
-    }
 }

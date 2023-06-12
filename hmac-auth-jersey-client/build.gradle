@@ -1,26 +1,26 @@
 
 dependencies {
-    compile("jakarta.servlet:jakarta.servlet-api:6.0.0") { ext.provided = true }
-    compile 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation("jakarta.servlet:jakarta.servlet-api:6.0.0") { ext.provided = true }
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
 
-    compile 'com.sun.jersey.contribs:jersey-apache-client4:1.19.4'
+    implementation 'com.sun.jersey.contribs:jersey-apache-client4:1.19.4'
 
-    compile 'org.aspectj:aspectjweaver:1.9.19'
+    implementation 'org.aspectj:aspectjweaver:1.9.19'
 
-    compile 'commons-codec:commons-codec:1.15'
+    implementation 'commons-codec:commons-codec:1.15'
 
-    compile 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
 
-    compile 'com.sun.jersey:jersey-client:1.19.4'
-    compile 'com.sun.jersey:jersey-core:1.19.4'
+    implementation 'com.sun.jersey:jersey-client:1.19.4'
+    implementation 'com.sun.jersey:jersey-core:1.19.4'
 
-    compile project(path: ":hmac-auth-common")
+    implementation project(path: ":hmac-auth-common")
 
-    testCompile 'org.testng:testng:7.5'
-    testCompile 'org.hamcrest:hamcrest-core:2.2'
-    testCompile 'org.hamcrest:hamcrest-library:2.2'
-    testCompile 'org.mockito:mockito-core:4.10.0'
-    testCompile 'org.springframework:spring-test:6.0.8'
+    testImplementation 'org.testng:testng:7.5'
+    testImplementation 'org.hamcrest:hamcrest-core:2.2'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
+    testImplementation 'org.mockito:mockito-core:4.10.0'
+    testImplementation 'org.springframework:spring-test:6.0.8'
 }
 
 artifacts {
@@ -34,38 +34,3 @@ signing {
     sign configurations.archives
 }
 
-uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                pom.project {
-                    name 'hmac-auth-jersey-client'
-                    packaging 'jar'
-                    description 'client library of the hmac-auth project.'
-                    url 'http://github.com/otto-de/hmac-auth'
-
-                    scm {
-                        url 'scm:git@github.com:otto-de/hmac-auth.git'
-                        connection 'scm:git@github.com:otto-de/hmac-auth.git'
-                        developerConnection 'scm:git@github.com:otto-de/hmac-auth.git'
-                    }
-
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id 'mnoecker'
-                            name 'Mario Nöcker'
-                        }
-                    }
-                }
-            }
-        }
-}

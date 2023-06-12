@@ -15,11 +15,16 @@ buildscript {
     }
 }
 
+repositories {
+    mavenCentral()
+    maven { url 'http://repo.spring.io/libs-snapshot' }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
-    apply plugin: 'maven'
+//    apply plugin: 'maven'
     apply plugin: 'signing'
 
     group = 'de.otto'
@@ -54,40 +59,5 @@ subprojects {
         classifier = 'sources'
     }
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
-            }
-        }
-    }
-
-    task uploadInternal(type: Upload) {
-        configuration = configurations.archives
-        uploadDescriptor = true
-        repositories {
-           mavenDeployer {
-               repository(url: nexusReleaseUrl) {
-                  authentication(userName: nexusReleaseUsername, password: nexusReleasePassword)
-               }
-               snapshotRepository(url: nexusSnapshotUrl) {
-                   authentication(userName: nexusSnapshotUsername, password: nexusSnapshotPassword)
-               }
-           }
-        }
-    }
-
-    task uploadLocal(type: Upload) {
-        configuration = configurations.archives
-        uploadDescriptor = true
-        repositories {
-            mavenLocal()
-        }
-    }
 
 }
