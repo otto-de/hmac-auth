@@ -54,6 +54,10 @@ publishing {
                     }
                 }
                 developers {
+                    developer {
+                        id = 'gsteinacker'
+                        name = 'Guido Steinacker'
+                    }
                 }
                 scm {
                     connection = 'scm:git@github.com:otto-de/hmac-auth.git'
