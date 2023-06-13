@@ -13,8 +13,60 @@ artifacts {
     archives sourcesJar
 }
 
-signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask(":uploadArchives") }
-    sign configurations.archives
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'hmac-auth-server-spring'
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'hmac-auth-server-spring'
+                description = 'Spring Beans for HMAC authentication.'
+                url = 'http://github.com/otto-de/hmac-auth'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                }
+                scm {
+                    connection = 'scm:git@github.com:otto-de/hmac-auth.git'
+                    developerConnection = 'scm:git@github.com:otto-de/hmac-auth.git'
+                    url = 'http://github.com/otto-de/hmac-auth'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            if (project.debugUpload) {
+                releasesRepoUrl = "$buildDir/repos/releases"
+                snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            } else {
+                credentials {
+                    username = sonatypeUsername
+                    password = sonatypePassword
+                }
+            }
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
 }
 
+signing {
+    required { isReleaseVersion }
+    sign publishing.publications.mavenJava
+}
