@@ -3,7 +3,7 @@ package de.otto.hmac.authentication;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.Test;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Clock;

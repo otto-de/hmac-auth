@@ -3,6 +3,7 @@ dependencies {
     implementation 'org.glassfish.jersey.core:jersey-client:3.1.2'
 
     implementation 'commons-codec:commons-codec:1.15'
+    implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.slf4j:slf4j-api:1.7.36'
     
     implementation project(path: ":hmac-auth-common")

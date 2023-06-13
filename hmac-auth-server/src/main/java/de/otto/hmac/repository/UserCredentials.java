@@ -1,9 +1,8 @@
 package de.otto.hmac.repository;
 
-import javax.annotation.concurrent.Immutable;
 import java.util.Set;
 
-@Immutable
+//@Immutable
 public class UserCredentials {
 
     private final String user;

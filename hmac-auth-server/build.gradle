@@ -2,6 +2,7 @@ dependencies {
     implementation("jakarta.servlet:jakarta.servlet-api:6.0.0") { ext.provided = true }
     implementation 'org.aspectj:aspectjweaver:1.9.19'
     implementation 'commons-codec:commons-codec:1.15'
+    implementation 'com.google.guava:guava:31.1-jre'
     implementation 'com.google.code.gson:gson:2.10'
     implementation 'org.slf4j:slf4j-api:1.7.36'
 

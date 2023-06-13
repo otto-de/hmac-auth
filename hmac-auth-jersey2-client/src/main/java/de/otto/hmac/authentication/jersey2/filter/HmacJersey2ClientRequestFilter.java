@@ -4,8 +4,8 @@ import com.google.common.io.ByteSource;
 import de.otto.hmac.authentication.WrappedOutputStream;
 import de.otto.hmac.authentication.WrappedOutputStreamContext;
 
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientRequestFilter;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
