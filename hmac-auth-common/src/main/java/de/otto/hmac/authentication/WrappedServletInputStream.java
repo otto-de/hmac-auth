@@ -52,25 +52,24 @@ class WrappedServletInputStream extends ServletInputStream {
 
     @Override
     public boolean isFinished() {
-        if (inputStream instanceof ServletInputStream) {
-            return ((ServletInputStream) inputStream).isFinished();
+        if (inputStream instanceof ServletInputStream sis) {
+            return sis.isFinished();
         }
         return false;
     }
 
     @Override
     public boolean isReady() {
-        if (inputStream instanceof ServletInputStream) {
-            return ((ServletInputStream) inputStream).isReady();
+        if (inputStream instanceof ServletInputStream sis) {
+            return sis.isReady();
         }
         return false;
     }
 
     @Override
     public void setReadListener(ReadListener readListener) {
-        if (inputStream instanceof ServletInputStream) {
-            ((ServletInputStream) inputStream).setReadListener(readListener);
+        if (inputStream instanceof ServletInputStream sis) {
+            sis.setReadListener(readListener);
         }
-
     }
 }
