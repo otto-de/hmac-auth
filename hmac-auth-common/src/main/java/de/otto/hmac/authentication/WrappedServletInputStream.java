@@ -1,5 +1,6 @@
 package de.otto.hmac.authentication;
 
+import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,4 +49,28 @@ class WrappedServletInputStream extends ServletInputStream {
         return inputStream.markSupported();
     }
 
+
+    @Override
+    public boolean isFinished() {
+        if (inputStream instanceof ServletInputStream) {
+            return ((ServletInputStream) inputStream).isFinished();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isReady() {
+        if (inputStream instanceof ServletInputStream) {
+            return ((ServletInputStream) inputStream).isReady();
+        }
+        return false;
+    }
+
+    @Override
+    public void setReadListener(ReadListener readListener) {
+        if (inputStream instanceof ServletInputStream) {
+            ((ServletInputStream) inputStream).setReadListener(readListener);
+        }
+
+    }
 }

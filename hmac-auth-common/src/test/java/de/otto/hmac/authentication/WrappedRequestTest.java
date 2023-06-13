@@ -2,6 +2,7 @@ package de.otto.hmac.authentication;
 
 
 import com.google.common.io.ByteStreams;
+import jakarta.servlet.ReadListener;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.Test;
 
@@ -95,6 +96,21 @@ public class WrappedRequestTest {
         final String originalContent = contentAreaJson("testId");
         final InputStream inputStream = new ByteArrayInputStream(originalContent.getBytes("ASCII"));
         ServletInputStream servletInputStream = new ServletInputStream() {
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
+
+            @Override
+            public boolean isReady() {
+                return false;
+            }
+
+            @Override
+            public void setReadListener(ReadListener readListener) {
+
+            }
+
             @Override
             public int read() throws IOException {
                 return inputStream.read();

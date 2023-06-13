@@ -2,8 +2,8 @@ apply plugin: "application"
 
 mainClassName = "de.otto.hmac.proxy.ProxyServer"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 17
+targetCompatibility = 17
 
 
 dependencies {
@@ -11,9 +11,11 @@ dependencies {
 
     implementation 'com.sun.jersey:jersey-server:1.19.4'
     implementation 'com.sun.jersey:jersey-grizzly2:1.19.4'
+    implementation 'com.sun.jersey.contribs:jersey-apache-client4:1.19.4'
     implementation 'jakarta.xml.bind:jaxb-api:2.4.0-b180830.0359'
     implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
     implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
+    implementation 'com.google.guava:guava:31.1-jre'
     implementation 'jakarta.activation:activation:1.1.1'
     implementation 'com.beust:jcommander:1.82'
 

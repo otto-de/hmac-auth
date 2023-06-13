@@ -36,7 +36,7 @@ subprojects {
     version = '3.0.0-SNAPSHOT'
     ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-    sourceCompatibility = 1.8
+    sourceCompatibility = 17
 
     repositories {
         mavenCentral()
