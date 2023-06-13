@@ -24,7 +24,7 @@ artifacts {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'hmac-auth-auth-server'
+            artifactId = 'hmac-auth-server'
             from components.java
             artifact sourcesJar
             artifact javadocJar
@@ -37,7 +37,7 @@ publishing {
                 }
             }
             pom {
-                name = 'hmac-auth-auth-server'
+                name = 'hmac-auth-server'
                 description = 'HMAC authentication server.'
                 url = 'http://github.com/otto-de/hmac-auth'
                 licenses {
@@ -72,4 +72,9 @@ publishing {
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
     }
+}
+
+signing {
+    required { isReleaseVersion }
+    sign publishing.publications.mavenJava
 }

@@ -84,3 +84,8 @@ publishing {
         }
     }
 }
+
+signing {
+    required { isReleaseVersion }
+    sign publishing.publications.mavenJava
+}
