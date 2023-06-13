@@ -2,26 +2,28 @@ apply plugin: "application"
 
 mainClassName = "de.otto.hmac.proxy.ProxyServer"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 17
+targetCompatibility = 17
 
 
 dependencies {
-    compile project(path: ":hmac-auth-jersey-client")
+    implementation project(path: ":hmac-auth-jersey-client")
 
-    compile 'com.sun.jersey:jersey-server:1.19.4'
-    compile 'com.sun.jersey:jersey-grizzly2:1.19.4'
-    compile 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
-    compile 'com.sun.xml.bind:jaxb-impl:4.0.1'
-    compile 'com.sun.xml.bind:jaxb-core:4.0.1'
-    compile 'javax.activation:activation:1.1.1'
-    compile 'com.beust:jcommander:1.82'
+    implementation 'com.sun.jersey:jersey-server:1.19.4'
+    implementation 'com.sun.jersey:jersey-grizzly2:1.19.4'
+    implementation 'com.sun.jersey.contribs:jersey-apache-client4:1.19.4'
+    implementation 'jakarta.xml.bind:jaxb-api:2.4.0-b180830.0359'
+    implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
+    implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'jakarta.activation:activation:1.1.1'
+    implementation 'com.beust:jcommander:1.82'
 
-    runtime 'org.slf4j:slf4j-log4j12:1.7.36'
+    implementation 'org.slf4j:slf4j-log4j12:1.7.36'
 
-    testCompile 'org.testng:testng:7.5'
-    testCompile 'org.hamcrest:hamcrest-library:2.2'
-    testCompile 'org.mockito:mockito-core:4.10.0'
+    testImplementation 'org.testng:testng:7.5'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
+    testImplementation 'org.mockito:mockito-core:4.10.0'
 }
 
 artifacts {
@@ -30,47 +32,55 @@ artifacts {
     archives sourcesJar
 }
 
-signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask(":uploadArchives") }
-    sign configurations.archives
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            pom.project {
-                name "hmac-auth-proxy"
-                packaging "distZip"
-                description "Proxy-Application of the hmac-auth project."
-                url "http://github.com/otto-de/hmac-auth"
-
-                scm {
-                    url "scm:git@github.com:otto-de/hmac-auth.git"
-                    connection "scm:git@github.com:otto-de/hmac-auth.git"
-                    developerConnection "scm:git@github.com:otto-de/hmac-auth.git"
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'hmac-auth-proxy'
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
                 }
-
-                licenses {
-                    license {
-                        name "The Apache Software License, Version 2.0"
-                        url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                        distribution "repo"
-                    }
-                }
-
-                developers {
-                    developer {
-                        id "tvollert"
-                        name "Tom Vollerthun"
-                    }
-                    developer {
-                        id "drolfes"
-                        name "Daniel Rolfes"
-                    }
+                usage('java-runtime') {
+                    fromResolutionResult()
                 }
             }
+            pom {
+                name = 'hmac-auth-proxy'
+                description = 'HMAC authentication proxy.'
+                url = 'http://github.com/otto-de/hmac-auth'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                }
+                scm {
+                    connection = 'scm:git@github.com:otto-de/hmac-auth.git'
+                    developerConnection = 'scm:git@github.com:otto-de/hmac-auth.git'
+                    url = 'http://github.com/otto-de/hmac-auth'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            if (project.debugUpload) {
+                releasesRepoUrl = "$buildDir/repos/releases"
+                snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            } else {
+                credentials {
+                    username = sonatypeUsername
+                    password = sonatypePassword
+                }
+            }
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
     }
 }

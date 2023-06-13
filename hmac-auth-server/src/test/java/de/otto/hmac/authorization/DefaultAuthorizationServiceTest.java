@@ -3,7 +3,7 @@ package de.otto.hmac.authorization;
 import de.otto.hmac.repository.FileSystemUserRepository;
 import org.testng.annotations.Test;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -3,38 +3,48 @@ apply plugin: 'eclipse'
 apply plugin: 'java'
 apply plugin: 'com.github.ben-manes.versions'
 
+project.ext.set("debugUpload", false)
+
 // for gradle plugins
 buildscript {
+
     repositories {
         mavenCentral()
         jcenter()
+        mavenLocal()
     }
+
     dependencies {
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.11.1'
         classpath 'org.codehaus.groovy:groovy-backports-compat23:3.0.8'
     }
 }
 
+repositories {
+    mavenCentral()
+    maven { url 'http://repo.spring.io/libs-snapshot' }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
-    apply plugin: 'maven'
+//    apply plugin: 'maven'
     apply plugin: 'signing'
 
     group = 'de.otto'
-    version = '2.3.9-SNAPSHOT'
+    version = '3.0.0-SNAPSHOT'
     ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-    sourceCompatibility = 1.8
+    sourceCompatibility = 17
 
     repositories {
         mavenCentral()
-
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
+        mavenLocal()
+        maven { url 'https://oss.sonatype.org/content/repositories/releases/' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
+
 
     jar {
         manifest.attributes provider: 'gradle'
@@ -44,50 +54,5 @@ subprojects {
         useTestNG()
     }
 
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from 'build/docs/javadoc'
-    }
-
-    task sourcesJar(type: Jar) {
-        from sourceSets.main.allSource
-        classifier = 'sources'
-    }
-
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
-            }
-        }
-    }
-
-    task uploadInternal(type: Upload) {
-        configuration = configurations.archives
-        uploadDescriptor = true
-        repositories {
-           mavenDeployer {
-               repository(url: nexusReleaseUrl) {
-                  authentication(userName: nexusReleaseUsername, password: nexusReleasePassword)
-               }
-               snapshotRepository(url: nexusSnapshotUrl) {
-                   authentication(userName: nexusSnapshotUsername, password: nexusSnapshotPassword)
-               }
-           }
-        }
-    }
-
-    task uploadLocal(type: Upload) {
-        configuration = configurations.archives
-        uploadDescriptor = true
-        repositories {
-            mavenLocal()
-        }
-    }
-
+    apply from: "${rootDir}/gradle/maven.gradle"
 }

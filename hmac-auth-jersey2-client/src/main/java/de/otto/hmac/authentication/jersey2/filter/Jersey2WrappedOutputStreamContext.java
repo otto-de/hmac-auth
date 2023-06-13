@@ -2,7 +2,7 @@ package de.otto.hmac.authentication.jersey2.filter;
 
 import de.otto.hmac.authentication.WrappedOutputStreamContext;
 
-import javax.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestContext;
 
 class Jersey2WrappedOutputStreamContext implements WrappedOutputStreamContext {
     private final ClientRequestContext requestContext;

@@ -3,6 +3,10 @@ hmac-auth
 
 HMAC authentication for RESTful web applications
 
+# Release 3.0.0
+
+* Dependency updates (Spring 5 -> 6 etc.)
+
 # Release 2.3.8
 
 * Dependency updates (Spring 4 -> 5 etc.)

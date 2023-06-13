@@ -1,3 +1,5 @@
+rootProject.name = 'hmac-auth'
+
 include "hmac-auth-common"
 include "hmac-auth-server"
 include "hmac-auth-server-spring"

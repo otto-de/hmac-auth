@@ -1,0 +1,21 @@
+apply plugin: 'maven-publish'
+
+jar {
+    manifest {
+        attributes(
+                provider: 'gradle',
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version
+        )
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
+}

@@ -1,20 +1,21 @@
 
 dependencies {
-    compile 'org.glassfish.jersey.core:jersey-client:2.35'
+    implementation 'org.glassfish.jersey.core:jersey-client:3.1.2'
 
-    compile 'commons-codec:commons-codec:1.15'
-    compile 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'commons-codec:commons-codec:1.15'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
     
-    compile project(path: ":hmac-auth-common")
+    implementation project(path: ":hmac-auth-common")
     
-    testCompile 'junit:junit:4.13.2'
-    testCompile 'commons-io:commons-io:2.11.0'
-    testCompile 'org.hamcrest:hamcrest-library:2.2'
-    testCompile 'org.mockito:mockito-core:4.10.0'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'commons-io:commons-io:2.11.0'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
+    testImplementation 'org.mockito:mockito-core:4.10.0'
     // jersey test framework container with servlet support
-    testCompile 'org.glassfish.jersey.test-framework:jersey-test-framework-core:2.35'
-    testCompile 'org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.35'
-    testCompile 'org.glassfish.jersey.inject:jersey-hk2:2.35'
+    testImplementation 'org.glassfish.jersey.test-framework:jersey-test-framework-core:3.1.2'
+    testImplementation 'org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:3.1.2'
+    testImplementation 'org.glassfish.jersey.inject:jersey-hk2:3.1.2'
 }
 
 artifacts {
@@ -27,43 +28,55 @@ test {
     useJUnit()
 }
 
-signing {
-    required { isReleaseVersion && gradle.taskGraph.hasTask(":uploadArchives") }
-    sign configurations.archives
-}
-
-uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-                pom.project {
-                    name 'hmac-auth-jersey2-client'
-                    packaging 'jar'
-                    description 'client library of the hmac-auth project.'
-                    url 'http://github.com/otto-de/hmac-auth'
-
-                    scm {
-                        url 'scm:git@github.com:otto-de/hmac-auth.git'
-                        connection 'scm:git@github.com:otto-de/hmac-auth.git'
-                        developerConnection 'scm:git@github.com:otto-de/hmac-auth.git'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'hmac-auth-jersey2-client'
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'hmac-auth-jersey2-client'
+                description = 'Jersey 2 client for HMAC authentication.'
+                url = 'http://github.com/otto-de/hmac-auth'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
-
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id 'mnoecker'
-                            name 'Mario Nöcker'
-                        }
-                    }
+                }
+                developers {
+                }
+                scm {
+                    connection = 'scm:git@github.com:otto-de/hmac-auth.git'
+                    developerConnection = 'scm:git@github.com:otto-de/hmac-auth.git'
+                    url = 'http://github.com/otto-de/hmac-auth'
                 }
             }
         }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            if (project.debugUpload) {
+                releasesRepoUrl = "$buildDir/repos/releases"
+                snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            } else {
+                credentials {
+                    username = sonatypeUsername
+                    password = sonatypePassword
+                }
+            }
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
 }

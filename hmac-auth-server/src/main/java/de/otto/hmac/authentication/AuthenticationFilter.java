@@ -2,16 +2,16 @@ package de.otto.hmac.authentication;
 
 import org.slf4j.Logger;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.EOFException;
 import java.io.IOException;
 
 import static de.otto.hmac.HmacAttributes.AUTHENTICATED_USERNAME;
 import static de.otto.hmac.authentication.AuthenticationResult.Status.FAIL;
 import static de.otto.hmac.authentication.AuthenticationResult.Status.SUCCESS;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class AuthenticationFilter implements Filter {
