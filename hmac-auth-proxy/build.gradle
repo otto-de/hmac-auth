@@ -11,10 +11,10 @@ dependencies {
 
     implementation 'com.sun.jersey:jersey-server:1.19.4'
     implementation 'com.sun.jersey:jersey-grizzly2:1.19.4'
-    implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+    implementation 'jakarta.xml.bind:jaxb-api:2.4.0-b180830.0359'
     implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
     implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
-    implementation 'javax.activation:activation:1.1.1'
+    implementation 'jakarta.activation:activation:1.1.1'
     implementation 'com.beust:jcommander:1.82'
 
     implementation 'org.slf4j:slf4j-log4j12:1.7.36'

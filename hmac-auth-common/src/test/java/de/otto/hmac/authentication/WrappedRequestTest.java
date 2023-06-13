@@ -5,8 +5,8 @@ import com.google.common.io.ByteStreams;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.Test;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
