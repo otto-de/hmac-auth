@@ -39,7 +39,11 @@ public class ProxyServer {
             Logger.getLogger("").setLevel(Level.OFF);
         }
 
-        startServer();
+        try {
+            startServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         if (ProxyConfiguration.isHelp()) {
             System.out.println("A local proxy server that forwards all requests to the given target host and port, \n" +
