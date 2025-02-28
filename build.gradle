@@ -38,6 +38,10 @@ subprojects {
 
     sourceCompatibility = 17
 
+    compileJava {
+        options.compilerArgs << '-parameters'
+    }
+
     repositories {
         mavenCentral()
         mavenLocal()
